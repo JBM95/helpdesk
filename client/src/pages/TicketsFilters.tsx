@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/select";
 import { Search } from "lucide-react";
 import { agentTicketStatuses, statusLabel } from "core/constants/ticket-status.ts";
-import type { TicketFilters } from "./TicketsPage";
+import type { TicketFilters } from "@/lib/ticket-list-params";
 
 const ALL = "__all__";
 

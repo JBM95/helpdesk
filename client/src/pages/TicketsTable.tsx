@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { useMemo } from "react";
+import { Link, useLocation } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import {
@@ -34,7 +34,12 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from "lucide-react";
-import type { TicketFilters } from "./TicketsPage";
+import type { TicketSortField, TicketSortOrder } from "core/constants/ticket-sort.ts";
+import {
+  DEFAULT_SORT_BY,
+  DEFAULT_SORT_ORDER,
+  type TicketListParams,
+} from "@/lib/ticket-list-params";
 
 interface TicketsResponse {
   tickets: Ticket[];
@@ -43,13 +48,17 @@ interface TicketsResponse {
   pageSize: number;
 }
 
-const columns: ColumnDef<Ticket>[] = [
+// `listSearch` rides along in router state so the ticket-detail back link can return to the exact
+// list the reader came from. It stays out of the detail URL deliberately: the detail page does not
+// filter anything, and a reader who deep-links or reloads there simply gets a plain back link.
+const buildColumns = (listSearch: string): ColumnDef<Ticket>[] => [
   {
     accessorKey: "subject",
     header: "Subject",
     cell: ({ row }) => (
       <Link
         to={`/tickets/${row.original.id}`}
+        state={{ listSearch }}
         className="link font-medium"
       >
         {row.original.subject}
@@ -95,21 +104,40 @@ const columns: ColumnDef<Ticket>[] = [
 
 const PAGE_SIZE = 10;
 
-export default function TicketsTable({ filters }: { filters: TicketFilters }) {
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: "createdAt", desc: true },
-  ]);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
+interface TicketsTableProps {
+  params: TicketListParams;
+  onSortChange: (sortBy: TicketSortField, sortOrder: TicketSortOrder) => void;
+  onPageChange: (page: number) => void;
+}
+
+export default function TicketsTable({
+  params,
+  onSortChange,
+  onPageChange,
+}: TicketsTableProps) {
+  const { search: listSearch } = useLocation();
+  const columns = useMemo(() => buildColumns(listSearch), [listSearch]);
+
+  // Sorting and pagination are derived from the URL every render rather than held in state. That
+  // is what lets browser history, a reload and a shared link all reproduce the same view — and it
+  // is why there is no effect resetting the page when the filters change: the reset happens in
+  // TicketsPage where the change is made, not in response to a new object reference here.
+  const { status, category, search, sortBy, sortOrder, page } = params;
+
+  // The API and the URL are 1-based; TanStack's pageIndex is 0-based.
+  const sorting: SortingState = [{ id: sortBy, desc: sortOrder === "desc" }];
+  const pagination: PaginationState = {
+    pageIndex: page - 1,
     pageSize: PAGE_SIZE,
-  });
+  };
 
-  useEffect(() => {
-    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-  }, [filters]);
-
-  const sortBy = sorting[0]?.id ?? "createdAt";
-  const sortOrder = sorting[0]?.desc ?? true ? "desc" : "asc";
+  // Absent filters are omitted rather than sent as undefined keys, so the request the API receives
+  // is byte-for-byte what it received before this change.
+  const filters = {
+    ...(status ? { status } : {}),
+    ...(category ? { category } : {}),
+    ...(search ? { search } : {}),
+  };
 
   const {
     data,
@@ -139,10 +167,24 @@ export default function TicketsTable({ filters }: { filters: TicketFilters }) {
     columns,
     state: { sorting, pagination },
     onSortingChange: (updater) => {
-      setSorting(updater);
-      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+      const next = typeof updater === "function" ? updater(sorting) : updater;
+      const [first] = next;
+      // A third click clears the sort in TanStack, which lands back on the default pair — the same
+      // state the previous local-state implementation fell back to, and one the URL then omits.
+      onSortChange(
+        (first?.id as TicketSortField | undefined) ?? DEFAULT_SORT_BY,
+        first === undefined
+          ? DEFAULT_SORT_ORDER
+          : first.desc
+            ? "desc"
+            : "asc"
+      );
     },
-    onPaginationChange: setPagination,
+    onPaginationChange: (updater) => {
+      const next =
+        typeof updater === "function" ? updater(pagination) : updater;
+      onPageChange(next.pageIndex + 1);
+    },
     manualSorting: true,
     manualPagination: true,
     enableMultiSort: false,

@@ -46,12 +46,21 @@ const mockAgents = [
   { id: "agent-2", name: "John Smith" },
 ];
 
-function renderPage(ticketId = "1") {
+function renderPage(ticketId = "1", listSearch?: string) {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
   return render(
-    <MemoryRouter initialEntries={[`/tickets/${ticketId}`]}>
+    <MemoryRouter
+      initialEntries={[
+        {
+          pathname: `/tickets/${ticketId}`,
+          // What the ticket list attaches when the reader clicks a subject, so the back link can
+          // return to the list they left.
+          state: listSearch === undefined ? null : { listSearch },
+        },
+      ]}
+    >
       <QueryClientProvider client={queryClient}>
         <Routes>
           <Route path="/tickets/:id" element={<TicketDetailPage />} />
@@ -63,6 +72,31 @@ function renderPage(ticketId = "1") {
 
 beforeEach(() => {
   vi.resetAllMocks();
+});
+
+describe("TicketDetailPage — back link (GH-1 AC4)", () => {
+  // CASE-20e7b0b98b08
+  it("should carry the list's query string back to the tickets list", () => {
+    mockedAxios.get.mockReturnValue(new Promise(() => {}));
+    renderPage("1", "?status=open&sortBy=subject&sortOrder=asc&page=2");
+
+    expect(screen.getByRole("link", { name: /Back to tickets/ })).toHaveAttribute(
+      "href",
+      "/tickets?status=open&sortBy=subject&sortOrder=asc&page=2"
+    );
+  });
+
+  // CASE-20e7b0b98b08 — a deep link or a reload has no router state to read, and falls back to the
+  // plain list rather than guessing a filter the reader never chose.
+  it("should link to the plain list when there is no list state to return to", () => {
+    mockedAxios.get.mockReturnValue(new Promise(() => {}));
+    renderPage("1");
+
+    expect(screen.getByRole("link", { name: /Back to tickets/ })).toHaveAttribute(
+      "href",
+      "/tickets"
+    );
+  });
 });
 
 describe("TicketDetailPage", () => {
