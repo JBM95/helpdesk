@@ -1,0 +1,1102 @@
+{
+  "schemaVersion": "1.1.0",
+  "producerVersion": "6.34.1",
+  "workItem": {
+    "id": "GH-1",
+    "tracker": {
+      "provider": "github",
+      "project": "JBM95/helpdesk"
+    }
+  },
+  "tier": "T2",
+  "plan": {
+    "path": ".solvo/testplans/GH-1-plan.md",
+    "sha256": "a4d3161c90df639d9611c28eee7bb705cb2255ff24515227bd7a35f7dc7cbe71"
+  },
+  "planRevisions": [
+    {
+      "version": 1,
+      "definitionHash": "90f3f0fb81d912fa68cddeaf2db1f86dae02d6723d2eec9472ab31ad72317bd8",
+      "supersedesVersion": null,
+      "createdAt": "2026-09-05T09:28:07.773Z"
+    },
+    {
+      "version": 2,
+      "definitionHash": "a4d3161c90df639d9611c28eee7bb705cb2255ff24515227bd7a35f7dc7cbe71",
+      "supersedesVersion": 1,
+      "createdAt": "2026-09-05T09:43:19.993Z"
+    }
+  ],
+  "scopeApproval": {
+    "status": "approved",
+    "by": "JB Mccallaghan",
+    "approvedAt": "2026-09-05T09:43:50.227Z",
+    "approvedVersion": 2,
+    "approvedHash": "a4d3161c90df639d9611c28eee7bb705cb2255ff24515227bd7a35f7dc7cbe71"
+  },
+  "casesArtifact": {
+    "path": ".solvo/testplans/GH-1-cases.md",
+    "sha256": "8a637cc21c6f526fd336829cfd247358798d07a16eec9833cf55c5fe1cc69ceb"
+  },
+  "caseSetRevisions": [
+    {
+      "version": 1,
+      "definitionHash": "d3561f8bf0e2edfebc7044e5656a896a07da3f3e20f7e8dec2a994c29cda64f1",
+      "supersedesVersion": null,
+      "createdAt": "2026-09-05T09:49:13.025Z"
+    },
+    {
+      "version": 2,
+      "definitionHash": "c1ab34a65812fcf426e1ecfb7e8565046372c8e3058430cfda9b06e52282dfd1",
+      "supersedesVersion": 1,
+      "createdAt": "2026-09-05T09:50:30.756Z"
+    }
+  ],
+  "caseSetApproval": {
+    "status": "approved",
+    "by": "JB Mccallaghan",
+    "approvedAt": "2026-09-05T09:50:41.205Z",
+    "approvedVersion": 2,
+    "approvedHash": "c1ab34a65812fcf426e1ecfb7e8565046372c8e3058430cfda9b06e52282dfd1"
+  },
+  "cases": [
+    {
+      "caseId": "CASE-e08e0e3c793c",
+      "definitionHash": "00e4ad49d6c4844f0e348a6680499380cfa246c3a29edddf07f4b505ecad70c9",
+      "ac": "AC1",
+      "instance": "selecting a status writes status to the URL",
+      "title": "Status selection is reflected in the URL",
+      "steps": [
+        "Mount the tickets list at /tickets",
+        "Select 'Open' in the status filter"
+      ],
+      "expected": "The URL search string contains status=open and /api/tickets is called with status: \"open\"",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-5e855865f6b2",
+      "definitionHash": "65cfb2847f45bc9125fc2c7dd446b5849df281f9ed0b3a92ab7e4484334f456e",
+      "ac": "AC1",
+      "instance": "selecting a category writes category to the URL",
+      "title": "Category selection is reflected in the URL",
+      "steps": [
+        "Mount the tickets list at /tickets",
+        "Select 'Refund' in the category filter"
+      ],
+      "expected": "The URL search string contains category=refund_request and /api/tickets is called with category: \"refund_request\"",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-337c883e0c29",
+      "definitionHash": "906179ddcdfa5d604d62091f6dd5ea1968fcbcd89aa8bdde6002dc0e339a0077",
+      "ac": "AC1",
+      "instance": "typing a search term writes search to the URL",
+      "title": "Search term is reflected in the URL",
+      "steps": [
+        "Mount the tickets list at /tickets",
+        "Type 'login' into the search input"
+      ],
+      "expected": "The URL search string contains search=login and /api/tickets is called with search: \"login\"",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-f3e86fed5d68",
+      "definitionHash": "37ffa92795ad1c7fbf0d03e9beee72baa4b8fc05c9ec864bd743e07327152470",
+      "ac": "AC1",
+      "instance": "all three filters set together appear together in the URL",
+      "title": "Status, category and search coexist in the URL",
+      "steps": [
+        "Mount the tickets list at /tickets",
+        "Select a status, then a category, then type a search term"
+      ],
+      "expected": "The URL carries all three params simultaneously and the request carries all three filters",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-3924bab2bec2",
+      "definitionHash": "1a6a5ef85263d09a2ea01d6edbfd4c8407f98f8b6468312957cbb5c76951761a",
+      "ac": "AC1",
+      "instance": "mounting at a URL with all three filter params initialises all three controls",
+      "title": "Filter controls initialise from the URL",
+      "steps": [
+        "Mount at /tickets?status=open&category=technical_question&search=login"
+      ],
+      "expected": "The status select shows 'Open', the category select shows 'Technical', and the search input contains 'login'",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-27dd90575a06",
+      "definitionHash": "4059e8e7b526c3237b8cdc1deb337dc4d8a0a66a64d68330d7fb374f48f61da7",
+      "ac": "AC1",
+      "instance": "mounting at a filtered URL sends those filters to the API",
+      "title": "Filters from the URL reach /api/tickets on first load",
+      "steps": [
+        "Mount at /tickets?status=resolved&category=general_question&search=vpn"
+      ],
+      "expected": "The first /api/tickets call includes status, category and search from the URL — not the defaults",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-040ad9228689",
+      "definitionHash": "e4019d6a29953616ba620ad4cc57f8e5fc0ff64451cb7d5cb4c288e4362080d8",
+      "ac": "AC1",
+      "instance": "a single-character search term round-trips through the URL",
+      "title": "One-character search term round-trips",
+      "steps": [
+        "Mount at /tickets",
+        "Type a single character 'a' into the search input"
+      ],
+      "expected": "search=a appears in the URL and is sent to the API; the input still shows 'a'",
+      "caseClass": "boundary",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-655998d07a02",
+      "definitionHash": "8195883a9cb87a9e9adb7827b8cd62e096fc17c1876373a2abc105e8f36ecb84",
+      "ac": "AC1",
+      "instance": "a search term containing URL-reserved characters round-trips encoded",
+      "title": "Reserved characters in the search term survive the URL",
+      "steps": [
+        "Mount at /tickets",
+        "Type 'a&b=c?d#e' into the search input",
+        "Read the URL, then read the search input back"
+      ],
+      "expected": "The term is percent-encoded in the URL, decoded back into the input unchanged, and sent to the API as the original string",
+      "caseClass": "boundary",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-2ae124573efe",
+      "definitionHash": "6bd2912617f55510cf9cb9e996f2429277cf126f90c47fde6c767374e14c8ad3",
+      "ac": "AC1",
+      "instance": "a search term at maximum practical length round-trips",
+      "title": "Very long search term does not break the URL",
+      "steps": [
+        "Mount at /tickets",
+        "Type a 300-character search term into the search input"
+      ],
+      "expected": "The term round-trips through the URL and the page renders; no truncation that changes the sent value silently",
+      "caseClass": "boundary",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-e8fb8a4bf179",
+      "definitionHash": "1f4960242cf9db4527a2406ff151f1d21622a881b1c63c662afcdf0aec46c693",
+      "ac": "AC1",
+      "instance": "typing a search term rapidly leaves the URL matching the final value",
+      "title": "Fast typing settles on the final search value",
+      "steps": [
+        "Mount at /tickets",
+        "Type 'login' quickly, character by character"
+      ],
+      "expected": "The URL ends on search=login and the last request sent carries 'login', not an intermediate prefix",
+      "caseClass": "concurrency",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-b545d0a5c4bf",
+      "definitionHash": "fb2293162abb6df53c21cb08fc1244aeebe1541fd45760ae8673f47830c71b49",
+      "ac": "AC1",
+      "instance": "changing status then category before the first request settles keeps both",
+      "title": "Two filter changes in flight both survive",
+      "steps": [
+        "Mount at /tickets with a slow /api/tickets response",
+        "Select a status, then immediately select a category before the first response resolves"
+      ],
+      "expected": "The URL carries both params and the settled list reflects both filters",
+      "caseClass": "concurrency",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-2845362e6dfc",
+      "definitionHash": "2cacfa29fbba8b9d9d3647d3d956981bd1391ff1c591789b0995a7e94bd8253c",
+      "ac": "AC1",
+      "instance": "a filtered request that fails leaves the filter in the URL",
+      "title": "Failed request does not discard the URL filters",
+      "steps": [
+        "Mount at /tickets?status=open",
+        "Make /api/tickets reject"
+      ],
+      "expected": "ErrorAlert 'Failed to fetch tickets' renders and status=open remains in the URL so the user can correct or retry",
+      "caseClass": "failure",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-fabda9180a68",
+      "definitionHash": "5ff756a3c5af40d5f9ea86ea42b88cad5ea092021ccde9ce31e64d0ad17a84f5",
+      "ac": "AC2",
+      "instance": "clicking a column header writes sortBy and sortOrder to the URL",
+      "title": "Sorting by a column is reflected in the URL",
+      "steps": [
+        "Mount at /tickets",
+        "Click the Subject column header"
+      ],
+      "expected": "The URL contains sortBy=subject and sortOrder=asc, and the request carries the same",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-4234ebc72492",
+      "definitionHash": "491cb8af9c5856db21b294f1d7def116f8f1beb5734bb697cc3a4fb4ab027277",
+      "ac": "AC2",
+      "instance": "clicking the same header twice flips sortOrder in the URL",
+      "title": "Sort direction toggle is reflected in the URL",
+      "steps": [
+        "Mount at /tickets",
+        "Click the Subject header twice"
+      ],
+      "expected": "The URL moves from sortOrder=asc to sortOrder=desc and the request follows",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-12efbff9d879",
+      "definitionHash": "9eebb3b278fd335a6f1a22f5c32548986a115aecaef5b43f2fc0f5d89fbf760a",
+      "ac": "AC2",
+      "instance": "mounting at a sort URL shows the matching sort indicator",
+      "title": "Sort indicator initialises from the URL",
+      "steps": [
+        "Mount at /tickets?sortBy=subject&sortOrder=asc"
+      ],
+      "expected": "The Subject header shows the ascending arrow; no other header shows a direction arrow",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-d901f3d998b8",
+      "definitionHash": "e6e623a4d582a777c1335a1848b7b34185e7c9ea8980d20d692d43775270fbf7",
+      "ac": "AC2",
+      "instance": "mounting at a sort URL sends that sort to the API",
+      "title": "Sort from the URL reaches /api/tickets on first load",
+      "steps": [
+        "Mount at /tickets?sortBy=senderName&sortOrder=asc"
+      ],
+      "expected": "The first request carries sortBy: \"senderName\", sortOrder: \"asc\" instead of the createdAt/desc default",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-32e17db60aa6",
+      "definitionHash": "e92eee027fb017b0c50e3e9babc71db4d1f50f49ef7e657067c9b8c96f31c338",
+      "ac": "AC2",
+      "instance": "each sortable column round-trips through the URL",
+      "title": "All five sortable columns round-trip",
+      "steps": [
+        "For each of subject, senderName, status, category, createdAt: mount at /tickets?sortBy=<column>",
+        "Read the header indicator and the request params"
+      ],
+      "expected": "Every column in core/schemas/tickets.ts sortableColumns is accepted from the URL and sent through",
+      "caseClass": "boundary",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-1d6a0684e1d0",
+      "definitionHash": "817cb7b79fd03e1fa9c6381a131f225bd9dd8eecf4ffbae9e0d0f38b198677d9",
+      "ac": "AC2",
+      "instance": "both sort directions round-trip through the URL",
+      "title": "sortOrder=asc and sortOrder=desc both round-trip",
+      "steps": [
+        "Mount at /tickets?sortBy=subject&sortOrder=asc, then at sortOrder=desc"
+      ],
+      "expected": "Each mount shows the matching arrow and sends the matching sortOrder",
+      "caseClass": "boundary",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-33e9012af743",
+      "definitionHash": "95f626e9eb0845bbc61bdbe64d1887a2c95f00d61cd906ce0dab2588eb425a82",
+      "ac": "AC2",
+      "instance": "clicking two different headers before the first request settles leaves the URL on the second",
+      "title": "Two sort clicks in flight settle on the last one",
+      "steps": [
+        "Mount at /tickets with a slow response",
+        "Click the Subject header, then immediately click the Created header"
+      ],
+      "expected": "The URL and the settled list both reflect sortBy=createdAt; the Subject sort does not win the race",
+      "caseClass": "concurrency",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-e83eec605a96",
+      "definitionHash": "33afaa9ef87934246f5bfb0287f746805635dc79d6d0a805ab76dd0b28575146",
+      "ac": "AC3",
+      "instance": "clicking Next writes the page to the URL",
+      "title": "Advancing a page is reflected in the URL",
+      "steps": [
+        "Mount at /tickets with a total of 50 tickets",
+        "Click Next page"
+      ],
+      "expected": "The URL contains page=2 and the request carries page: 2",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-adc92fc24569",
+      "definitionHash": "55a5b23cc0fc8486bedf0e0834331ef50c0f8cba8ce97e85b42ab48328f7f68d",
+      "ac": "AC3",
+      "instance": "mounting at a page URL requests that page",
+      "title": "Page initialises from the URL",
+      "steps": [
+        "Mount at /tickets?page=2 with a total of 50 tickets"
+      ],
+      "expected": "The first request carries page: 2 and the footer reads 'Page 2 of 5' with 'Showing 11-20 of 50 tickets'",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-875adb87792b",
+      "definitionHash": "fd0f8e4e94867a83efe5801262af72e6f6d66ef64d355eceaa5d68a1a00ceaef",
+      "ac": "AC3",
+      "instance": "First, Previous and Last each update the URL page",
+      "title": "All four pagination controls update the URL",
+      "steps": [
+        "Mount at /tickets?page=3 with a total of 50 tickets",
+        "Click Previous, then First, then Last"
+      ],
+      "expected": "The URL page param tracks each control (2, then absent-or-1, then 5) and each request matches",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-752a41e3d870",
+      "definitionHash": "284b07d3ae642d5c8ed9983e23c3dc9d89a24a786064bb6fa8c5cb0ea877fda9",
+      "ac": "AC3",
+      "instance": "the last page is reachable from the URL and disables Next",
+      "title": "Last page from the URL disables forward controls",
+      "steps": [
+        "Mount at /tickets?page=5 with a total of 50 tickets"
+      ],
+      "expected": "Next and Last are disabled, Previous and First are enabled, footer reads 'Page 5 of 5'",
+      "caseClass": "boundary",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-095552a8995f",
+      "definitionHash": "656defee370dc6e6718d3c8b6398dce05dc6459a7ea616208834b65e911506b5",
+      "ac": "AC3",
+      "instance": "a page beyond the last page renders without crashing",
+      "title": "Page past the end degrades gracefully",
+      "steps": [
+        "Mount at /tickets?page=99 with a total of 50 tickets"
+      ],
+      "expected": "The page renders (empty body or clamped to the last page) — no crash, no unhandled error, no blank screen",
+      "caseClass": "boundary",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-9a9129bfb43d",
+      "definitionHash": "f6161895ba86407a55268ff02cc0be4db563b2c6aee53e1e9a411f0e3d7664e2",
+      "ac": "AC3",
+      "instance": "the current page survives a re-render with unchanged filters",
+      "title": "Page 2 is not reset by a re-render",
+      "steps": [
+        "Mount at /tickets?page=2",
+        "Force a parent re-render without changing any filter value"
+      ],
+      "expected": "The page stays 2 and no page: 1 request is issued — the filters-object identity does not reset pagination",
+      "caseClass": "concurrency",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-33183e39dc55",
+      "definitionHash": "ad1a569c4ede9f36ca567fba8dcc9639504def8cda36fe0340be2d696a186d77",
+      "ac": "AC3",
+      "instance": "the current page survives a background refetch",
+      "title": "Page 2 is not reset by a refetch",
+      "steps": [
+        "Mount at /tickets?page=2",
+        "Trigger a React Query refetch of the tickets query"
+      ],
+      "expected": "The refetch requests page 2 and the URL still says page=2",
+      "caseClass": "concurrency",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-93514dfd0070",
+      "definitionHash": "0556e10ebf914f57f355bbc4405fc88b0492632aefa6fec88a58a6b9607840d1",
+      "ac": "AC3",
+      "instance": "double-clicking Next advances exactly one page",
+      "title": "Double-click on Next does not skip a page",
+      "steps": [
+        "Mount at /tickets with a total of 50 tickets",
+        "Double-click Next page"
+      ],
+      "expected": "The URL lands on page=2, not page=3, and one page-2 request is settled",
+      "caseClass": "concurrency",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-9be39e305430",
+      "definitionHash": "79915ddb52ab9be7ebb8fe2df1503247f9f37486c257ae821fe6ea77b7682511",
+      "ac": "AC3",
+      "instance": "a paged request that fails leaves the page in the URL",
+      "title": "Failed request does not discard the URL page",
+      "steps": [
+        "Mount at /tickets?page=2",
+        "Make /api/tickets reject"
+      ],
+      "expected": "ErrorAlert renders and page=2 stays in the URL",
+      "caseClass": "failure",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-e51a15eb56e6",
+      "definitionHash": "80248256300ec81d9b95c0c437b9c37ed33ce70b63e8b4816cbcdef9fbbf456c",
+      "ac": "AC4",
+      "instance": "opening a ticket and returning restores the list state",
+      "title": "List state survives a round trip through a ticket",
+      "steps": [
+        "Log in and go to /tickets",
+        "Apply a status filter, sort by Subject, go to page 2",
+        "Open a ticket from the list",
+        "Return to the tickets list"
+      ],
+      "expected": "The filter, sort and page are all restored exactly as they were left",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-8d69642c9b08",
+      "definitionHash": "00ec1cae8bc3f1b76e6dfac44718c714621c32c747c0ec83767dff72b1e587ff",
+      "ac": "AC4",
+      "instance": "the list mounts from the URL alone with no in-memory carry-over",
+      "title": "List state comes from the URL, not component memory",
+      "steps": [
+        "Mount the list at a fully-parameterised URL",
+        "Unmount it completely and remount at the same URL"
+      ],
+      "expected": "The second mount produces identical controls and an identical request — no state is held outside the URL",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-20e7b0b98b08",
+      "definitionHash": "dd5d0d19ec6e4c4fd13e28b646792b325135ad273a00952588d43cfe6223b056",
+      "ac": "AC4",
+      "instance": "the ticket detail back-link returns to the list URL including its params",
+      "title": "Back-link from ticket detail preserves the list query",
+      "steps": [
+        "Open a ticket from a filtered, sorted, paged list",
+        "Use the in-app navigation back to the tickets list"
+      ],
+      "expected": "The destination URL carries the same search params the list was left on",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-f3c0d3dae2bb",
+      "definitionHash": "5653c313539cd12130df71e399fd9496c96cc82250d5edf909feb90a087d1fc8",
+      "ac": "AC4",
+      "instance": "reloading the browser on a parameterised list URL restores the same list",
+      "title": "Full page reload restores the list state",
+      "steps": [
+        "Log in, go to /tickets, apply a filter and go to page 2",
+        "Reload the browser"
+      ],
+      "expected": "The same filter and page are shown after the reload",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-f4309d9553e2",
+      "definitionHash": "226d50fb600bae23f37d979507087cda865691cdd7fe467673453cea280da2c2",
+      "ac": "AC4",
+      "instance": "deep-linking to a parameterised list URL while unauthenticated redirects to login",
+      "title": "Unauthenticated deep link is still guarded",
+      "steps": [
+        "With no session, navigate directly to /tickets?status=open&page=2"
+      ],
+      "expected": "ProtectedRoute redirects to /login; the ticket list is never rendered and no /api/tickets call is made",
+      "caseClass": "authz",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-b66a9cb01fd3",
+      "definitionHash": "dc8120c5190528245ad355c362906f0c06d6fb5234c75998badef4b00eb95096",
+      "ac": "AC4",
+      "instance": "after logging in from a guarded deep link the list state is restored or explicitly lost",
+      "title": "List state after login from a deep link",
+      "steps": [
+        "Navigate to /tickets?status=open&page=2 with no session",
+        "Log in at the redirect"
+      ],
+      "expected": "Either the original parameterised URL is restored, or the user lands on the default list — whichever the implementation chooses must be deliberate and consistent, not intermittent",
+      "caseClass": "authz",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-f8fac94b30ab",
+      "definitionHash": "59ee843cf8eb3d37574b5beab4b88631d9bfed6faad935ab00bf95b1141a6cf6",
+      "ac": "AC5",
+      "instance": "back after a filter change returns to the previous filter state",
+      "title": "Back undoes a filter change",
+      "steps": [
+        "Go to /tickets",
+        "Apply a status filter",
+        "Press browser Back"
+      ],
+      "expected": "The list returns to the unfiltered state and the URL loses the status param",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-8548791d29f3",
+      "definitionHash": "f97fbed4ba1ed021df6df44d83ca605e38fb71f8b77f497ec30e08f1c22d952a",
+      "ac": "AC5",
+      "instance": "back after a page change returns to the previous page",
+      "title": "Back undoes a page change",
+      "steps": [
+        "Go to /tickets with a total of 50 tickets",
+        "Click Next page",
+        "Press browser Back"
+      ],
+      "expected": "The list returns to page 1 and the URL page param follows",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-4aa8b6f78dbf",
+      "definitionHash": "12b8b540634acd8d9b3dff3510b742028313482d658a995155f0c5d2cf472eea",
+      "ac": "AC5",
+      "instance": "forward after back re-applies the state",
+      "title": "Forward redoes the change Back undid",
+      "steps": [
+        "Apply a filter, press Back, then press Forward"
+      ],
+      "expected": "The filter is re-applied and the URL matches the state it had before Back",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-a95f558f6ba0",
+      "definitionHash": "407ed434577da0a6931aa5cefb518d83702de198be964a0f230ef3d14894275b",
+      "ac": "AC5",
+      "instance": "back through three successive states unwinds them in order",
+      "title": "Back unwinds a multi-step history in order",
+      "steps": [
+        "Apply a filter, then a sort, then go to page 2",
+        "Press Back three times"
+      ],
+      "expected": "Each Back lands on the immediately preceding list state, ending at the default list",
+      "caseClass": "boundary",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-fe4d5dbbfc65",
+      "definitionHash": "61e2fe5c92a69379bfb163ecba64f8be71f90c97ad8da44f910725e7a8ed88fb",
+      "ac": "AC5",
+      "instance": "back from the first list state leaves the tickets page rather than trapping the user",
+      "title": "Back from an untouched list does not trap",
+      "steps": [
+        "Navigate to /tickets from another page",
+        "Press Back without touching any control"
+      ],
+      "expected": "The browser leaves /tickets for the previous page; the user is not held on the list by a replaced history entry",
+      "caseClass": "boundary",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-b45e016761f1",
+      "definitionHash": "b15a5b377f7f3b7cd851d1e243b5c0026377a32988c516e99c80fe7fb2530d9b",
+      "ac": "AC5",
+      "instance": "rapid back and forward leaves the rendered list agreeing with the URL",
+      "title": "Rapid Back/Forward does not desync list and URL",
+      "steps": [
+        "Build three list states",
+        "Press Back and Forward rapidly several times",
+        "Stop and compare the rendered controls, the rows and the URL"
+      ],
+      "expected": "The rendered filter/sort/page controls and the row set all match the final URL",
+      "caseClass": "concurrency",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-6e5a5e6f195f",
+      "definitionHash": "5124197ce39a58a49a12b517c5cc15dfee4c107a8a2249118b208f6e6443daab",
+      "ac": "AC5",
+      "instance": "navigating history while a request is in flight does not render the superseded result",
+      "title": "In-flight request does not overwrite the navigated-to state",
+      "steps": [
+        "Apply a filter with a slow /api/tickets response",
+        "Press Back before the response arrives"
+      ],
+      "expected": "The settled list matches the URL after the Back, not the superseded in-flight request",
+      "caseClass": "failure",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-54ddb84f8d5c",
+      "definitionHash": "b7068f432e2f5deacf4ff2abf2fe08a1aff6052a148abbe8d29a49d896e2e511",
+      "ac": "AC6",
+      "instance": "changing the status filter while on a later page resets to page 1",
+      "title": "Status change resets pagination",
+      "steps": [
+        "Mount at /tickets?page=3 with a total of 50 tickets",
+        "Change the status filter"
+      ],
+      "expected": "The request carries page: 1 and the URL no longer says page=3",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-1f30bb0a8eee",
+      "definitionHash": "00e3e464e00a68a8c265dd01d3b145f8ecd69ea7845e942e9444f00f6b56d27e",
+      "ac": "AC6",
+      "instance": "changing the category filter while on a later page resets to page 1",
+      "title": "Category change resets pagination",
+      "steps": [
+        "Mount at /tickets?page=3 with a total of 50 tickets",
+        "Change the category filter"
+      ],
+      "expected": "The request carries page: 1 and the URL no longer says page=3",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-1e9fb05ae79a",
+      "definitionHash": "580e7c03333c854099e84bd6f7db3f3a2843aba43f2a7ad5742d68dfbfe453b8",
+      "ac": "AC6",
+      "instance": "changing the search term while on a later page resets to page 1",
+      "title": "Search change resets pagination",
+      "steps": [
+        "Mount at /tickets?page=3 with a total of 50 tickets",
+        "Type a search term"
+      ],
+      "expected": "The request carries page: 1 and the URL no longer says page=3",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-0947995d87db",
+      "definitionHash": "44795bf277ef892b37f1a90908ed1bae63a52bacff201f5359dc7f2809bb661d",
+      "ac": "AC6",
+      "instance": "changing the sort while on a later page resets to page 1",
+      "title": "Sort change resets pagination",
+      "steps": [
+        "Mount at /tickets?page=3&sortBy=createdAt with a total of 50 tickets",
+        "Click the Subject column header"
+      ],
+      "expected": "The request carries sortBy: \"subject\" with page: 1 and the URL reflects both",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-187f6a80d1e3",
+      "definitionHash": "75da3f55606cbacca0b0bd99d06835ba108530693103ed62451720f53e62ac1b",
+      "ac": "AC6",
+      "instance": "the pagination reset is visible in the URL and not only in the request",
+      "title": "Reset to page 1 is reflected in the URL",
+      "steps": [
+        "Mount at /tickets?page=4",
+        "Change any filter",
+        "Read the URL"
+      ],
+      "expected": "The URL either drops the page param or sets page=1 — it never keeps a stale page=4 while requesting page 1",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-b7a0968876d3",
+      "definitionHash": "fd5bb46ab286c225d796357527bd931fcdfddd49f0f8faaacfe490f1aec067f9",
+      "ac": "AC6",
+      "instance": "clearing a filter while on a later page also resets to page 1",
+      "title": "Clearing a filter resets pagination",
+      "steps": [
+        "Mount at /tickets?status=open&page=3",
+        "Set the status filter back to 'All statuses'"
+      ],
+      "expected": "The request carries page: 1 and the URL drops both status and page",
+      "caseClass": "boundary",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-222fa42cb560",
+      "definitionHash": "fd62e76287b50f1db6c406a007a0d61f8fa664002fb6a1532972290e40214d67",
+      "ac": "AC6",
+      "instance": "changing a filter while already on page 1 does not add a redundant history entry",
+      "title": "Reset on page 1 does not pollute history",
+      "steps": [
+        "Mount at /tickets",
+        "Change a filter",
+        "Press Back once"
+      ],
+      "expected": "One Back returns to the unfiltered list — the reset does not push an extra indistinguishable entry",
+      "caseClass": "boundary",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-94d5af5f9efe",
+      "definitionHash": "582050d2e2ea79253eb4aac83ac944ca6003144d857927976f264389d99849a4",
+      "ac": "AC7",
+      "instance": "an unsupported status value falls back to no status filter",
+      "title": "status=frozen falls back",
+      "steps": [
+        "Mount at /tickets?status=frozen"
+      ],
+      "expected": "The list renders unfiltered, the status select shows 'All statuses', and no status param is sent to /api/tickets",
+      "caseClass": "negative",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-4380d2a19b98",
+      "definitionHash": "6dca7fe47bb87b3facd014437b7e86470c595f08e90749b10f8d5933832c0d69",
+      "ac": "AC7",
+      "instance": "a real ticket status that agents cannot filter by falls back",
+      "title": "status=new is rejected client-side",
+      "steps": [
+        "Mount at /tickets?status=new"
+      ],
+      "expected": "The value is treated as unsupported (it is in ticketStatuses but not agentTicketStatuses) and is not sent — the server would 400 and blank the page",
+      "caseClass": "negative",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-8646466a3043",
+      "definitionHash": "8b56c4c7fdf16b3291a19702c385d88d6cf9065c30404ba3697b0b98bc81ffb0",
+      "ac": "AC7",
+      "instance": "an unsupported category value falls back to no category filter",
+      "title": "category=billing falls back",
+      "steps": [
+        "Mount at /tickets?category=billing"
+      ],
+      "expected": "The list renders with no category filter and no category param is sent",
+      "caseClass": "negative",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-0abb1d5dcdef",
+      "definitionHash": "bc5d540e4eabed99c854ba234a61826b7999aae0dde607a1d74002bffe559bdb",
+      "ac": "AC7",
+      "instance": "a rendered but unsortable column falls back to the default sort",
+      "title": "sortBy=senderEmail falls back to createdAt",
+      "steps": [
+        "Mount at /tickets?sortBy=senderEmail"
+      ],
+      "expected": "The sort falls back to createdAt/desc and sortBy=senderEmail is never sent — it is a rendered column but absent from sortableColumns",
+      "caseClass": "negative",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-5f5a79a6d058",
+      "definitionHash": "866771850aedf34d78d3aacd32e56e76f8f75a8c47c554be387cb0e7ae34fac6",
+      "ac": "AC7",
+      "instance": "an unsupported sort direction falls back to the default direction",
+      "title": "sortOrder=sideways falls back to desc",
+      "steps": [
+        "Mount at /tickets?sortBy=subject&sortOrder=sideways"
+      ],
+      "expected": "sortOrder falls back to desc; sortBy=subject is still honoured",
+      "caseClass": "negative",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-b048b7aec830",
+      "definitionHash": "144ab71397636467bfd77376aaf7108439fc3f27f055475aac318ae1c787e572",
+      "ac": "AC7",
+      "instance": "a zero page value falls back to page 1",
+      "title": "page=0 falls back to page 1",
+      "steps": [
+        "Mount at /tickets?page=0"
+      ],
+      "expected": "The request carries page: 1 — the server's min(1) constraint is never reached",
+      "caseClass": "negative",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-f712934f69ca",
+      "definitionHash": "7ca2e9ad2fa1b3c43bd67c993967a16c071d7b9411d938d0fee034fc1ffd7af5",
+      "ac": "AC7",
+      "instance": "a negative page value falls back to page 1",
+      "title": "page=-1 falls back to page 1",
+      "steps": [
+        "Mount at /tickets?page=-1"
+      ],
+      "expected": "The request carries page: 1 and the page renders",
+      "caseClass": "negative",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-73f3dcc5a1d6",
+      "definitionHash": "9039d4c81081a162ec06560bbe92fbce457a3ccc2ba3bea9cbf7cc59b0e860a9",
+      "ac": "AC7",
+      "instance": "a non-numeric page value falls back to page 1",
+      "title": "page=abc falls back to page 1",
+      "steps": [
+        "Mount at /tickets?page=abc"
+      ],
+      "expected": "The request carries page: 1 — no NaN reaches the query params",
+      "caseClass": "negative",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-8bca3b4a2a3a",
+      "definitionHash": "a5bbdea404f8d1fd78a872c071dc23c628aefe519de0c3c58f43e6f6c853fca6",
+      "ac": "AC7",
+      "instance": "a fractional page value falls back to a valid integer page",
+      "title": "page=1.5 falls back to a valid integer",
+      "steps": [
+        "Mount at /tickets?page=1.5"
+      ],
+      "expected": "An integer page is sent; the server's int() constraint is never reached",
+      "caseClass": "negative",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-34f10743279c",
+      "definitionHash": "1ebebafb61433c493602d577687db6fb8b1b514570d7172894ea79f3100b61f5",
+      "ac": "AC7",
+      "instance": "duplicate values for one param resolve to a single supported value",
+      "title": "Duplicate status keys resolve to one value",
+      "steps": [
+        "Mount at /tickets?status=open&status=closed"
+      ],
+      "expected": "Exactly one supported status is applied and sent; the page does not send a comma-joined or array value the server would reject",
+      "caseClass": "negative",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-167bc56de8f8",
+      "definitionHash": "4cfaeca23a658c94094f591ccb151760fc25e607ef10e16ed3a398781e83c453",
+      "ac": "AC7",
+      "instance": "an unrecognised query param does not break the page",
+      "title": "Unknown param is ignored safely",
+      "steps": [
+        "Mount at /tickets?assignee=me&status=open"
+      ],
+      "expected": "The status filter applies, the unknown param is ignored or preserved harmlessly, and nothing extra is sent to /api/tickets",
+      "caseClass": "negative",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-7f01d782c90b",
+      "definitionHash": "ac918f7c7e3e3e329226ba8e0cf1d4f5e6437f8d304e47945ab8c2c4a14499b5",
+      "ac": "AC7",
+      "instance": "a malformed query string renders the default list",
+      "title": "Malformed query string degrades to defaults",
+      "steps": [
+        "Mount at /tickets?%%%&=&status"
+      ],
+      "expected": "The default list renders with default sort and page; no crash and no error alert",
+      "caseClass": "negative",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-4cf6ae359e0d",
+      "definitionHash": "7e34d7ec98ccc539b04f42a706e6d2dcbd7b377316754fd6271cc5f80f90320e",
+      "ac": "AC7",
+      "instance": "every invalid combination still produces a successful API request",
+      "title": "No URL-supplied value ever reaches the API unvalidated",
+      "steps": [
+        "Mount at /tickets?status=frozen&category=billing&sortBy=senderEmail&sortOrder=sideways&page=abc",
+        "Inspect the outgoing request params"
+      ],
+      "expected": "The request contains only schema-valid values, so ticketListQuerySchema cannot 400 and 'Failed to fetch tickets' is not shown",
+      "caseClass": "failure",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-c27e798cbe1d",
+      "definitionHash": "a4c46ca3d44909ed2a900a62fbcf8946ed482e8d0f0ce3fcf47065b1ee984ff9",
+      "ac": "AC7",
+      "instance": "a page far beyond the result set renders without crashing",
+      "title": "Very large page value degrades gracefully",
+      "steps": [
+        "Mount at /tickets?page=999999 with a total of 50 tickets"
+      ],
+      "expected": "The page renders with an empty body or clamps to the last page; the footer text does not show a nonsensical range",
+      "caseClass": "boundary",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-c676aa4d6c2f",
+      "definitionHash": "475b9f1232e4e778eb1554634c3b2ab953babaa33d6231116e3fe3c7d67f197b",
+      "ac": "AC8",
+      "instance": "the default list state produces no search params",
+      "title": "Default list URL is clean",
+      "steps": [
+        "Mount at /tickets and change nothing"
+      ],
+      "expected": "The URL search string stays empty — no sortBy, sortOrder or page appears just because defaults exist",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-f4b2c0c285fa",
+      "definitionHash": "7a1787b8ffe45165bcbf8c723587649d79748d0e96c85bdccefb4f1243bed89d",
+      "ac": "AC8",
+      "instance": "clearing a filter removes its param rather than leaving it empty",
+      "title": "Cleared status filter drops the param",
+      "steps": [
+        "Mount at /tickets?status=open",
+        "Set the status filter back to 'All statuses'"
+      ],
+      "expected": "The URL drops status entirely — it does not read status= or status=__all__",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-70b9f471d1ea",
+      "definitionHash": "db6e2e2d32877a5948d1a70f814c7d1120ac42ec2523f2c8ddd26eeca3b8d9d1",
+      "ac": "AC8",
+      "instance": "emptying the search input removes the search param",
+      "title": "Emptied search input drops the param",
+      "steps": [
+        "Mount at /tickets?search=login",
+        "Clear the search input"
+      ],
+      "expected": "The URL drops search entirely and no empty search string is sent to the API",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-76b3900894f2",
+      "definitionHash": "c104b2010b73bad6ac276f172b39ac3a69416eeb0371d870926dfc98c2dad32c",
+      "ac": "AC8",
+      "instance": "the default sort is absent from the URL",
+      "title": "Default sort is not written to the URL",
+      "steps": [
+        "Mount at /tickets",
+        "Sort by Subject, then sort back to Created descending"
+      ],
+      "expected": "Once the state matches the createdAt/desc default, the sort params are absent from the URL",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-c9644e6ae50c",
+      "definitionHash": "18dea41173234fd0dbfff2530d684d0d849a5b8e7e6fd53336c26dc9f78d3a89",
+      "ac": "AC8",
+      "instance": "page 1 is absent from the URL",
+      "title": "Page 1 is not written to the URL",
+      "steps": [
+        "Mount at /tickets with a total of 50 tickets",
+        "Click Next, then Previous"
+      ],
+      "expected": "Back on the first page the URL has no page param rather than page=1",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-2ce11011a545",
+      "definitionHash": "c4e03135b8e8d55c2b0eaf679854f8d9abc2a82f23c605e3b6ccde8009f4cc88",
+      "ac": "AC8",
+      "instance": "returning every control to its default leaves the URL clean again",
+      "title": "Full round trip back to defaults empties the URL",
+      "steps": [
+        "Apply a status, a category, a search term, a sort and a page",
+        "Return every control to its default"
+      ],
+      "expected": "The URL search string is empty again — no residual params from the journey",
+      "caseClass": "boundary",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-980cc3885141",
+      "definitionHash": "6a9b17a216dbcc4ec6aa828c27778b4ecccb788156d019cc7040be8da6cb6427",
+      "ac": "AC9",
+      "instance": "the default request params are unchanged",
+      "title": "Default /api/tickets params are byte-identical to today",
+      "steps": [
+        "Mount the tickets list with no URL params",
+        "Assert the axios call with an exact params object"
+      ],
+      "expected": "axios.get is called with { sortBy: \"createdAt\", sortOrder: \"desc\", page: 1, pageSize: 10 } — the existing exact-match test passes unmodified, not loosened to objectContaining",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-08476f34d947",
+      "definitionHash": "9471515f5760793abd489759eb5da0d7412309f033ab59c029c9e39ed253f961",
+      "ac": "AC9",
+      "instance": "pageSize stays fixed and is not made URL-controllable",
+      "title": "pageSize is not exposed through the URL",
+      "steps": [
+        "Mount at /tickets?pageSize=100"
+      ],
+      "expected": "The request still sends pageSize: 10 — page size is out of scope for this story",
+      "caseClass": "negative",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-a6d60258881b",
+      "definitionHash": "1e930dca699b92ac59db6e616a6a7a1d49fedb6469a524eaae2cc132d7ee3bb1",
+      "ac": "AC9",
+      "instance": "no new query param is introduced on the API call",
+      "title": "No additional params are sent to /api/tickets",
+      "steps": [
+        "Exercise every filter, sort and page control",
+        "Collect the params of every outgoing request"
+      ],
+      "expected": "Every request's params are a subset of the keys ticketListQuerySchema already accepts",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-071ab822b94e",
+      "definitionHash": "ecfff4b142f179c961294d529259250b1f7820dbc9a523a90f70ea41082c2f4a",
+      "ac": "AC9",
+      "instance": "the server and shared schema are untouched",
+      "title": "No server-side or shared-schema change in the diff",
+      "steps": [
+        "Inspect the diff for server/** and core/schemas/tickets.ts"
+      ],
+      "expected": "Neither is modified; the change is confined to the client. There is no server test suite in this repo, so diff inspection is the control",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-47298dac3ca4",
+      "definitionHash": "d04bfc8201e402b3ae9a8185e00aa27ea2670ae1a41a7989575f09826de868bd",
+      "ac": "AC9",
+      "instance": "the response shape is consumed unchanged",
+      "title": "Response handling is unchanged",
+      "steps": [
+        "Return the existing { tickets, total, page, pageSize } shape",
+        "Read the table body and the pagination footer"
+      ],
+      "expected": "Rows, total count and footer text render exactly as before the change",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-8e3d236b21a9",
+      "definitionHash": "f3ca9218574d55cf7bdb3b8efed953f99a37b3c2d4c75c84c12357c2435ce01a",
+      "ac": "AC4",
+      "instance": "arriving at the list from the nav link produces a defined list state",
+      "title": "Nav link to Tickets lands on a defined state",
+      "steps": [
+        "Apply a filter and go to page 2 on /tickets",
+        "Navigate to another page (e.g. Home)",
+        "Click the Tickets link in the navigation"
+      ],
+      "expected": "The destination is deliberate and repeatable — either the preserved parameterised URL or a clean /tickets. The story does not say which, so whichever is implemented must be consistent and stated; it must not vary by how the nav link is reached",
+      "caseClass": "happy",
+      "origin": "approved"
+    }
+  ],
+  "classDispositions": [],
+  "exploratoryCharters": [
+    {
+      "charterId": "CH-be78fe0e3063",
+      "area": "tickets list URL state",
+      "text": "CHARTER: explore the tickets list URL state with hand-edited and shared/bookmarked URLs to discover states the page cannot recover from",
+      "ac": "AC7",
+      "definitionHash": "3978ccbc274c26b23edd78691c06ab70460beecc9cbf6cc20e203b5f8056db48"
+    },
+    {
+      "charterId": "CH-5e072067c341",
+      "area": "tickets list browser history",
+      "text": "CHARTER: explore browser history navigation on the tickets list with rapid back/forward and in-flight requests to discover stale list renders that disagree with the URL",
+      "ac": "AC5",
+      "definitionHash": "a0911ce78e1d42593c7fe747f317e42343b5d1121c9e27ab6221b63ecdb2ae79"
+    }
+  ],
+  "createdAt": "2026-09-05T09:28:07.773Z",
+  "updatedAt": "2026-09-05T09:50:41.205Z"
+}

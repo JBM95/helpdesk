@@ -47,9 +47,9 @@
     "coverageArtifact": "n/a: not measured at install — no coverage script detected",
     "lint": [],
     "tests": {
-      "backend": "n/a: no runner configured at install — stack not recognised",
-      "frontend": "",
-      "e2e": "",
+      "backend": "n/a: no server test suite exists in this repo",
+      "frontend": "cd client && bun run test",
+      "e2e": "bun run test:e2e",
       "onPr": "run",
       "timeoutMs": 300000
     },
