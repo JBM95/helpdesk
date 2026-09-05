@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "phase": "complete",
+  "solvoVersion": "6.34.0",
+  "recordedAt": "2026-09-04T15:14:25.209Z",
+  "installMode": "plugin",
+  "answers": {
+    "tracker": "github",
+    "scm": "github",
+    "agent": "claude",
+    "packs": [
+      "dev",
+      "qa"
+    ],
+    "obsidian": false,
+    "claudePlugin": true,
+    "jiraProject": "",
+    "jiraSite": "",
+    "adoOrg": "",
+    "adoProject": "",
+    "githubOwner": "JBM95",
+    "githubRepo": "helpdesk",
+    "marketplaceUrl": ""
+  },
+  "restore": [
+    {
+      "path": ".gitignore",
+      "bytes": 137,
+      "sha256": "b264ccbd957feb36fdd3160659afe7429abfcb20c723ca1f1327cc36bfa360b4",
+      "lossy": false,
+      "content": "node_modules\n\n# Environment files (keep *.example templates tracked)\n.env\n.env.*\n!.env.example\n\ne2e/test-results/\ne2e/playwright-report/\n"
+    },
+    {
+      "path": "CLAUDE.md",
+      "bytes": 7369,
+      "sha256": "b4f2148853f46f6a5f4654645959d8300c9bd4fc3dd9f6d2592a9c2cbef8eef8",
+      "lossy": false,
+      "content": "# Helpdesk - AI-Powered Ticket Management System\n\n## Project Overview\n\nA ticket management system that uses AI to classify, respond to, and route support tickets. See `project-scope.md` for full requirements and `implementation-plan.md` for phased task breakdown.\n\n## Tech Stack\n\n- **Frontend**: React + TypeScript + Vite (port 5173) + shadcn/ui\n- **Backend**: Express + TypeScript + Bun (port 3000)\n- **Database**: PostgreSQL with Prisma ORM\n- **AI**: OpenAI GPT-5 Nano via Vercel AI SDK (`@ai-sdk/openai`)\n- **Auth**: Better Auth (email/password, database sessions)\n- **Job Queue**: pg-boss (PostgreSQL-backed, runs in `pgboss` schema)\n\n## Project Structure\n\n```\n/core     - Shared code (Zod schemas, types) — Bun workspace package\n/client   - React frontend (Vite)\n/server   - Express backend\n/e2e      - Playwright E2E tests\n```\n\n## Development\n\n```bash\n# Start server\ncd server && bun run dev\n\n# Start client\ncd client && bun run dev\n```\n\nThe client proxies `/api/*` requests to the server via Vite config (target is configurable via `VITE_API_URL` env var, defaults to `http://localhost:3000`).\n\n## Key Conventions\n\n- Use Bun as the runtime and package manager (not npm/yarn)\n- Use TypeScript throughout\n- Use context7 MCP server to fetch up-to-date documentation for libraries\n- Use shadcn/ui components for all UI (import from `@/components/ui/*`)\n- Use the `@/` path alias for imports (maps to `./src/`)\n- Use shadcn's semantic color tokens (e.g. `bg-background`, `text-muted-foreground`, `text-destructive`) instead of hardcoded Tailwind colors\n- Organize server endpoints into Express `Router` modules under `server/src/routes/` (e.g. `routes/users.ts`), mounted in `index.ts`\n- Define shared Zod schemas in the `core` package under `core/schemas/` (e.g. `core/schemas/users.ts`) and import them in both client and server (e.g. `import { createUserSchema } from \"core/schemas/users\"`)\n- Use Zod for validation (import from `zod/v4`)\n- Validate request bodies in route handlers using the shared `validate` helper (`import { validate } from \"../lib/validate\"`). It takes a Zod schema, the request body, and the `res` object — returns parsed data or `null` (after sending a 400 response).\n- Parse and validate numeric ID route params with the shared `parseId` helper (`import { parseId } from \"../lib/parse-id\"`). Returns a positive integer or `null` for invalid values.\n- Do not wrap async route handlers in try/catch — Express 5 automatically catches rejected promises\n- Use the shared `Role` constant instead of hardcoded `\"admin\"` / `\"agent\"` strings (import from `core/constants/role.ts`, e.g. `import { Role } from \"core/constants/role.ts\"`)\n- Define shared constants and domain types in `core/constants/` as union types (not `enum` — the client has `erasableSyntaxOnly` enabled). Use `as const` objects when runtime access is needed (e.g. `Role`), and plain union types when only type checking is needed (e.g. `type TicketStatus = \"open\" | \"resolved\" | \"closed\"`).\n- Use React Hook Form with Zod resolver for client-side form validation (`useForm` + `zodResolver` from `@hookform/resolvers/zod`)\n- Use Axios for HTTP requests (not `fetch`)\n- Use TanStack React Query (`useQuery`, `useMutation`) for server state management (not `useEffect` + `useState`)\n- Use the `ErrorAlert` component for error messages (`import ErrorAlert from \"@/components/ErrorAlert\"`). For static messages: `<ErrorAlert message=\"Failed to load data\" />`. For mutation/query errors with automatic Axios message extraction: `<ErrorAlert error={mutation.error} fallback=\"Failed to save\" />`.\n- Use the `ErrorMessage` component for field validation errors (`import ErrorMessage from \"@/components/ErrorMessage\"`): `{errors.name && <ErrorMessage message={errors.name.message} />}`\n\n## Job Queue (pg-boss)\n\n- **Config**: `server/src/lib/queue.ts` — creates pg-boss instance using `DATABASE_URL`\n- pg-boss auto-creates its own `pgboss` schema in PostgreSQL (no Prisma migration needed)\n- `startQueue()` is called before `app.listen()` in the async `boot()` function in `index.ts`\n- `stopQueue()` is called on `SIGTERM`/`SIGINT` for graceful shutdown\n- To add a new background job: create a queue with `boss.createQueue()`, register a worker with `boss.work()` in `startQueue()`, and export a `send*Job()` function\n- **Existing queues**:\n  - `classify-ticket` — classifies inbound tickets via GPT (retryLimit: 3, retryDelay: 30s, exponential backoff)\n  - `auto-resolve-ticket` — attempts to auto-resolve tickets via GPT; if unsuccessful, transitions status to `open`\n\n## Ticket Lifecycle\n\n- Inbound emails arrive via the `/api/webhooks/inbound-email` endpoint (SendGrid multipart format) and are created with status `new`\n- The system enqueues `classify-ticket` and `auto-resolve-ticket` background jobs automatically\n- Status flow: `new` → `processing` (AI working) → `open` (if not auto-resolved) or `resolved` (if auto-resolved)\n- `new` and `processing` tickets are system-managed and never shown in the agent UI — agents only see `open`, `resolved`, and `closed` tickets\n- The `/api/tickets` endpoint excludes `new` and `processing` tickets by default (no `status` filter param)\n\n## Authentication\n\n- **Library**: Better Auth with Prisma adapter\n- **Server config**: `server/src/lib/auth.ts` — mounted at `/api/auth/{*any}` (must be before `express.json()`)\n- **Client config**: `client/src/lib/auth-client.ts` — exports `signIn`, `signOut`, `useSession`\n- **Middleware**: `server/src/middleware/require-auth.ts` — `requireAuth` guard that sets `req.user` and `req.session`\n- **Route protection (client)**: `ProtectedRoute` component wraps authenticated routes; redirects to `/login` if unauthenticated\n- **Admin route protection (client)**: `AdminRoute` component wraps admin-only routes; redirects non-admins to `/`\n- **Sign-up is disabled** — users are seeded via `prisma/seed.ts`\n- **User roles**: `admin` and `agent` (defined as Prisma enum, default `agent`)\n- **Rate limiting**: Auth routes are rate-limited, but only enforced when `NODE_ENV=production`\n\n## Testing\n\n- **Prefer component tests** for the majority of coverage (rendering, states, data display, error handling). Reserve E2E tests for things that truly need a real browser + server: navigation, auth redirects, and full-stack integration flows (e.g. webhook creates data that appears in the UI).\n\n### Component Tests\n- **Framework**: Vitest + React Testing Library\n- Run with `cd client && bun run test` (single run) or `bun run test:watch` (watch mode)\n- Place test files next to the component: `ComponentName.test.tsx`\n- Use `renderWithQuery` from `@/test/render` to wrap components that use TanStack React Query\n- Mock Axios with `vi.mock(\"axios\")` and `vi.mocked(axios, { deep: true })`\n\n### E2E Tests\n- **Framework**: Playwright\n- Use the `e2e-test-writer` agent for writing Playwright E2E tests\n- Run with `bun run test:e2e` from root\n- **Only use for things that truly require a real browser + server** — never duplicate what unit tests already cover\n- Valid E2E scenarios: auth redirects, cross-page navigation, data persistence after reload, full-stack integration flows (e.g. webhook creates data → UI displays it)\n- Invalid E2E scenarios: rendering, display logic, component states, API call verification, form validation, error messages — use component tests for these\n"
+    }
+  ],
+  "absent": [
+    {
+      "path": ".gitattributes"
+    },
+    {
+      "path": "solvo.manifest.json"
+    },
+    {
+      "path": "solvo.lock.json"
+    },
+    {
+      "path": "AGENTS.md"
+    }
+  ],
+  "remove": [
+    {
+      "path": ".claude/agents/local/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".claude/commands/local/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".claude/settings.json",
+      "sha256": "e8f9b9bdb314d1ae3ab584568f76effdaa234695dfbe0437026c04520431095c",
+      "bytes": 437
+    },
+    {
+      "path": ".claude/skills/local/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".gitattributes",
+      "sha256": "468e32eca0ebee3a954edc1140c68bd76651dd982b14e7278935aa5e9f54cefd",
+      "bytes": 447
+    },
+    {
+      "path": ".mcp.json",
+      "sha256": "dedfd786d7c24e182547497318224aa555b1371075973edccc372af2be523727",
+      "bytes": 151
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "a6b360acde381ed18d9bb0f577eda197e977b31b0927c9b4b052e9e4a8d4fd5a",
+      "bytes": 1707
+    },
+    {
+      "path": "docs/repo-wiki/INDEX.md",
+      "sha256": "eb0655f2d2bd97833e93936f93c539d945988c6eff4c8ef92f7816e0cc5073b2",
+      "bytes": 9900
+    },
+    {
+      "path": "docs/repo-wiki/_memories/README.md",
+      "sha256": "11fbdf6608ec1cd3ad0e63e2d073f31197b1a77633426c52b4c7825b2c83792f",
+      "bytes": 482
+    },
+    {
+      "path": "docs/repo-wiki/_state/README.md",
+      "sha256": "8b780371c18391c944eb9b3d0757e39ecc6c95396a931dc0bdca25e60c97fe17",
+      "bytes": 9287
+    },
+    {
+      "path": "docs/repo-wiki/_templates/domain-template.md",
+      "sha256": "279c8d617d45ab4267a4e086253b0b43004bd4b0cc33217ec4adef6e43cd3e75",
+      "bytes": 1379
+    },
+    {
+      "path": "docs/repo-wiki/_templates/feature-template.md",
+      "sha256": "36d56a7ccec2703ed34e6030cb6f0859c1fd0cdaf78eac69f098fdfd197b7e01",
+      "bytes": 1180
+    },
+    {
+      "path": "docs/repo-wiki/_templates/tech-debt-entry.md",
+      "sha256": "20e67d71ea3d0078d64a599595d7e0d20e8604c17ebd36218d3e3c7d24a67b6d",
+      "bytes": 471
+    },
+    {
+      "path": "docs/repo-wiki/_templates/weekly-rollup-template.md",
+      "sha256": "6c01f940dc1f56573e1ad5e7faf238583fe9a291b09392aff3a210895f9f962c",
+      "bytes": 7585
+    },
+    {
+      "path": "docs/solvo/BA-ENV-SETUP.md",
+      "sha256": "309e867419b94b1e79ce19109e44a57e143ad4b83de51517710d4671037083f9",
+      "bytes": 4444
+    },
+    {
+      "path": "docs/solvo/GLOSSARY.md",
+      "sha256": "323353728b5318765a5249e3e76d41f7f2d5a628b07618e5a4c93d3996280ff9",
+      "bytes": 6207
+    },
+    {
+      "path": "docs/solvo/INSTALL.md",
+      "sha256": "dbec360b1d3c0eb3d8b1ba5bde81438cf7894830cb315bf5c830bc5678243224",
+      "bytes": 32816
+    },
+    {
+      "path": "solvo.json",
+      "sha256": "7b8019e2da248174f292c7368da613bdbe920719fe0d23cf8eec8a825753ef3f",
+      "bytes": 2729
+    },
+    {
+      "path": "solvo.lock.json",
+      "sha256": "65bd8680273fcc1a263e828bef153a273c67aa9065605b8cde12733123514e97",
+      "bytes": 69
+    },
+    {
+      "path": "solvo.manifest.json",
+      "sha256": "01e7df808c2c14cdc3d2c7a05f8ec4929f38a7c175f66aac8508ff7a2fbd6746",
+      "bytes": 19728
+    },
+    {
+      "path": ".solvo/install-snapshot.json",
+      "self": true
+    }
+  ],
+  "leave": [
+    {
+      "path": "package.json",
+      "reason": "present before the install and not written by it"
+    }
+  ],
+  "sealedAt": "2026-09-04T15:14:25.376Z"
+}

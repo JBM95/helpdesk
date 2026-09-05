@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git merge*)",
+      "Bash(git rebase -i*)",
+      "Bash(git reset --hard origin*)"
+    ]
+  },
+  "enabledPlugins": {
+    "solvo@solvd": true
+  },
+  "extraKnownMarketplaces": {}
+}

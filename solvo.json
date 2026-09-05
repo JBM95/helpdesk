@@ -1,0 +1,129 @@
+{
+  "version": "0.1.0",
+  "packs": [
+    "dev",
+    "qa"
+  ],
+  "extensions": [],
+  "tracker": {
+    "provider": "github",
+    "github": {
+      "owner": "JBM95",
+      "repo": "helpdesk"
+    },
+    "allowNonCycleBranches": false
+  },
+  "scm": {
+    "provider": "github"
+  },
+  "agent": {
+    "provider": "claude"
+  },
+  "specLayer": {
+    "provider": "bmad"
+  },
+  "bmad": {
+    "autoInstall": "prompt",
+    "installCommand": "npx bmad-method install --yes --directory {dir} --modules bmm --tools claude-code"
+  },
+  "tiers": {
+    "t3Domains": [],
+    "blastRadiusEscalation": {
+      "files": 15,
+      "callers": 40
+    }
+  },
+  "specs": {
+    "functionalDir": "",
+    "badocsDir": "",
+    "companionDirs": []
+  },
+  "quality": {
+    "coverageLine": 80,
+    "coverageBranch": 75,
+    "coverageDiffLine": 80,
+    "mutation": 60,
+    "p95Ms": 500,
+    "coverageArtifact": "n/a: not measured at install — no coverage script detected",
+    "lint": [],
+    "tests": {
+      "backend": "n/a: no runner configured at install — stack not recognised",
+      "frontend": "",
+      "e2e": "",
+      "onPr": "run",
+      "timeoutMs": 300000
+    },
+    "qa": {
+      "mode": "warn",
+      "requiredFromTier": "T2",
+      "allowedEvidencePaths": [
+        ".solvo/evidence/qa/"
+      ]
+    }
+  },
+  "intelligence": {
+    "staleness": {
+      "legacyMaxAgeDays": 90,
+      "churnWindowDays": 90,
+      "churnRefreshDays": 7,
+      "tiers": {
+        "hot": {
+          "minCommits": 30,
+          "minChurnRatio": 0.25,
+          "maxAgeDays": 14
+        },
+        "warm": {
+          "minCommits": 5,
+          "minChurnRatio": 0.05,
+          "maxAgeDays": 45
+        },
+        "cold": {
+          "minCommits": 0,
+          "minChurnRatio": 0,
+          "maxAgeDays": 180
+        }
+      }
+    },
+    "docTrust": {
+      "minSamples": 5,
+      "maxEvidenceAgeDays": 180,
+      "groundingThreshold": "partial",
+      "bands": {
+        "trustworthy": 0.95,
+        "mostlyTrustworthy": 0.8,
+        "partial": 0.6
+      }
+    }
+  },
+  "models": {
+    "mechanical": "script",
+    "recon": "sonnet",
+    "plan": {
+      "t1": "sonnet",
+      "t2": "opus",
+      "t3": "opus"
+    },
+    "build": {
+      "default": "sonnet",
+      "escalateOnRedChecks": "opus",
+      "t3": "opus"
+    },
+    "selfReview": "sonnet",
+    "independentReview": "opus",
+    "roleDefault": {
+      "product": "sonnet",
+      "plan": "haiku",
+      "qa": "sonnet"
+    }
+  },
+  "telemetry": {
+    "endpoint": "",
+    "team": "",
+    "enabled": true
+  },
+  "$schema": "https://schemas.solvo.solvd.claims/solvo/6.34.0/solvo.schema.json",
+  "install": {
+    "mode": "plugin",
+    "marketplace": "git@gitlab.com:solvd1/ai-first-sdlc/plugin-marketplace.git"
+  }
+}

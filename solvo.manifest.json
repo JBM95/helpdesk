@@ -1,0 +1,512 @@
+{
+  "version": "6.34.0",
+  "managed": [
+    {
+      "source": "agents/build-fixer.md",
+      "target": ".agents/agents/build-fixer.md",
+      "sha256": "d4a1e3fc22986008c1079c570d4771cf97d0f16249f37cb867df4beec0232edb",
+      "pack": "dev"
+    },
+    {
+      "source": "agents/explore-01-recon-scout.md",
+      "target": ".agents/agents/explore-01-recon-scout.md",
+      "sha256": "05261691c6eae07d898ca290d0e46d3327dac6694120fb0388bd26c2f46eff05"
+    },
+    {
+      "source": "agents/explore-02-standards-extractor.md",
+      "target": ".agents/agents/explore-02-standards-extractor.md",
+      "sha256": "f903f4e9eb0b27d6e3eec63bad17f40654130e5a0c3a746609de9ef8d58b9323"
+    },
+    {
+      "source": "agents/explore-03-dependency-auditor.md",
+      "target": ".agents/agents/explore-03-dependency-auditor.md",
+      "sha256": "d4db4dcccc24879799d5b8644a1a8dea2b6e3043f991e79786c5053189b31a86"
+    },
+    {
+      "source": "agents/explore-04-build-deploy-mapper.md",
+      "target": ".agents/agents/explore-04-build-deploy-mapper.md",
+      "sha256": "3e64c531f3388c3cd69c550a86c89b732d142c635c1fd4d5542832122ab8477e"
+    },
+    {
+      "source": "agents/explore-05-domain-mapper.md",
+      "target": ".agents/agents/explore-05-domain-mapper.md",
+      "sha256": "cdce55865af335a68096b8b18f4a6e4a84709cee6f19c902c9f47268ac144d3c"
+    },
+    {
+      "source": "agents/explore-06-api-surface-mapper.md",
+      "target": ".agents/agents/explore-06-api-surface-mapper.md",
+      "sha256": "0b4b398887f2ea7bdd97681d8b23a3944024b95c721a360c2845046b67c78ecd"
+    },
+    {
+      "source": "agents/explore-07-frontend-explorer.md",
+      "target": ".agents/agents/explore-07-frontend-explorer.md",
+      "sha256": "dbe487ff8c5837558ebad83b5e737aa98ca3e3f21b42ee67f392e88797beed9e"
+    },
+    {
+      "source": "agents/explore-08-data-model-mapper.md",
+      "target": ".agents/agents/explore-08-data-model-mapper.md",
+      "sha256": "ba400a036eab7e73205b6cdbb9bc4810dfab520d9a0e21732bcf02be13fb9a9f"
+    },
+    {
+      "source": "agents/explore-09-feature-cataloger.md",
+      "target": ".agents/agents/explore-09-feature-cataloger.md",
+      "sha256": "8801692dacd4f196f9a87bda47bdbfcf7d026b0ba7eb54114b2dc89e62f0c32b"
+    },
+    {
+      "source": "agents/explore-10-integration-mapper.md",
+      "target": ".agents/agents/explore-10-integration-mapper.md",
+      "sha256": "04a22cb30dd3fccddae19bba2fc23584f88353e15ba1ca06ebc98f1c00ff05d2"
+    },
+    {
+      "source": "agents/explore-11-cross-cutting-mapper.md",
+      "target": ".agents/agents/explore-11-cross-cutting-mapper.md",
+      "sha256": "e1ac201d1f974c6342582aa70e255f4bbd7f33bb7ce03770f6cff2c2d7dc5f59"
+    },
+    {
+      "source": "agents/explore-12-test-coverage-mapper.md",
+      "target": ".agents/agents/explore-12-test-coverage-mapper.md",
+      "sha256": "2defc31e72d975c0f74860c02f508ed55974a81cd1486d5af390746fa0552088"
+    },
+    {
+      "source": "agents/explore-13-legacy-detective.md",
+      "target": ".agents/agents/explore-13-legacy-detective.md",
+      "sha256": "57780b984532dcf2667b5beac282dcaced61473cea46116ecca2617c19b52180"
+    },
+    {
+      "source": "agents/explore-14-doc-verifier.md",
+      "target": ".agents/agents/explore-14-doc-verifier.md",
+      "sha256": "5a37063d0d262c49fc380bb5cb6dc138c6339c39d4cc11b45482231bb37f5f9c"
+    },
+    {
+      "source": "agents/fresh-reviewer.md",
+      "target": ".agents/agents/fresh-reviewer.md",
+      "sha256": "005bb933a3b20b62e7bc5a487be5fd9aee8a9df3130dd23757a0f25c189a946a",
+      "pack": "dev"
+    },
+    {
+      "source": "agents/qa-executor.md",
+      "target": ".agents/agents/qa-executor.md",
+      "sha256": "3a48184107bcb5e7abf5dcdf2b405c8bcd72d81ce348444053e5e2a3354f05c7",
+      "pack": "qa"
+    },
+    {
+      "source": "agents/qa-verifier.md",
+      "target": ".agents/agents/qa-verifier.md",
+      "sha256": "1e0f787f0823d66c7dd0a4abb7f741620acb5ff2705759d3ee4b8f4c5d82c348",
+      "pack": "qa"
+    },
+    {
+      "source": "agents/recon-worker.md",
+      "target": ".agents/agents/recon-worker.md",
+      "sha256": "c714fefa1c33136bd0b7edb95cb4e174e6afe57c8f7ace973e404edb7fe07187",
+      "pack": "dev"
+    },
+    {
+      "source": "commands/auto-run.md",
+      "target": ".agents/commands/auto-run.md",
+      "sha256": "b1824ee4b13730b533fdb0aafa052ab8aca39f666c233923f30a98804a12f4c6"
+    },
+    {
+      "source": "commands/dev-07-trace-endpoint.md",
+      "target": ".agents/commands/dev-07-trace-endpoint.md",
+      "sha256": "8c91ccf0134b1ac9c1c22ed80c917652c3d0a079f195dcbdc6422cba824daede"
+    },
+    {
+      "source": "commands/dev-08-find-callers.md",
+      "target": ".agents/commands/dev-08-find-callers.md",
+      "sha256": "60849b2f1ec1b43d4809d19df20f53c61e52fc94a82f225ec2bb0fddf0e3089d"
+    },
+    {
+      "source": "commands/dev-09-map-feature.md",
+      "target": ".agents/commands/dev-09-map-feature.md",
+      "sha256": "da85e3a099087fc6877627569b560a7a733ea8996b27b8d62168968a128e4fbf"
+    },
+    {
+      "source": "commands/dev-10-onboard-domain.md",
+      "target": ".agents/commands/dev-10-onboard-domain.md",
+      "sha256": "6486a15b2fbefbb5ac37395f1abdba416157870aa31cde740f5326b52b8d4027"
+    },
+    {
+      "source": "commands/dev-11-modernize-component.md",
+      "target": ".agents/commands/dev-11-modernize-component.md",
+      "sha256": "0769e3a06bd574f4bcedd5963b11bf604b07420602a80c8dbb438c851f7a54fd"
+    },
+    {
+      "source": "commands/dev-12-modernize-pattern.md",
+      "target": ".agents/commands/dev-12-modernize-pattern.md",
+      "sha256": "86c356410820dd0eb66c384e1479b5972dee65bed9f7410af86a5fa7b999949d"
+    },
+    {
+      "source": "commands/dev-13-write-adr.md",
+      "target": ".agents/commands/dev-13-write-adr.md",
+      "sha256": "4ef8d15951020d6ce7f6b350c71870966c82664c69a8610ec0fdad11af25855f"
+    },
+    {
+      "source": "commands/dev-14-capture-knowledge.md",
+      "target": ".agents/commands/dev-14-capture-knowledge.md",
+      "sha256": "ff139450f95e64aa7c95b49ae03aeba36e00c64b5f75a2c7b58533a06fc48017"
+    },
+    {
+      "source": "commands/dev-bug.md",
+      "target": ".agents/commands/dev-bug.md",
+      "sha256": "66eea7dc6e6ae9e3c85d130fddeed4de72e17e1ad26a49e4f4b8cfbddf989e17",
+      "pack": "dev"
+    },
+    {
+      "source": "commands/dev-comments.md",
+      "target": ".agents/commands/dev-comments.md",
+      "sha256": "9235c3dac664994de9d6937d85f17a5b52e231530b0b6a85127fb666ccc7d31e",
+      "pack": "dev"
+    },
+    {
+      "source": "commands/dev-conflicts.md",
+      "target": ".agents/commands/dev-conflicts.md",
+      "sha256": "6cb2055f3a5a5100f238dd2c4f6e6cb1fd93ae16dff435bda4408772667add2e",
+      "pack": "dev"
+    },
+    {
+      "source": "commands/dev-finish.md",
+      "target": ".agents/commands/dev-finish.md",
+      "sha256": "d86eaae2d203c536b58feebfb616fd7c4148d10c1a44967a060af0fb40310ede",
+      "pack": "dev"
+    },
+    {
+      "source": "commands/dev-fix.md",
+      "target": ".agents/commands/dev-fix.md",
+      "sha256": "8a7f4120a9d7e8f4588b3409d6cb41f84f8dcff0716d4884e9cfee3879215b07",
+      "pack": "dev"
+    },
+    {
+      "source": "commands/dev-pr-review.md",
+      "target": ".agents/commands/dev-pr-review.md",
+      "sha256": "e412beaed32ff77ab9268ef88902988f2cc9f8697749fbee50c7b69776dfafe7",
+      "pack": "dev"
+    },
+    {
+      "source": "commands/dev-review.md",
+      "target": ".agents/commands/dev-review.md",
+      "sha256": "1781b6710a47ed0aac43b878246e46db47cf19901351fcd3180160f003066098",
+      "pack": "dev"
+    },
+    {
+      "source": "commands/dev-ticket.md",
+      "target": ".agents/commands/dev-ticket.md",
+      "sha256": "818d01953ad4756d9aa78a57441601df4c8f9e9719e28cf6aee0076f1716b431",
+      "pack": "dev"
+    },
+    {
+      "source": "commands/help.md",
+      "target": ".agents/commands/help.md",
+      "sha256": "82b2643525fb37f9355d466231b732251cdc49be9b384bae2e9dc480a012e76c"
+    },
+    {
+      "source": "commands/next.md",
+      "target": ".agents/commands/next.md",
+      "sha256": "e7b3825e767b5eb95ea1028b6d12928b0a62cf321f566f63025a83fa64887055"
+    },
+    {
+      "source": "commands/plan-backlog.md",
+      "target": ".agents/commands/plan-backlog.md",
+      "sha256": "8fa7deeeab3174fdada1857301b866744ebf2eeb8bbe5f414eb0e1e764e6937a",
+      "pack": "plan"
+    },
+    {
+      "source": "commands/plan-iteration.md",
+      "target": ".agents/commands/plan-iteration.md",
+      "sha256": "9e3b199f0bab8b5a09c2ad2b378ffd3218baa9b6231e82fc03da5329d6c11fcb",
+      "pack": "plan"
+    },
+    {
+      "source": "commands/product-epic.md",
+      "target": ".agents/commands/product-epic.md",
+      "sha256": "25e91885b8da042672291ba988daf4245b1f51e2109cea298b9508160f4a7a6d",
+      "pack": "product"
+    },
+    {
+      "source": "commands/product-groom.md",
+      "target": ".agents/commands/product-groom.md",
+      "sha256": "d462e493b62e94c7c12177496ec22c91ee979c2ad113420723cae4feb701b4ca",
+      "pack": "product"
+    },
+    {
+      "source": "commands/product-impact.md",
+      "target": ".agents/commands/product-impact.md",
+      "sha256": "c4fef1db569ee8d87f4ad946898d93b632bee6221e107d165dc8584cccf9a050",
+      "pack": "product"
+    },
+    {
+      "source": "commands/product-reconcile.md",
+      "target": ".agents/commands/product-reconcile.md",
+      "sha256": "80d773330b3f3811a76bd7feb211b478bc2ace0f9f83228b0a0e69f78f8bac09",
+      "pack": "product"
+    },
+    {
+      "source": "commands/product-spec.md",
+      "target": ".agents/commands/product-spec.md",
+      "sha256": "c8bb3e1b705589fac97e02f29b5d4461fbff5bd8af15bbf090426b63aa0b2046",
+      "pack": "product"
+    },
+    {
+      "source": "commands/product-story.md",
+      "target": ".agents/commands/product-story.md",
+      "sha256": "8b1c4ee93a315d77f0ff8633f6689b0091e83fc90bacf060cd8c284a4b8f2aaa",
+      "pack": "product"
+    },
+    {
+      "source": "commands/qa-bug.md",
+      "target": ".agents/commands/qa-bug.md",
+      "sha256": "d7450dbdc7494669bdf1f29e5b41d39acf79ff5aa3107693652f27f496d979b2",
+      "pack": "qa"
+    },
+    {
+      "source": "commands/qa-cases.md",
+      "target": ".agents/commands/qa-cases.md",
+      "sha256": "ddf6a263b4e1b15a61eaed0d2a9fd239168e6b025d38b8e8cdace8f053a8b52d",
+      "pack": "qa"
+    },
+    {
+      "source": "commands/qa-execute.md",
+      "target": ".agents/commands/qa-execute.md",
+      "sha256": "1e748ab951c8794266010dc42ac60d7a060239c6069a62440d0097fce31d329d",
+      "pack": "qa"
+    },
+    {
+      "source": "commands/qa-plan.md",
+      "target": ".agents/commands/qa-plan.md",
+      "sha256": "f71d58b518c19ac3548843c1e9d7f21972bfb0b95bef1f0814cde640657acfc8",
+      "pack": "qa"
+    },
+    {
+      "source": "commands/qa-triage.md",
+      "target": ".agents/commands/qa-triage.md",
+      "sha256": "1cadb6083f5c9f791258c07fe9d6cb0515115254f50b65e65162f9a57167d6ae",
+      "pack": "qa"
+    },
+    {
+      "source": "commands/qa-verify.md",
+      "target": ".agents/commands/qa-verify.md",
+      "sha256": "63276af74d8f579cda3ec1103f0ee82e143c1eba3937c7cd432800aa70fe49f9",
+      "pack": "qa"
+    },
+    {
+      "source": "commands/review-01-standards-check.md",
+      "target": ".agents/commands/review-01-standards-check.md",
+      "sha256": "f9c275d17e32609b95347e3226aaf8ac3c0e85d1d8c1a5274c0eaa7a960b9f8b"
+    },
+    {
+      "source": "commands/review-02-legacy-audit.md",
+      "target": ".agents/commands/review-02-legacy-audit.md",
+      "sha256": "7a636269b1b4d4a06f7cea027dd7b473cb1b1fa2a99176c3180db4e2b0a6236c"
+    },
+    {
+      "source": "commands/review-03-security-check.md",
+      "target": ".agents/commands/review-03-security-check.md",
+      "sha256": "7e4dae26e7df8b2e1e492a2354e6032d8d6526731617ec490a175d0314af7fd2"
+    },
+    {
+      "source": "commands/setup-01-vision.md",
+      "target": ".agents/commands/setup-01-vision.md",
+      "sha256": "e19b0181b7886397bcdc6879e295c6c4b00786e9d9c0b05a35a07aecd5224596"
+    },
+    {
+      "source": "commands/setup-02-recon.md",
+      "target": ".agents/commands/setup-02-recon.md",
+      "sha256": "75f7d095753f5464f3e7e2f83d4072f3ca13f21a11d611447df508c2477e8729"
+    },
+    {
+      "source": "commands/setup-04-scope.md",
+      "target": ".agents/commands/setup-04-scope.md",
+      "sha256": "abd4c03725024ecd6d4ef2e8686edb78c4b98c1635603337ed98227bfd9446f3"
+    },
+    {
+      "source": "commands/setup-05-explore.md",
+      "target": ".agents/commands/setup-05-explore.md",
+      "sha256": "fd84c3767b12d482385c68a2e63edcda15f8a35307a65565f647b063fcde0260"
+    },
+    {
+      "source": "commands/setup.md",
+      "target": ".agents/commands/setup.md",
+      "sha256": "83b508012732966e3367891e11f1c6b155fa678483e49f6d769d44aad2912d6b"
+    },
+    {
+      "source": "commands/status.md",
+      "target": ".agents/commands/status.md",
+      "sha256": "0c480831199997a12c2f62f9e49e93208237ce0ed08df20f64b7ced6cd7c38b9"
+    },
+    {
+      "source": "hooks/command-gate.mjs",
+      "target": ".agents/hooks/command-gate.mjs",
+      "sha256": "5ee796f0fde4bc2bba030b2ae4aa52d21b256212f2eec089eab0723072bf21ed"
+    },
+    {
+      "source": "hooks/compat.mjs",
+      "target": ".agents/hooks/compat.mjs",
+      "sha256": "6c7c4ad1fd58798c93fb5b31014d92c56df7d806faeba858db636f936b1faba3"
+    },
+    {
+      "source": "hooks/doctor-check.mjs",
+      "target": ".agents/hooks/doctor-check.mjs",
+      "sha256": "f2d8727f9030911c1ce20d4e47b101b336af674f400676e5c32464bc61440803"
+    },
+    {
+      "source": "hooks/doctor-check.ps1",
+      "target": ".agents/hooks/doctor-check.ps1",
+      "sha256": "fa8a6ec8806c5d458f60be907763b30ddc478e5118e1b7f34cadb00d28377641"
+    },
+    {
+      "source": "hooks/doctor-check.sh",
+      "target": ".agents/hooks/doctor-check.sh",
+      "sha256": "a8d6889c5ef77e9de6981ae53213871edbaa35cac801b89c8c1e2fc89647e1d8"
+    },
+    {
+      "source": "hooks/gate-guard.mjs",
+      "target": ".agents/hooks/gate-guard.mjs",
+      "sha256": "ab06970f7b86ead0f24d84a5691089928877f8626f81eb9425508a3f83750f6c"
+    },
+    {
+      "source": "hooks/lint.mjs",
+      "target": ".agents/hooks/lint.mjs",
+      "sha256": "22fc48466b9ae4153c4604602d5226caa80d9ebd0675d0ba04cd6f9f9e94d683"
+    },
+    {
+      "source": "hooks/merge-verify-gate.mjs",
+      "target": ".agents/hooks/merge-verify-gate.mjs",
+      "sha256": "82390cc485f96df817e81bd40eb362a5383f6271aea70b9c99b13f6aca089b61"
+    },
+    {
+      "source": "hooks/qa-execute.mjs",
+      "target": ".agents/hooks/qa-execute.mjs",
+      "sha256": "3b155146830358a5621b480b206efbbb74de749eee702cb07ba4ca5b658820ca"
+    },
+    {
+      "source": "hooks/qa-verify.mjs",
+      "target": ".agents/hooks/qa-verify.mjs",
+      "sha256": "e9b46d0e303b6ee453ea155588a0662a4f49e4729ee5335baf709cee8a513f53"
+    },
+    {
+      "source": "hooks/setup.mjs",
+      "target": ".agents/hooks/setup.mjs",
+      "sha256": "3151090e18bfbba91dc0dd0c4902d7eb0d7b000773bb50d04d81aac85751e1e7"
+    },
+    {
+      "source": "hooks/staleness-gate.mjs",
+      "target": ".agents/hooks/staleness-gate.mjs",
+      "sha256": "c4427babfbe400b80a42e22f140fc0edab1a5ce71d5ca451e00e882d325f7c0b"
+    },
+    {
+      "source": "hooks/subagent-mutation-gate.mjs",
+      "target": ".agents/hooks/subagent-mutation-gate.mjs",
+      "sha256": "6ba5f55497337cae0a471390f873de5db748e4439c1d52800a3d92154df254fc"
+    },
+    {
+      "source": "hooks/sync.mjs",
+      "target": ".agents/hooks/sync.mjs",
+      "sha256": "e5ec81eceaec0f95abd471ec968b944b29da0ad393c156595325b527c756afa8"
+    },
+    {
+      "source": "hooks/telemetry.mjs",
+      "target": ".agents/hooks/telemetry.mjs",
+      "sha256": "9a233d0ee596e85ad42e09d55578cef316e5b2667b633c89986245e7f1257546"
+    },
+    {
+      "source": "skills/ado-conventions/SKILL.md",
+      "target": ".agents/skills/ado-conventions/SKILL.md",
+      "sha256": "36ebe384cfa3085303a5e3ff70dd9186d931b55756417f3b8bcc091d0c28f86b"
+    },
+    {
+      "source": "skills/build-failure-method/SKILL.md",
+      "target": ".agents/skills/build-failure-method/SKILL.md",
+      "sha256": "8d59d5e5baa937dab255832bd43e9fa5805b8f506c9bf110dcc99c5d3abaa62b"
+    },
+    {
+      "source": "skills/evidence-pack/SKILL.md",
+      "target": ".agents/skills/evidence-pack/SKILL.md",
+      "sha256": "9289fd1738eb2e79fae6effb8efea0b18ba4999a48460b8e50566ca94467e125"
+    },
+    {
+      "source": "skills/gated-cycle/SKILL.md",
+      "target": ".agents/skills/gated-cycle/SKILL.md",
+      "sha256": "7645784075749d0264f9cb14ee34b101e05ce482351b7422e65a80014aa81d20"
+    },
+    {
+      "source": "skills/github-conventions/SKILL.md",
+      "target": ".agents/skills/github-conventions/SKILL.md",
+      "sha256": "18dc8883176e722f81890afdadfb132c1f6dba4414eac467a1eea7a2a9ef501b"
+    },
+    {
+      "source": "skills/gitlab-conventions/SKILL.md",
+      "target": ".agents/skills/gitlab-conventions/SKILL.md",
+      "sha256": "ca60c777fed189e8ccd86b2930c6211a18be511d637ac784f0467c65b96972e2"
+    },
+    {
+      "source": "skills/glab/SKILL.md",
+      "target": ".agents/skills/glab/SKILL.md",
+      "sha256": "6e7f0d379a2360d3c83861d120b396e7dc9128f4997f358cd5d72e1006e582f0"
+    },
+    {
+      "source": "skills/jira-conventions/SKILL.md",
+      "target": ".agents/skills/jira-conventions/SKILL.md",
+      "sha256": "2afe7b418bafbcb1e8fd34be90b4fd8656c43d22b82ff8480bce5157e2e4bb03"
+    },
+    {
+      "source": "skills/obsidian-conventions/SKILL.md",
+      "target": ".agents/skills/obsidian-conventions/SKILL.md",
+      "sha256": "8a4cba2427021b410c8db5e5977e06f6c517656608f25a95e3671754269fcaa7"
+    },
+    {
+      "source": "skills/policies/SKILL.md",
+      "target": ".agents/skills/policies/SKILL.md",
+      "sha256": "a523600c0acba26e003fa62be2418c5a33ce4960eba31a47c07f2eb7cc7991f2"
+    },
+    {
+      "source": "skills/policies/approved-dependencies.md",
+      "target": ".agents/skills/policies/approved-dependencies.md",
+      "sha256": "354340c56c23323a29fa72b5d3a1e38007a2ec8937f2cbc54e8f95556103ce40"
+    },
+    {
+      "source": "skills/policies/pattern-constraints.md",
+      "target": ".agents/skills/policies/pattern-constraints.md",
+      "sha256": "ecc0c8c3cd6af044fe1b138654306192da99af7a3a0d2b36f9e388606ef17c0f"
+    },
+    {
+      "source": "skills/policies/security-rules.md",
+      "target": ".agents/skills/policies/security-rules.md",
+      "sha256": "d4d7296bb44bd9616510eb7b795d4a30954c2d0ef288e8f7521cad1c6ef05f0b"
+    },
+    {
+      "source": "skills/recon-method/SKILL.md",
+      "target": ".agents/skills/recon-method/SKILL.md",
+      "sha256": "407eb4e413e95872a60c68008549b446f622c4863490b79205a6ff8a51cfe149"
+    },
+    {
+      "source": "skills/review-checklists/SKILL.md",
+      "target": ".agents/skills/review-checklists/SKILL.md",
+      "sha256": "e19f056d2f9fbf2cfea96def7e9bdacfcd7d76189dfbe180894ff8e084b7e3c4"
+    },
+    {
+      "source": "skills/risk-tiering/SKILL.md",
+      "target": ".agents/skills/risk-tiering/SKILL.md",
+      "sha256": "3b6a04b4bee2bec4fa7108fd1a2681ca4ef0768630ca1ff22f354b18db9a12fa"
+    },
+    {
+      "source": "skills/speckit-conventions/SKILL.md",
+      "target": ".agents/skills/speckit-conventions/SKILL.md",
+      "sha256": "304fd16bf572003e16ebcaf4b3f7bdffa9f3f33849b9c98ccc15b6c323ff90fb"
+    },
+    {
+      "source": "skills/story-method/SKILL.md",
+      "target": ".agents/skills/story-method/SKILL.md",
+      "sha256": "7647ee16cc3d8f94a08d8d1d39515565b6e2106d1140d99f2c71d657bd4ec21d"
+    },
+    {
+      "source": "skills/test-method/SKILL.md",
+      "target": ".agents/skills/test-method/SKILL.md",
+      "sha256": "55d19bb2e30b4ca0d625011c4f6661fb97106796aab7880eaa257d014421d191"
+    },
+    {
+      "source": "skills/ticket-standard/SKILL.md",
+      "target": ".agents/skills/ticket-standard/SKILL.md",
+      "sha256": "e21ec7e08ae6094ee6c5a4f30e3cbd1ee0023f57a8f94c2028053118cfae62fc"
+    }
+  ]
+}

@@ -1,3 +1,12 @@
+<!-- SOLVO:BEGIN (managed by `@solvd1/solvo` v6.34.0 — do not edit inside markers; run `npx @solvd1/solvo update`) -->
+# Solvo
+This repo uses the Solvo framework. Daily work: `/dev-ticket #<id>` (build a story), `/dev-bug <symptom>` (investigate), `/dev-review` (review a diff), `/dev-comments` (answer PR review threads), `/dev-conflicts` (resolve a conflicted merge), `/dev-fix` (remediate a red CI pipeline), `/dev-finish #<id>` (after merge). Role packs per `solvo.json → packs` — BA: `/product-impact` → `/product-epic` → `/product-spec` → `/product-story` (see `/help` for what each step consumes); existing tickets `/product-groom #<id>`; meetings `/product-reconcile` · QA: `/qa-plan` → `/qa-cases` → `/qa-verify`, defects via `/qa-bug` · SM: `/plan-backlog` → `/plan-iteration`. Lost? `/help`. Status: `/status`.
+Tools differ in how much of that list they carry as slash commands, and some carry none. Any command yours does not offer is still a plain-markdown playbook — workflows in `.agents/commands/`, methods in `.agents/skills/`, worker roles in `.agents/agents/`: read the file and follow it. A slash command that turns out to be a short pointer is one of those files being named: read what it points at, and follow that.
+Rules: work items get a risk tier (T1/T2/T3) that shapes the pipeline — confirm it honestly; never merge as the agent; the agent surface is generated — edit only `.agents/*/local/`, never other `.agents/` files or any tool view; repo config lives in `solvo.json`.
+Repo intelligence lives in `docs/repo-wiki/` — read it before reading code. Custom team commands/skills: `.agents/commands/local/`, `.agents/skills/local/`.
+<!-- SOLVO:END -->
+
+
 # Helpdesk - AI-Powered Ticket Management System
 
 ## Project Overview
