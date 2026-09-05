@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { test, expect, type Page } from "@playwright/test";
 import { loginAsAdmin } from "../fixtures/auth";
 
@@ -32,12 +33,17 @@ const API_BASE_URL = process.env.BETTER_AUTH_URL!;
  * AC4 retrace and nav-link ones and the AC5 unwind and rapid-history ones. Replace this helper with
  * a dedicated seed route when one exists; that is the real fix.
  */
-async function seedOpenTickets(page: Page, count: number) {
+async function seedOpenTickets(page: Page, count: number): Promise<string> {
+  // One token per batch, returned so a test can pick its own rows out of a list that may also hold
+  // tickets seeded by another spec file: the suite is `fullyParallel` against a single database, so
+  // no test owns the whole list. Ordering assertions must scope themselves to this token.
+  const token = randomUUID().slice(0, 8);
+
   for (let i = 0; i < count; i++) {
-    // Zero-padded so the subjects sort lexicographically in the same order they were created. Two
-    // iterations can share a millisecond, and an unpadded index would put "-9" above "-10" while
-    // createdAt puts "-10" first, which would invert the order assertion below.
-    const unique = `${Date.now()}-${String(i).padStart(3, "0")}`;
+    // Zero-padded so the subjects sort lexicographically in the same order they were created. An
+    // unpadded index would put "-9" above "-10" while createdAt puts "-10" first, which would
+    // invert the order assertion below.
+    const unique = `${token}-${String(i).padStart(3, "0")}`;
 
     const created = await page.request.post(
       `${API_BASE_URL}/api/webhooks/inbound-email`,
@@ -67,6 +73,8 @@ async function seedOpenTickets(page: Page, count: number) {
       "seeded ticket should be patched to open"
     ).toBe(200);
   }
+
+  return token;
 }
 
 /**
@@ -345,18 +353,26 @@ test.describe("Ticket list URL state (GH-1)", () => {
       page,
     }) => {
       await loginAsAdmin(page);
-      await seedOpenTickets(page, 11);
+      const token = await seedOpenTickets(page, 11);
 
       await page.goto("/tickets");
       await chooseStatus(page, "Open");
       await expect(page).toHaveURL(/status=open/);
 
-      // Hold the next list request open so Back happens while it is in flight.
+      // Hold ONLY the sort request, matched on its own query string.
+      //
+      // An earlier version matched every "**/api/tickets?*" and failed 6 runs in 10. Two reasons,
+      // both caused by holding too much: goBack() fires a fresh list request for the popped URL,
+      // which the same handler then held against a promise the test only resolves afterwards; and
+      // page.unroute() ran while those handlers were still parked, so route.continue() came back
+      // "Route is already handled!". Matching on sortBy=subject leaves the Back request untouched,
+      // which is what the scenario actually wants held and released — and removes the need to
+      // unroute at all, since route handlers die with the browser context.
       let release: () => void = () => {};
       const held = new Promise<void>((resolve) => {
         release = resolve;
       });
-      await page.route("**/api/tickets?*", async (route) => {
+      await page.route(/\/api\/tickets\?.*sortBy=subject/, async (route) => {
         await held;
         await route.continue();
       });
@@ -366,7 +382,6 @@ test.describe("Ticket list URL state (GH-1)", () => {
 
       await page.goBack();
       release();
-      await page.unroute("**/api/tickets?*");
 
       // Back landed on filter-only, so that is what must be rendered — not the sort whose request
       // was still outstanding.
@@ -380,18 +395,23 @@ test.describe("Ticket list URL state (GH-1)", () => {
       // Asserted positively: the rows must match the order the *popped* URL asks for, newest first.
       // A "not sorted by subject" assertion would also pass on a page holding a single row, or any
       // time the two orders happened to differ, which is not the same claim.
-      const subjects = await page
+      // Scoped to this batch's token: the suite is fullyParallel against one database, so another
+      // spec's tickets can appear in this list. They are ordered by createdAt too, but their
+      // subjects carry no relation to ours, so comparing every row would assert something about
+      // other tests' data rather than about this story.
+      const allSubjects = await page
         .getByRole("table")
         .getByRole("link")
         .allInnerTexts();
+      const subjects = allSubjects.filter((s) => s.includes(token));
       const seededDescending = [...subjects].sort((a, b) => b.localeCompare(a));
       expect(
         subjects.length,
-        "need more than one row for the order to mean anything"
+        "need more than one of this batch's rows for the order to mean anything"
       ).toBeGreaterThan(1);
       expect(
         subjects,
-        "rows should be in the default createdAt order the popped URL asks for — seeded subjects carry an ascending timestamp, so newest-first is descending by subject"
+        "rows should be in the default createdAt order the popped URL asks for — seeded subjects carry an ascending index, so newest-first is descending by subject"
       ).toEqual(seededDescending);
     });
   });
