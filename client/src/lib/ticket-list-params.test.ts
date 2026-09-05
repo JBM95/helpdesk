@@ -4,6 +4,7 @@ import {
   DEFAULT_SORT_BY,
   DEFAULT_SORT_ORDER,
   MAX_PAGE,
+  PAGE_SIZE,
   parseTicketListParams,
   serializeTicketListParams,
   type TicketListParams,
@@ -148,11 +149,14 @@ describe("parseTicketListParams", () => {
     );
 
     // The schema would accept MAX_SAFE_INTEGER, but the route turns page into
-    // `skip: (page - 1) * pageSize` and Prisma types skip as a 32-bit int, so MAX_PAGE is the real
-    // ceiling and it is the one this module has to respect.
-    it("should accept the largest page whose skip still fits in an i32", () => {
+    // `skip: (page - 1) * pageSize`, and Prisma's query engine rejects a skip outside signed 32-bit
+    // range at runtime, so MAX_PAGE is the real ceiling and the one this module has to respect.
+    it("should accept the largest page whose skip the query engine still accepts", () => {
       expect(parse(`?page=${MAX_PAGE}`).page).toBe(MAX_PAGE);
-      expect((MAX_PAGE - 1) * 10).toBeLessThan(2 ** 31);
+      // the boundary itself: the last accepted page produces a skip inside i32, the first rejected
+      // page would not
+      expect((MAX_PAGE - 1) * PAGE_SIZE).toBeLessThanOrEqual(2 ** 31 - 1);
+      expect(MAX_PAGE * PAGE_SIZE).toBeGreaterThan(2 ** 31 - 1);
     });
 
     it.each([MAX_PAGE + 1, Number.MAX_SAFE_INTEGER])(

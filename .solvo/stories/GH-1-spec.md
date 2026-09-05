@@ -55,7 +55,7 @@ server test suite.
 | AC2 | Sort field + direction in the URL | 7 | component + unit |
 | AC3 | Current page in the URL | 9 | component; reload at E2E |
 | AC4 | Retrace back to the list restores state | 7 | E2E, except remount + back-link at component |
-| AC5 | Browser back/forward | 7 | E2E only — a component test cannot prove this honestly |
+| AC5 | Browser back/forward | 7 | component (router POP via useNavigate) for all 7; E2E on top for the real Back button |
 | AC6 | Filter or sort change resets to page 1 | 7 | component |
 | AC7 | Invalid params fall back safely | 14 | unit, plus component for the request itself |
 | AC8 | Default/empty values omitted | 6 | unit + component |
@@ -76,7 +76,7 @@ built that way rather than blocked.
 `client/src/pages/TicketDetailPage.tsx` | back link carries the list's search string (AC4, retrace-only) |
 `client/src/pages/TicketsPage.test.tsx` | new and updated tests per the approved case set |
 
-`client/src/test/render.tsx` is **deliberately not changed**. It is used by 7 test files, so extending
+`client/src/test/render.tsx` is **deliberately not changed**. It is used by 6 test files, so extending
 `renderWithQuery` would widen the blast radius across every component test for one story's benefit.
 New tests use `MemoryRouter` with `initialEntries` directly.
 
@@ -124,7 +124,7 @@ needs a decision because option A conflicts with an already-approved QA case:
 
 ## Anti-regression plan
 
-- `cd client && bun run test` in full — not a targeted file run. All 26 existing tests in
+- `cd client && bun run test` in full — not a targeted file run. All 21 existing tests in
   `TicketsPage.test.tsx` stay green, and the exact-params assertion at
   [TicketsPage.test.tsx:186](../../client/src/pages/TicketsPage.test.tsx#L186) stays an exact match. It
   must **not** be loosened to `objectContaining` to accommodate new params — that assertion is the AC9

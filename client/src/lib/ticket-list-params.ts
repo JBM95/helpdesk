@@ -17,14 +17,21 @@ export const DEFAULT_SORT_BY: TicketSortField = "createdAt";
 export const DEFAULT_SORT_ORDER: TicketSortOrder = "desc";
 export const DEFAULT_PAGE = 1;
 
+/** Rows per page. Lives here because MAX_PAGE below is derived from it. */
+export const PAGE_SIZE = 10;
+
+/** The largest `skip` the Prisma query engine accepts — a signed 32-bit integer. */
+const MAX_SKIP = 2 ** 31 - 1;
+
 /**
  * The largest page that can be requested without breaking something downstream.
  *
  * `ticketListQuerySchema` only caps `page` at `MAX_SAFE_INTEGER`, but the route turns it into
- * `skip: (page - 1) * pageSize` and Prisma types `skip` as a 32-bit int. So the real ceiling is the
- * page whose skip still fits, and it is lower than the schema's by a wide margin.
+ * `skip: (page - 1) * pageSize`, and while Prisma's generated type for `skip` is a plain `number`,
+ * its query engine rejects one outside signed 32-bit range at runtime. So the real ceiling is the
+ * page whose skip still fits, and it is far below the schema's.
  */
-export const MAX_PAGE = Math.floor(2 ** 31 / 10);
+export const MAX_PAGE = Math.floor(MAX_SKIP / PAGE_SIZE) + 1;
 
 export interface TicketListParams {
   status?: AgentTicketStatus;

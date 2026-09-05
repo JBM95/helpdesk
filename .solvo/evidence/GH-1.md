@@ -21,7 +21,7 @@ https://github.com/JBM95/helpdesk/issues/1
 
 **T2**, confirmed by JB Mccallaghan at the tier gate.
 
-Blast radius from recon: 5 files, 10 callers, against `tiers.blastRadiusEscalation` of 15 files / 40
+Blast radius from recon: 5 files, 10 callers (the delivered diff touches 7 source files — the two core/ files came from the GATE 1 allow-list decision; still well under the 15-file threshold), against `tiers.blastRadiusEscalation` of 15 files / 40
 callers — no escalation triggered. `tiers.t3Domains` is empty and nothing on the path touches auth,
 PII, payments or the schema. No escalations.
 
@@ -54,7 +54,7 @@ what was read, not a skipped step.
 | AC2 | Sort field and sort direction are reflected in the URL. | 7 | unit + component |
 | AC3 | Current page is reflected in the URL. | 9 | unit + component; reload at E2E |
 | AC4 | Opening a ticket and returning to the Tickets page restores the previous list state. | 7 | component (both halves of the hand-off) + E2E |
-| AC5 | Browser back/forward navigation restores the corresponding list state. | 7 | component (router POP) + E2E (real browser) |
+| AC5 | Browser back/forward navigation restores the corresponding list state. | 7 | component (router POP) for all 7 instances; E2E on top for the real Back button |
 | AC6 | Changing a filter or sort resets pagination to page 1. | 7 | component |
 | AC7 | Unknown/invalid query-param values fall back safely to supported defaults rather than breaking the page. | 14 | unit + component |
 | AC8 | Empty/default values are omitted where practical so URLs remain clean. | 6 | unit + component |
@@ -86,13 +86,14 @@ commits, which belong to the trial rather than to this story.
 | `91476c3` | chore(GH-1): record recon, spec and GATE 1 approval | ✓ | ✓ |
 
 All seven are agent-authored and all seven carry both trailers. No human hotfix commits on this
-branch. Two further commits follow this pack, per the PR-phase order: this pack plus the vault
-memory, then the state file alone.
+branch. Commits after this pack are, per the PR-phase order, the pack itself plus the vault memory,
+then state-file-only commits — `checks.commit` therefore names the last commit carrying code, which
+is what the freshness gate expects and explicitly tolerates.
 
 ## 6. Tests
 
 **Command**: `cd client && bun run test` (vitest run)
-**Result**: 225 passed / 225, 9 files. Baseline on the branch point was 114 passed / 8 files.
+**Result**: 229 passed / 229, 9 files. Baseline on the branch point was 114 passed / 8 files.
 
 **Lint**: `cd client && bun run lint` — 7 problems (5 errors, 2 warnings), identical to the base
 branch. Verified by linting the stashed base, not assumed. Four errors and one warning are in files
@@ -117,9 +118,10 @@ credential is wrong, and that file is gitignored so it is per-machine. The specs
 are discovered by `playwright test --list`. **Nobody has seen them pass.** This is the section that
 makes the pack INCOMPLETE.
 
-AC5 is not left unverified by that: three component tests drive a real router POP through
-`useNavigate(-1)` and assert the list re-derives from the popped URL. The E2E specs cover the real
-browser on top of that.
+AC5 is not left unverified by that. All seven of its behaviour instances have component tests that
+drive a real router POP (and forward) through `useNavigate`, asserting that the controls, the footer,
+the rows and the request all follow the popped URL. The E2E specs cover the real Back button on top of
+that. AC3's real reload and AC4's real retrace and nav-link paths remain browser-only.
 
 ## 7. Reviews
 
@@ -128,7 +130,7 @@ keystroke in the search box was pushing a history entry (typing "login" left fiv
 back through "logi", "log", "lo"), and a test of mine asserted `window.history.length`, which never
 moves under `MemoryRouter` and so would have passed against any implementation.
 
-**Fresh review** — `fresh-reviewer`, three rounds, each independently mutation-tested the previous
+**Fresh review** — `fresh-reviewer`, four rounds, each independently mutation-tested the previous
 round's fixes.
 
 | Round | Verdict | Blockers | Resolution |
@@ -136,6 +138,7 @@ round's fixes.
 | 1 | REQUEST_CHANGES | 4 | all fixed in `967ba1b` |
 | 2 | REQUEST_CHANGES | 4 | all fixed in `ccc0d34` |
 | 3 | REQUEST_CHANGES | 1 | fixed in this phase — see below |
+| 4 | **APPROVE** | 0 | 10 mutations applied, all caught; every numeric claim in these records independently re-measured |
 
 The blockers that mattered, all confirmed by reproduction before fixing:
 
@@ -160,9 +163,14 @@ tests, paired with a count of 217. It is resolved by the PR-phase step that re-r
 records them at the commit being shipped, which is the commit this pack sits on. Round 3 said of the
 code itself: "the implementation itself I would merge."
 
-**Round cap reached.** The cycle allows three review rounds and three ran, so the recorded verdict
-stays REQUEST_CHANGES with zero blockers open rather than an APPROVE nobody issued. Carried to the
-human at the merge gate as an open item.
+Round 4 returned **APPROVE, 0 blockers**, having mutation-tested every fix from all three earlier
+rounds and re-measured the test, lint, typecheck and case-reconciliation figures in these records
+against its own runs. It also proved a claim of mine wrong: the spec said AC5 could not be honestly
+component-tested, and round 4 demonstrated a passing router-POP test in 494ms. All seven AC5
+instances are now component-tested as a result, so AC5 no longer depends on the unexecuted E2E specs.
+
+Round 4's remaining decision-needed items are recorded as open items for the human below, not as
+defects: the `checks.e2e` schema value, and the unexecuted E2E specs themselves.
 
 **Carried as follow-ups, not fixed here** (each judged out of this story's blast radius, and none
 merge-blocking in the reviewer's own assessment):
@@ -174,8 +182,8 @@ merge-blocking in the reviewer's own assessment):
 - `parseTicketListParams` re-implements `ticketListQuerySchema`'s rules rather than deriving from it
   with per-field `.catch()`. That divergence is what produced two of the blockers above, so it is a
   real argument for the refactor — later, deliberately.
-- The E2E seed helper races `auto-resolve-ticket`; 5 of the 13 scenarios can time out rather than
-  fail an assertion when that race is lost. Worth knowing before the first real run.
+- The E2E seed helper races `auto-resolve-ticket`; the 4 scenarios that page behind a status filter
+  can time out rather than fail an assertion when that race is lost. Worth knowing before the first real run.
 
 **Human reviewers**: none yet — the PR has not opened.
 

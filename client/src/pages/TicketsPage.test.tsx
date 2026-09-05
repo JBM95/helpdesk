@@ -1117,10 +1117,13 @@ describe("TicketsPage — list state in the URL", () => {
   // These are the executable half of AC5, and they stand whether or not the E2E specs ever run.
   describe("AC5 — a history POP re-derives the list from the popped URL", () => {
     function renderWithBackButton(entries: string[]) {
-      function BackButton() {
+      function HistoryButtons() {
         const navigate = useNavigate();
         return (
-          <button onClick={() => navigate(-1)}>go back</button>
+          <>
+            <button onClick={() => navigate(-1)}>go back</button>
+            <button onClick={() => navigate(1)}>go forward</button>
+          </>
         );
       }
       return render(
@@ -1130,9 +1133,10 @@ describe("TicketsPage — list state in the URL", () => {
               new QueryClient({ defaultOptions: { queries: { retry: false } } })
             }
           >
-            <BackButton />
+            <HistoryButtons />
             <Routes>
               <Route path="/tickets" element={<TicketsPage />} />
+              <Route path="/" element={<div>dashboard</div>} />
             </Routes>
             <LocationProbe />
           </QueryClientProvider>
@@ -1181,6 +1185,140 @@ describe("TicketsPage — list state in the URL", () => {
       await waitFor(() =>
         expect(lastRequestParams()).toMatchObject({ page: 1 })
       );
+    });
+
+    // CASE-4aa8b6f78dbf
+    it("should re-apply the state on a forward navigation after a POP", async () => {
+      const user = userEvent.setup();
+      mockedAxios.get.mockResolvedValue(mockResponse());
+      renderWithBackButton(["/tickets", "/tickets?status=resolved"]);
+
+      await waitFor(() =>
+        expect(lastRequestParams()).toMatchObject({ status: "resolved" })
+      );
+
+      await user.click(screen.getByRole("button", { name: "go back" }));
+      await waitFor(() => expect(currentSearch()).toBe(""));
+
+      await user.click(screen.getByRole("button", { name: "go forward" }));
+
+      await waitFor(() => expect(currentSearch()).toBe("?status=resolved"));
+      expect(statusFilterTrigger()).toHaveTextContent("Resolved");
+      await waitFor(() =>
+        expect(lastRequestParams()).toMatchObject({ status: "resolved" })
+      );
+    });
+
+    // CASE-fe4d5dbbfc65 — an untouched list must not trap the reader. It would if arriving at
+    // /tickets replaced the previous entry instead of pushing one.
+    it("should leave the list on a POP when no control was touched", async () => {
+      const user = userEvent.setup();
+      mockedAxios.get.mockResolvedValue(mockResponse());
+      renderWithBackButton(["/", "/tickets"]);
+
+      await waitFor(() =>
+        expect(screen.getByText("Cannot login to my account")).toBeInTheDocument()
+      );
+
+      await user.click(screen.getByRole("button", { name: "go back" }));
+
+      await waitFor(() =>
+        expect(screen.getByText("dashboard")).toBeInTheDocument()
+      );
+      expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    });
+
+    // CASE-b45e016761f1 — after rapid history navigation the rendered controls, the rows and the URL
+    // must all agree. A URL-only assertion would not catch a list left on a superseded render.
+    it("should keep the rendered list in step with the URL through rapid POPs and forwards", async () => {
+      const user = userEvent.setup();
+      mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
+      renderWithBackButton([
+        "/tickets",
+        "/tickets?status=open",
+        "/tickets?status=open&sortBy=subject&sortOrder=asc",
+        "/tickets?status=open&sortBy=subject&sortOrder=asc&page=2",
+      ]);
+
+      await waitFor(() =>
+        expect(screen.getByText("Page 2 of 5")).toBeInTheDocument()
+      );
+
+      const back = screen.getByRole("button", { name: "go back" });
+      const forward = screen.getByRole("button", { name: "go forward" });
+      await user.click(back);
+      await user.click(back);
+      await user.click(forward);
+      await user.click(forward);
+      await user.click(back);
+
+      // Settled on filter + sort, page 1
+      await waitFor(() =>
+        expect(currentSearch()).toBe("?status=open&sortBy=subject&sortOrder=asc")
+      );
+      expect(statusFilterTrigger()).toHaveTextContent("Open");
+      await waitFor(() =>
+        expect(screen.getByText("Page 1 of 5")).toBeInTheDocument()
+      );
+      await waitFor(() =>
+        expect(lastRequestParams()).toMatchObject({
+          status: "open",
+          sortBy: "subject",
+          sortOrder: "asc",
+          page: 1,
+        })
+      );
+      expect(screen.getAllByRole("row").slice(1)).toHaveLength(
+        mockTickets.length
+      );
+    });
+
+    // CASE-6e5a5e6f195f — a POP while a request is in flight must not render the superseded result
+    it("should not render a superseded in-flight response after a POP", async () => {
+      const user = userEvent.setup();
+      let release: () => void = () => {};
+      const held = new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      const sorted = [...mockTickets].sort((a, b) =>
+        a.subject.localeCompare(b.subject)
+      );
+
+      mockedAxios.get.mockImplementation(async (_url, config) => {
+        const params = config?.params as { sortBy?: string };
+        if (params?.sortBy === "subject") {
+          await held;
+          return mockResponse(sorted);
+        }
+        return mockResponse();
+      });
+
+      renderWithBackButton([
+        "/tickets?status=open",
+        "/tickets?status=open&sortBy=subject&sortOrder=asc",
+      ]);
+
+      // the sorted request is outstanding
+      await waitFor(() =>
+        expect(lastRequestParams()).toMatchObject({ sortBy: "subject" })
+      );
+
+      await user.click(screen.getByRole("button", { name: "go back" }));
+      release();
+
+      await waitFor(() => expect(currentSearch()).toBe("?status=open"));
+      // The rows must be the popped URL's order, not the subject-sorted response that resolved after
+      // the POP. Asserted positively on the expected order.
+      await waitFor(() =>
+        expect(
+          screen.getByText("Cannot login to my account")
+        ).toBeInTheDocument()
+      );
+      const subjects = screen
+        .getAllByRole("row")
+        .slice(1)
+        .map((row) => row.querySelector("a")?.textContent);
+      expect(subjects).toEqual(mockTickets.map((ticket) => ticket.subject));
     });
 
     // CASE-a95f558f6ba0 — three states unwind in order

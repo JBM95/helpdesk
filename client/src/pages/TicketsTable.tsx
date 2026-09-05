@@ -38,6 +38,7 @@ import type { TicketSortField, TicketSortOrder } from "core/constants/ticket-sor
 import {
   DEFAULT_SORT_BY,
   DEFAULT_SORT_ORDER,
+  PAGE_SIZE,
   type TicketListParams,
 } from "@/lib/ticket-list-params";
 
@@ -101,8 +102,6 @@ const buildColumns = (listSearch: string): ColumnDef<Ticket>[] => [
       new Date(row.original.createdAt).toLocaleDateString(),
   },
 ];
-
-const PAGE_SIZE = 10;
 
 const plural = (count: number, noun: string) =>
   `${count} ${noun}${count === 1 ? "" : "s"}`;

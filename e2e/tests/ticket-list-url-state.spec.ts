@@ -34,7 +34,10 @@ const API_BASE_URL = process.env.BETTER_AUTH_URL!;
  */
 async function seedOpenTickets(page: Page, count: number) {
   for (let i = 0; i < count; i++) {
-    const unique = `${Date.now()}-${i}`;
+    // Zero-padded so the subjects sort lexicographically in the same order they were created. Two
+    // iterations can share a millisecond, and an unpadded index would put "-9" above "-10" while
+    // createdAt puts "-10" first, which would invert the order assertion below.
+    const unique = `${Date.now()}-${String(i).padStart(3, "0")}`;
 
     const created = await page.request.post(
       `${API_BASE_URL}/api/webhooks/inbound-email`,
