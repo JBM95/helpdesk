@@ -47,7 +47,12 @@ function parsePage(value: string | null): number {
   // Number, not parseInt: parseInt("1.5") is 1 and parseInt("2abc") is 2, so parseInt would
   // silently accept values the server's int() constraint rejects.
   const page = Number(value);
-  return Number.isInteger(page) && page >= DEFAULT_PAGE ? page : DEFAULT_PAGE;
+  // isSafeInteger, not isInteger. Zod's z.int() caps at Number.MAX_SAFE_INTEGER, so 1e21 is an
+  // integer by isInteger's reckoning and `too_big` by the server's — it would 400 and blank the
+  // list, which is the one thing this module exists to prevent.
+  return Number.isSafeInteger(page) && page >= DEFAULT_PAGE
+    ? page
+    : DEFAULT_PAGE;
 }
 
 /**

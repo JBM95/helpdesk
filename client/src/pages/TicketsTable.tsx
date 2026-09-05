@@ -104,6 +104,9 @@ const buildColumns = (listSearch: string): ColumnDef<Ticket>[] => [
 
 const PAGE_SIZE = 10;
 
+const plural = (count: number, noun: string) =>
+  `${count} ${noun}${count === 1 ? "" : "s"}`;
+
 interface TicketsTableProps {
   params: TicketListParams;
   onSortChange: (sortBy: TicketSortField, sortOrder: TicketSortOrder) => void;
@@ -133,10 +136,16 @@ export default function TicketsTable({
 
   // Absent filters are omitted rather than sent as undefined keys, so the request the API receives
   // is byte-for-byte what it received before this change.
+  //
+  // The search term is trimmed here and only here. The URL and the input keep it verbatim, because
+  // trimming on the way in is what stopped a space being typed at all; but a term that is only
+  // whitespace is not a filter anyone meant, and sending it would match on a literal space. So the
+  // reader sees what they typed and the API gets what they meant.
+  const trimmedSearch = search?.trim();
   const filters = {
     ...(status ? { status } : {}),
     ...(category ? { category } : {}),
-    ...(search ? { search } : {}),
+    ...(trimmedSearch ? { search: trimmedSearch } : {}),
   };
 
   const {
@@ -162,6 +171,8 @@ export default function TicketsTable({
   const total = data?.total ?? 0;
   const pageCount = Math.ceil(total / pagination.pageSize);
   const firstRowOnPage = pagination.pageIndex * pagination.pageSize + 1;
+  // The page is URL-controllable now, so it can name a page past the end of the result set.
+  const isBeyondEnd = total > 0 && firstRowOnPage > total;
 
   const table = useReactTable({
     data: data?.tickets ?? [],
@@ -269,10 +280,8 @@ export default function TicketsTable({
           <p className="text-sm text-muted-foreground">
             {total === 0
               ? "No tickets"
-              : firstRowOnPage > total
-                ? // The page is now URL-controllable, so it can name a page past the end of the
-                  // result set. Without this the range reads "Showing 981–50 of 50".
-                  `No tickets on page ${page} — ${total} tickets across ${pageCount} pages`
+              : isBeyondEnd
+                ? `Page ${page} does not exist — ${plural(total, "ticket")} across ${plural(pageCount, "page")}`
                 : `Showing ${firstRowOnPage}–${Math.min(firstRowOnPage + pagination.pageSize - 1, total)} of ${total} tickets`}
           </p>
           <div className="flex items-center gap-1">
@@ -296,9 +305,22 @@ export default function TicketsTable({
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <span className="text-sm px-2">
-              Page {pagination.pageIndex + 1} of {pageCount || 1}
-            </span>
+            {isBeyondEnd ? (
+              // Past the end, TanStack disables Next and Last as well as reporting "Page 99 of 5",
+              // so without this the only way out is Previous ninety-four times or editing the URL.
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8"
+                onClick={() => onPageChange(pageCount)}
+              >
+                Go to last page
+              </Button>
+            ) : (
+              <span className="text-sm px-2">
+                Page {pagination.pageIndex + 1} of {pageCount || 1}
+              </span>
+            )}
             <Button
               variant="outline"
               size="icon"

@@ -80,6 +80,13 @@ built that way rather than blocked.
 `renderWithQuery` would widen the blast radius across every component test for one story's benefit.
 New tests use `MemoryRouter` with `initialEntries` directly.
 
+Two files outside the story's own scope were touched, declared here rather than left to be found:
+
+| File | Why |
+|---|---|
+`client/src/test/pointer-events.ts` | **new** — the Radix pointer-capture shim needed to drive a Select in jsdom. It was already duplicated inline in `TicketDetailPage.test.tsx`, and this story's tests need it too; a third copy was the alternative. Imported for its side effect by the two test files that open a Select, so it carries none of `render.tsx`'s blast radius. |
+`.gitattributes` | `solvo qa-scope` hashes the test plan and case set byte for byte, and `core.autocrlf` is `true` on this machine, so a fresh checkout would rewrite them to CRLF and every recorded approval would read as drifted. The generated `SOLVO` block covers only `/.solvo/**/*.json`. Added outside that block, scoped to `*.md`. Hygiene, not an AC — noted so it is a declared change rather than one riding along unannounced. |
+
 ## The two traps this story is most likely to fall into
 
 **1. The `useEffect` at [TicketsTable.tsx:107](../../client/src/pages/TicketsTable.tsx#L107).** It resets

@@ -4,28 +4,11 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, Routes, Route } from "react-router";
 import axios from "axios";
+import "@/test/pointer-events";
 import TicketDetailPage from "./TicketDetailPage";
 
 vi.mock("axios");
 const mockedAxios = vi.mocked(axios, { deep: true });
-
-// Radix Select relies on pointer capture APIs not available in jsdom
-class MockPointerEvent extends Event {
-  button: number;
-  ctrlKey: boolean;
-  pointerType: string;
-  constructor(type: string, props: PointerEventInit & { pointerType?: string } = {}) {
-    super(type, props);
-    this.button = props.button ?? 0;
-    this.ctrlKey = props.ctrlKey ?? false;
-    this.pointerType = props.pointerType ?? "mouse";
-  }
-}
-window.PointerEvent = MockPointerEvent as unknown as typeof PointerEvent;
-window.HTMLElement.prototype.scrollIntoView = vi.fn();
-window.HTMLElement.prototype.hasPointerCapture = vi.fn();
-window.HTMLElement.prototype.releasePointerCapture = vi.fn();
-window.HTMLElement.prototype.setPointerCapture = vi.fn();
 
 const mockTicket = {
   id: 1,

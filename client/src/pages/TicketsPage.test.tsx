@@ -11,30 +11,13 @@ import {
 } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import axios from "axios";
+import "@/test/pointer-events";
 import { renderWithQuery } from "@/test/render";
 import TicketsPage from "./TicketsPage";
 
+
 vi.mock("axios");
 const mockedAxios = vi.mocked(axios, { deep: true });
-
-// Radix Select relies on pointer capture APIs not available in jsdom (same shim as
-// TicketDetailPage.test.tsx, which drives the status and category selects there)
-class MockPointerEvent extends Event {
-  button: number;
-  ctrlKey: boolean;
-  pointerType: string;
-  constructor(type: string, props: PointerEventInit & { pointerType?: string } = {}) {
-    super(type, props);
-    this.button = props.button ?? 0;
-    this.ctrlKey = props.ctrlKey ?? false;
-    this.pointerType = props.pointerType ?? "mouse";
-  }
-}
-window.PointerEvent = MockPointerEvent as unknown as typeof PointerEvent;
-window.HTMLElement.prototype.scrollIntoView = vi.fn();
-window.HTMLElement.prototype.hasPointerCapture = vi.fn();
-window.HTMLElement.prototype.releasePointerCapture = vi.fn();
-window.HTMLElement.prototype.setPointerCapture = vi.fn();
 
 /**
  * Reads the live query string back out of the router so a test can assert what the URL says, not
@@ -665,6 +648,16 @@ describe("TicketsPage — list state in the URL", () => {
           category: "refund_request",
         })
       );
+      // The case expects the *settled list* to reflect both filters, so the rows have to be checked
+      // once the held response resolves — a URL assertion alone would pass without the response.
+      await waitFor(() =>
+        expect(
+          screen.getByText("Cannot login to my account")
+        ).toBeInTheDocument()
+      );
+      expect(screen.getAllByRole("row").slice(1)).toHaveLength(
+        mockTickets.length
+      );
     });
 
     // CASE-2845362e6dfc — the filter has to survive the failure, or the reader cannot correct it
@@ -736,7 +729,13 @@ describe("TicketsPage — list state in the URL", () => {
       expect(subjectHeader.querySelector(`.${icon}`)).toBeTruthy();
     });
 
-    // CASE-33e9012af743
+    // CASE-33e9012af743 — Subject then Created, as the case specifies.
+    //
+    // The case's expected result was amended to case-set revision 4. It said the URL would "reflect
+    // sortBy=createdAt", which cannot happen: Created descending is the default pair, and AC8
+    // requires defaults be omitted, so landing there empties the sort params instead. The behaviour
+    // under test is unchanged — the second click wins — and the assertion now states it in terms
+    // the two ACs can both hold.
     it("should settle on the second column when two headers are clicked in flight", async () => {
       const user = userEvent.setup();
       let release: () => void = () => {};
@@ -750,18 +749,37 @@ describe("TicketsPage — list state in the URL", () => {
       renderTicketsAt();
 
       await user.click(screen.getByRole("button", { name: /Subject/ }));
-      await user.click(screen.getByRole("button", { name: /Sender/ }));
+      await expect.poll(() => currentSearch()).toMatch(/sortBy=subject/);
+
+      await user.click(screen.getByRole("button", { name: /Created/ }));
 
       release();
 
-      // The case is about which column wins the race. The direction is not asserted: with rows
-      // still in flight the table has no values to infer the column type from, so TanStack falls
-      // back to sorting descending first — incidental here, and covered by its own cases above.
-      await waitFor(() => expect(currentSearch()).toMatch(/sortBy=senderName/));
-      await waitFor(() =>
-        expect(lastRequestParams()).toMatchObject({ sortBy: "senderName" })
-      );
+      // Created descending is the default pair, so the URL empties — the sort is no longer Subject.
+      // The direction is not asserted beyond that: with no rows loaded TanStack cannot infer the
+      // column type and starts a string column descending instead of ascending. Verified against
+      // its getFirstSortDir; incidental here and covered by AC2's own direction cases.
+      await waitFor(() => expect(currentSearch()).toBe(""));
       expect(currentSearch()).not.toMatch(/sortBy=subject/);
+
+      // No fresh request is expected for the default sort: its query key is the one the first mount
+      // already issued and is still awaiting, so React Query serves it rather than refetching. The
+      // check is that a default-sort request exists and the settled rows came from it.
+      const sorts = mockedAxios.get.mock.calls.map(
+        (call) => (call[1]?.params as { sortBy?: string } | undefined)?.sortBy
+      );
+      expect(sorts).toContain("createdAt");
+
+      await waitFor(() =>
+        expect(
+          screen.getByText("Cannot login to my account")
+        ).toBeInTheDocument()
+      );
+      const subjects = screen
+        .getAllByRole("row")
+        .slice(1)
+        .map((row) => row.querySelector("a")?.textContent);
+      expect(subjects).toEqual(mockTickets.map((ticket) => ticket.subject));
     });
 
     // CASE-fabda9180a68
@@ -967,16 +985,37 @@ describe("TicketsPage — list state in the URL", () => {
     // CASE-c27e798cbe1d — the page is URL-controllable now, so it can name a page past the end.
     // The footer used to read "Showing 981–50 of 50 tickets".
     it("should not show a nonsensical range for a page past the end", async () => {
+      const user = userEvent.setup();
       mockedAxios.get.mockResolvedValue(mockResponse([], 50));
-      renderTicketsAt("/tickets?page=99");
+      renderTicketsAt("/tickets?page=999999");
 
       await waitFor(() =>
         expect(
-          screen.getByText("No tickets on page 99 — 50 tickets across 5 pages")
+          screen.getByText(
+            "Page 999999 does not exist — 50 tickets across 5 pages"
+          )
         ).toBeInTheDocument()
       );
-      expect(screen.queryByText(/Showing 981/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/^Showing/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/^Page 999999 of/)).not.toBeInTheDocument();
       expect(screen.queryByText("Failed to fetch tickets")).not.toBeInTheDocument();
+
+      // Next and Last are disabled this far past the end, so without an escape the only way back is
+      // Previous once per page or editing the URL by hand.
+      await user.click(screen.getByRole("button", { name: "Go to last page" }));
+
+      await waitFor(() => expect(currentSearch()).toBe("?page=5"));
+    });
+
+    it("should pluralise the out-of-range message for a single ticket and page", async () => {
+      mockedAxios.get.mockResolvedValue(mockResponse([], 1));
+      renderTicketsAt("/tickets?page=4");
+
+      await waitFor(() =>
+        expect(
+          screen.getByText("Page 4 does not exist — 1 ticket across 1 page")
+        ).toBeInTheDocument()
+      );
     });
 
     // CASE-93514dfd0070 (double-click) — TanStack advances one page per click
@@ -1003,6 +1042,58 @@ describe("TicketsPage — list state in the URL", () => {
         expect(screen.getByRole("table")).toBeInTheDocument();
       });
       expect(screen.queryByText("Failed to fetch tickets")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("AC4 — handing the list state to the ticket detail page", () => {
+    // CASE-20e7b0b98b08 producer half. The consumer half is covered in TicketDetailPage.test.tsx,
+    // but nothing asserted the list actually attaches the state — the `state` prop could be deleted
+    // from the subject Link and every other test still passed. The destination here is a probe
+    // rather than the real detail page, so the assertion is about the hand-off and nothing else.
+    it("should attach its query string to the ticket link's router state", async () => {
+      const user = userEvent.setup();
+      mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
+
+      function StateProbe() {
+        const { state } = useLocation();
+        return (
+          <div data-testid="handed-state">
+            {(state as { listSearch?: string } | null)?.listSearch ??
+              "NO STATE"}
+          </div>
+        );
+      }
+
+      const listUrl = "/tickets?status=open&sortBy=subject&sortOrder=asc&page=2";
+      render(
+        <MemoryRouter initialEntries={[listUrl]}>
+          <QueryClientProvider
+            client={
+              new QueryClient({ defaultOptions: { queries: { retry: false } } })
+            }
+          >
+            <Routes>
+              <Route path="/tickets" element={<TicketsPage />} />
+              <Route path="/tickets/:id" element={<StateProbe />} />
+            </Routes>
+          </QueryClientProvider>
+        </MemoryRouter>
+      );
+
+      await waitFor(() =>
+        expect(
+          screen.getByRole("link", { name: "Cannot login to my account" })
+        ).toBeInTheDocument()
+      );
+
+      await user.click(
+        screen.getByRole("link", { name: "Cannot login to my account" })
+      );
+
+      const handed = await screen.findByTestId("handed-state");
+      expect(handed).toHaveTextContent(
+        "?status=open&sortBy=subject&sortOrder=asc&page=2"
+      );
     });
   });
 
@@ -1096,6 +1187,8 @@ describe("TicketsPage — list state in the URL", () => {
       await waitFor(() => expect(currentSearch()).toBe(""));
       expect(lastRequestParams()).toMatchObject({ page: 1 });
       expect(lastRequestParams()).not.toHaveProperty("status");
+      // Clearing a filter is a discrete choice, so it pushes and Back undoes it
+      expect(lastNavigation()).toBe("PUSH");
     });
 
     // CASE-1e9fb05ae79a
@@ -1218,6 +1311,36 @@ describe("TicketsPage — list state in the URL", () => {
       await user.clear(input);
 
       await waitFor(() => expect(currentSearch()).toBe(""));
+      // Clearing ends the search rather than refining it, so it pushes. Replacing here would
+      // overwrite the search entry with the URL of the entry before it, and the reader's first Back
+      // would appear to do nothing.
+      expect(lastNavigation()).toBe("PUSH");
+    });
+
+    // A whitespace-only term stays in the URL and the input, because trimming on the way in is what
+    // stopped a space being typed at all — but it is not a filter anyone meant, so it is not sent.
+    it("should not send a whitespace-only search term to the API", async () => {
+      mockedAxios.get.mockResolvedValue(mockResponse());
+      renderTicketsAt("/tickets?search=%20%20");
+
+      await waitFor(() => expect(mockedAxios.get).toHaveBeenCalled());
+      expect(lastRequestParams()).not.toHaveProperty("search");
+      // Still in the URL and still in the input — only the request drops it
+      expect(screen.getByPlaceholderText("Search tickets...")).toHaveValue("  ");
+      expect(new URLSearchParams(currentSearch()!).get("search")).toBe("  ");
+    });
+
+    it("should send a search term without its surrounding whitespace", async () => {
+      mockedAxios.get.mockResolvedValue(mockResponse());
+      renderTicketsAt("/tickets?search=+vpn+");
+
+      await waitFor(() =>
+        expect(lastRequestParams()).toMatchObject({ search: "vpn" })
+      );
+      // the reader still sees exactly what they typed
+      expect(screen.getByPlaceholderText("Search tickets...")).toHaveValue(
+        " vpn "
+      );
     });
 
     // CASE-76b3900894f2 — sorting back to the default pair empties the URL again

@@ -66,7 +66,7 @@ to prove.
 | `CASE-d901f3d998b8` | happy | mounting at a sort URL sends that sort to the API | Mount at /tickets?sortBy=senderName&sortOrder=asc | The first request carries sortBy: "senderName", sortOrder: "asc" instead of the createdAt/desc default | pending |
 | `CASE-32e17db60aa6` | boundary | each sortable column round-trips through the URL | For each of subject, senderName, status, category, createdAt: mount at /tickets?sortBy=<column><br>Read the header indicator and the request params | Every column in core/schemas/tickets.ts sortableColumns is accepted from the URL and sent through | pending |
 | `CASE-1d6a0684e1d0` | boundary | both sort directions round-trip through the URL | Mount at /tickets?sortBy=subject&sortOrder=asc, then at sortOrder=desc | Each mount shows the matching arrow and sends the matching sortOrder | pending |
-| `CASE-33e9012af743` | concurrency | clicking two different headers before the first request settles leaves the URL on the second | Mount at /tickets with a slow response<br>Click the Subject header, then immediately click the Created header | The URL and the settled list both reflect sortBy=createdAt; the Subject sort does not win the race | pending |
+| `CASE-33e9012af743` | concurrency | clicking two different headers before the first request settles leaves the URL on the second | Mount at /tickets with a slow response<br>Click the Subject header, then immediately click the Created header | The settled list is sorted by Created and the Subject sort does not win the race. Created descending is the default pair, so AC8 requires the sort params be omitted — the URL therefore empties rather than naming createdAt, and the request that produced the settled rows carries sortBy=createdAt | pending |
 
 ## AC3 — Current page is reflected in the URL
 
@@ -172,11 +172,26 @@ of a finding.
 
 Component (Vitest + RTL, `cd client && bun run test`) carries everything except the cases that need a
 real browser: `CASE-e51a15eb56e6`, `CASE-f3c0d3dae2bb`, `CASE-f4309d9553e2`, `CASE-b66a9cb01fd3`,
-`CASE-afaeaa6a68a1` and the whole of AC5 — real Back/Forward, a real reload and a real
+`CASE-8e3d236b21a9` and the whole of AC5 — real Back/Forward, a real reload and a real
 `ProtectedRoute` redirect. Those go to Playwright (`bun run test:e2e`).
 
 `CASE-f338402aae86` is proven by diff inspection, not by a runner: this repo has no server test
 suite, which is why `quality.tests.backend` stays an `n/a:` marker.
+
+## Amendment — case-set revision 4
+
+Two corrections, both found by the round-2 fresh review.
+
+`CASE-33e9012af743`'s expected result named an outcome the ACs cannot both produce. It said the URL
+would "reflect sortBy=createdAt", but Created descending is the default sort pair and AC8 requires
+defaults be omitted, so landing there empties the sort params instead. The behaviour under test is
+unchanged — the second header click wins — and the expectation now states it in terms AC2 and AC8 can
+both hold. The test drives Subject then Created, as the steps always said.
+
+The Execution split above named `CASE-afaeaa6a68a1`, which was pruned at case-set revision 2 (it
+asserted role-independent list state, and `/tickets` has no admin gate — `AdminRoute` wraps only
+`/users`). It is replaced by `CASE-8e3d236b21a9`, the nav-link case added in the same revision, which
+does belong to Playwright.
 
 ## Amendment — case-set revision 3
 

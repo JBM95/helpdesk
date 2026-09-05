@@ -129,11 +129,27 @@ describe("parseTicketListParams", () => {
       }
     );
 
-    // Exponent notation is a valid integer and the server coerces it the same way
-    // (z.coerce.number().int().min(1)), so it is passed through rather than rejected. Whether that
-    // page exists is CASE-c27e798cbe1d's business, not this function's.
+    // Exponent notation inside the safe-integer range is a valid integer and the server coerces it
+    // the same way, so it is passed through rather than rejected. Whether that page exists is
+    // CASE-c27e798cbe1d's business, not this function's.
     it("should accept exponent notation as the integer it denotes", () => {
       expect(parse("?page=1e3").page).toBe(1000);
+    });
+
+    // Zod's z.int() caps at Number.MAX_SAFE_INTEGER, so anything above it is `too_big` server-side.
+    // Verified directly against ticketListQuerySchema: "1e21", "1e100" and "9007199254740993" are
+    // all rejected while "1e3" is accepted. Number.isInteger would have let all three through.
+    it.each(["1e21", "1e100", "9007199254740993", "1e400"])(
+      "should fall back to page 1 for page=%s, which the server rejects as too big",
+      (value) => {
+        expect(parse(`?page=${value}`).page).toBe(DEFAULT_PAGE);
+      }
+    );
+
+    it("should accept the largest page the server accepts", () => {
+      expect(parse(`?page=${Number.MAX_SAFE_INTEGER}`).page).toBe(
+        Number.MAX_SAFE_INTEGER
+      );
     });
 
     // CASE-34f10743279c — URLSearchParams.get returns the first value

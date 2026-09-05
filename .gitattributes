@@ -17,5 +17,7 @@
 # The generated block above covers /.solvo/**/*.json, but the markdown records beside it are
 # hashed too — `solvo qa-scope` hashes test plans and case sets byte for byte, and the evidence
 # pack digests the recon log and story spec. With core.autocrlf=true a Windows checkout rewrites
-# them to CRLF and every recorded approval reads as drifted. Pin the whole directory.
-/.solvo/** eol=lf
+# them to CRLF and every recorded approval reads as drifted.
+#
+# Scoped to *.md rather than ** so a future binary under .solvo/ is not corrupted by an eol filter.
+/.solvo/**/*.md eol=lf
