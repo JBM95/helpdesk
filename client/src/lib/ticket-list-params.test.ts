@@ -3,6 +3,7 @@ import {
   DEFAULT_PAGE,
   DEFAULT_SORT_BY,
   DEFAULT_SORT_ORDER,
+  MAX_PAGE,
   parseTicketListParams,
   serializeTicketListParams,
   type TicketListParams,
@@ -146,11 +147,20 @@ describe("parseTicketListParams", () => {
       }
     );
 
-    it("should accept the largest page the server accepts", () => {
-      expect(parse(`?page=${Number.MAX_SAFE_INTEGER}`).page).toBe(
-        Number.MAX_SAFE_INTEGER
-      );
+    // The schema would accept MAX_SAFE_INTEGER, but the route turns page into
+    // `skip: (page - 1) * pageSize` and Prisma types skip as a 32-bit int, so MAX_PAGE is the real
+    // ceiling and it is the one this module has to respect.
+    it("should accept the largest page whose skip still fits in an i32", () => {
+      expect(parse(`?page=${MAX_PAGE}`).page).toBe(MAX_PAGE);
+      expect((MAX_PAGE - 1) * 10).toBeLessThan(2 ** 31);
     });
+
+    it.each([MAX_PAGE + 1, Number.MAX_SAFE_INTEGER])(
+      "should fall back to page 1 for page=%s, past the skip ceiling",
+      (value) => {
+        expect(parse(`?page=${value}`).page).toBe(DEFAULT_PAGE);
+      }
+    );
 
     // CASE-34f10743279c — URLSearchParams.get returns the first value
     it("should resolve duplicate status keys to a single supported value", () => {

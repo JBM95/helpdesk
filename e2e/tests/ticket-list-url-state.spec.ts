@@ -372,17 +372,24 @@ test.describe("Ticket list URL state (GH-1)", () => {
       await expect(statusFilter(page)).toHaveText("Open");
 
       // The URL and the trigger are both derived from the URL, so they cannot detect a stale render
-      // on their own. The row order is what actually distinguishes the superseded response: the
-      // sorted request that was in flight would have returned subject-ascending rows.
+      // on their own. The row order is what distinguishes the superseded response.
+      //
+      // Asserted positively: the rows must match the order the *popped* URL asks for, newest first.
+      // A "not sorted by subject" assertion would also pass on a page holding a single row, or any
+      // time the two orders happened to differ, which is not the same claim.
       const subjects = await page
         .getByRole("table")
         .getByRole("link")
         .allInnerTexts();
-      const sortedBySubject = [...subjects].sort((a, b) => a.localeCompare(b));
+      const seededDescending = [...subjects].sort((a, b) => b.localeCompare(a));
+      expect(
+        subjects.length,
+        "need more than one row for the order to mean anything"
+      ).toBeGreaterThan(1);
       expect(
         subjects,
-        "rows should be in the default createdAt order, not the superseded subject sort"
-      ).not.toEqual(sortedBySubject);
+        "rows should be in the default createdAt order the popped URL asks for — seeded subjects carry an ascending timestamp, so newest-first is descending by subject"
+      ).toEqual(seededDescending);
     });
   });
 });

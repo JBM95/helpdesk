@@ -13,10 +13,9 @@ export const inboundEmailSchema = z.object({
 
 export type InboundEmailInput = z.infer<typeof inboundEmailSchema>;
 
-// Re-exported so existing importers of the type keep working; the list itself now lives in
-// core/constants/ticket-sort.ts so the client can validate sortBy against the same values the
-// server accepts instead of duplicating them.
-export type { TicketSortField } from "../constants/ticket-sort";
+// The sortable-column list lives in core/constants/ticket-sort.ts, alongside the status and category
+// lists, so the client can validate sortBy against the same values this schema accepts instead of
+// duplicating them. Import TicketSortField from there.
 
 export const updateTicketSchema = z.object({
   assignedToId: z.string().nullable().optional(),

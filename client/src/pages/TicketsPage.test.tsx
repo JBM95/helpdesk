@@ -7,6 +7,7 @@ import {
   Route,
   Routes,
   useLocation,
+  useNavigate,
   useNavigationType,
 } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -729,6 +730,39 @@ describe("TicketsPage — list state in the URL", () => {
       expect(subjectHeader.querySelector(`.${icon}`)).toBeTruthy();
     });
 
+    // TanStack clears the sort on a third click of the same header (enableSortingRemoval defaults
+    // on), so the fallback in onSortingChange is a live path. Changing it to subject/asc left the
+    // whole suite green before this test existed.
+    it("should fall back to the default sort when a third click clears it", async () => {
+      const user = userEvent.setup();
+      mockedAxios.get.mockResolvedValue(mockResponse());
+      renderTicketsAt();
+
+      await waitFor(() =>
+        expect(screen.getByText("Cannot login to my account")).toBeInTheDocument()
+      );
+
+      const subject = screen.getByRole("button", { name: /Subject/ });
+      await user.click(subject);
+      await waitFor(() => expect(currentSearch()).toBe("?sortBy=subject&sortOrder=asc"));
+      await user.click(subject);
+      await waitFor(() => expect(currentSearch()).toBe("?sortBy=subject&sortOrder=desc"));
+
+      await user.click(subject);
+
+      // Back to createdAt/desc, which AC8 then omits from the URL entirely
+      await waitFor(() => expect(currentSearch()).toBe(""));
+      await waitFor(() =>
+        expect(lastRequestParams()).toMatchObject({
+          sortBy: "createdAt",
+          sortOrder: "desc",
+        })
+      );
+      expect(
+        subject.querySelector(".lucide-arrow-up, .lucide-arrow-down")
+      ).toBeNull();
+    });
+
     // CASE-33e9012af743 — Subject then Created, as the case specifies.
     //
     // The case's expected result was amended to case-set revision 4. It said the URL would "reflect
@@ -1018,6 +1052,38 @@ describe("TicketsPage — list state in the URL", () => {
       );
     });
 
+    // A filter matching nothing gives total 0, so pageCount is 0 and every page above the first is
+    // out of range. Written against pageCount rather than `total > 0` for exactly this case, which
+    // otherwise still read "Page 99 of 1".
+    it("should treat a page above the first as out of range when nothing matches", async () => {
+      const user = userEvent.setup();
+      mockedAxios.get.mockResolvedValue(mockResponse([], 0));
+      renderTicketsAt("/tickets?status=closed&page=99");
+
+      await waitFor(() =>
+        expect(
+          screen.getByText("Page 99 does not exist — 0 tickets across 1 page")
+        ).toBeInTheDocument()
+      );
+      expect(screen.queryByText(/^Page 99 of/)).not.toBeInTheDocument();
+
+      await user.click(screen.getByRole("button", { name: "Go to last page" }));
+
+      await waitFor(() => expect(currentSearch()).toBe("?status=closed"));
+    });
+
+    it("should still say No tickets on the first page when nothing matches", async () => {
+      mockedAxios.get.mockResolvedValue(mockResponse([], 0));
+      renderTicketsAt("/tickets?status=closed");
+
+      await waitFor(() =>
+        expect(screen.getByText("No tickets")).toBeInTheDocument()
+      );
+      expect(
+        screen.queryByRole("button", { name: "Go to last page" })
+      ).not.toBeInTheDocument();
+    });
+
     // CASE-93514dfd0070 (double-click) — TanStack advances one page per click
     it("should advance exactly one page on a double-click of Next", async () => {
       const user = userEvent.setup();
@@ -1042,6 +1108,112 @@ describe("TicketsPage — list state in the URL", () => {
         expect(screen.getByRole("table")).toBeInTheDocument();
       });
       expect(screen.queryByText("Failed to fetch tickets")).not.toBeInTheDocument();
+    });
+  });
+
+  // AC5's cases are E2E in the plan because real Back/Forward needs a real browser. That is true of
+  // window.history, but not of a router POP: MemoryRouter can be navigated backwards, and doing so
+  // exercises the whole path that matters here — the list re-deriving itself from the popped URL.
+  // These are the executable half of AC5, and they stand whether or not the E2E specs ever run.
+  describe("AC5 — a history POP re-derives the list from the popped URL", () => {
+    function renderWithBackButton(entries: string[]) {
+      function BackButton() {
+        const navigate = useNavigate();
+        return (
+          <button onClick={() => navigate(-1)}>go back</button>
+        );
+      }
+      return render(
+        <MemoryRouter initialEntries={entries} initialIndex={entries.length - 1}>
+          <QueryClientProvider
+            client={
+              new QueryClient({ defaultOptions: { queries: { retry: false } } })
+            }
+          >
+            <BackButton />
+            <Routes>
+              <Route path="/tickets" element={<TicketsPage />} />
+            </Routes>
+            <LocationProbe />
+          </QueryClientProvider>
+        </MemoryRouter>
+      );
+    }
+
+    // CASE-f8fac94b30ab
+    it("should undo a filter change on a POP", async () => {
+      const user = userEvent.setup();
+      mockedAxios.get.mockResolvedValue(mockResponse());
+      renderWithBackButton(["/tickets", "/tickets?status=open"]);
+
+      await waitFor(() =>
+        expect(lastRequestParams()).toMatchObject({ status: "open" })
+      );
+      expect(statusFilterTrigger()).toHaveTextContent("Open");
+
+      await user.click(screen.getByRole("button", { name: "go back" }));
+
+      await waitFor(() => expect(currentSearch()).toBe(""));
+      expect(lastNavigation()).toBe("POP");
+      // the controls and the request follow the popped URL, not the state they were left in
+      expect(statusFilterTrigger()).toHaveTextContent("All statuses");
+      await waitFor(() =>
+        expect(lastRequestParams()).not.toHaveProperty("status")
+      );
+    });
+
+    // CASE-8548791d29f3
+    it("should undo a page change on a POP", async () => {
+      const user = userEvent.setup();
+      mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
+      renderWithBackButton(["/tickets", "/tickets?page=2"]);
+
+      await waitFor(() =>
+        expect(screen.getByText("Page 2 of 5")).toBeInTheDocument()
+      );
+
+      await user.click(screen.getByRole("button", { name: "go back" }));
+
+      await waitFor(() =>
+        expect(screen.getByText("Page 1 of 5")).toBeInTheDocument()
+      );
+      expect(currentSearch()).toBe("");
+      await waitFor(() =>
+        expect(lastRequestParams()).toMatchObject({ page: 1 })
+      );
+    });
+
+    // CASE-a95f558f6ba0 — three states unwind in order
+    it("should unwind three states in order on successive POPs", async () => {
+      const user = userEvent.setup();
+      mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
+      renderWithBackButton([
+        "/tickets",
+        "/tickets?status=open",
+        "/tickets?status=open&sortBy=subject&sortOrder=asc",
+        "/tickets?status=open&sortBy=subject&sortOrder=asc&page=2",
+      ]);
+
+      await waitFor(() =>
+        expect(screen.getByText("Page 2 of 5")).toBeInTheDocument()
+      );
+
+      const back = screen.getByRole("button", { name: "go back" });
+
+      await user.click(back);
+      await waitFor(() =>
+        expect(currentSearch()).toBe(
+          "?status=open&sortBy=subject&sortOrder=asc"
+        )
+      );
+
+      await user.click(back);
+      await waitFor(() => expect(currentSearch()).toBe("?status=open"));
+      expect(statusFilterTrigger()).toHaveTextContent("Open");
+
+      await user.click(back);
+      await waitFor(() => expect(currentSearch()).toBe(""));
+      expect(statusFilterTrigger()).toHaveTextContent("All statuses");
     });
   });
 

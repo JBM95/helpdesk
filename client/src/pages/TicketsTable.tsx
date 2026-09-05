@@ -171,8 +171,11 @@ export default function TicketsTable({
   const total = data?.total ?? 0;
   const pageCount = Math.ceil(total / pagination.pageSize);
   const firstRowOnPage = pagination.pageIndex * pagination.pageSize + 1;
-  // The page is URL-controllable now, so it can name a page past the end of the result set.
-  const isBeyondEnd = total > 0 && firstRowOnPage > total;
+  // The page is URL-controllable now, so it can name a page past the end of the result set. Written
+  // against pageCount rather than `total > 0` so a filter that matches nothing is covered too:
+  // there, pageCount is 0 and every page above the first is out of range.
+  const lastPage = Math.max(pageCount, 1);
+  const isBeyondEnd = page > lastPage;
 
   const table = useReactTable({
     data: data?.tickets ?? [],
@@ -278,10 +281,10 @@ export default function TicketsTable({
       {!isLoading && !error && (
         <div className="flex items-center justify-between mt-4">
           <p className="text-sm text-muted-foreground">
-            {total === 0
-              ? "No tickets"
-              : isBeyondEnd
-                ? `Page ${page} does not exist — ${plural(total, "ticket")} across ${plural(pageCount, "page")}`
+            {isBeyondEnd
+              ? `Page ${page} does not exist — ${plural(total, "ticket")} across ${plural(lastPage, "page")}`
+              : total === 0
+                ? "No tickets"
                 : `Showing ${firstRowOnPage}–${Math.min(firstRowOnPage + pagination.pageSize - 1, total)} of ${total} tickets`}
           </p>
           <div className="flex items-center gap-1">
@@ -312,7 +315,7 @@ export default function TicketsTable({
                 variant="outline"
                 size="sm"
                 className="h-8"
-                onClick={() => onPageChange(pageCount)}
+                onClick={() => onPageChange(lastPage)}
               >
                 Go to last page
               </Button>

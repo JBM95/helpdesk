@@ -17,6 +17,15 @@ export const DEFAULT_SORT_BY: TicketSortField = "createdAt";
 export const DEFAULT_SORT_ORDER: TicketSortOrder = "desc";
 export const DEFAULT_PAGE = 1;
 
+/**
+ * The largest page that can be requested without breaking something downstream.
+ *
+ * `ticketListQuerySchema` only caps `page` at `MAX_SAFE_INTEGER`, but the route turns it into
+ * `skip: (page - 1) * pageSize` and Prisma types `skip` as a 32-bit int. So the real ceiling is the
+ * page whose skip still fits, and it is lower than the schema's by a wide margin.
+ */
+export const MAX_PAGE = Math.floor(2 ** 31 / 10);
+
 export interface TicketListParams {
   status?: AgentTicketStatus;
   category?: TicketCategory;
@@ -49,8 +58,9 @@ function parsePage(value: string | null): number {
   const page = Number(value);
   // isSafeInteger, not isInteger. Zod's z.int() caps at Number.MAX_SAFE_INTEGER, so 1e21 is an
   // integer by isInteger's reckoning and `too_big` by the server's — it would 400 and blank the
-  // list, which is the one thing this module exists to prevent.
-  return Number.isSafeInteger(page) && page >= DEFAULT_PAGE
+  // list, which is the one thing this module exists to prevent. MAX_PAGE is the tighter of the two
+  // ceilings, because Prisma's `skip` gives way before the schema does.
+  return Number.isSafeInteger(page) && page >= DEFAULT_PAGE && page <= MAX_PAGE
     ? page
     : DEFAULT_PAGE;
 }
