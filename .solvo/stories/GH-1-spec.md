@@ -45,18 +45,22 @@ The 74 approved cases in [[GH-1-cases]] are the authoritative map; this table is
 works against. Every AC's cases are already generated, curated and approved, so build is TDD against
 that set rather than against tests invented here.
 
-| AC | Behaviour | Proven at |
-|---|---|---|
-| AC1 | Status, category, search in the URL | component (11 cases) |
-| AC2 | Sort field + direction in the URL | component (7 cases) |
-| AC3 | Current page in the URL | component (8) + E2E reload (1) |
-| AC4 | Retrace back to the list restores state | E2E (3) + component (2) + authz (2) |
-| AC5 | Browser back/forward | E2E (7) |
-| AC6 | Filter or sort change resets to page 1 | component (7 cases) |
-| AC7 | Invalid params fall back safely | component (15 cases) |
-| AC8 | Default/empty values omitted | component (6 cases) |
-| AC9 | `/api/tickets` behaviour unchanged | component regression (4) + diff inspection (1) |
-| AC10 | Tests added | satisfied by the above; no behaviour of its own |
+Case counts are read from `GH-1-scope.json`, which is authoritative; 73 of the 74 are cited by id in
+a test, and the 74th (`CASE-f338402aae86`) is proven by diff inspection because this repo has no
+server test suite.
+
+| AC | Behaviour | Cases | Proven at |
+|---|---|---|---|
+| AC1 | Status, category, search in the URL | 12 | component + unit |
+| AC2 | Sort field + direction in the URL | 7 | component + unit |
+| AC3 | Current page in the URL | 9 | component; reload at E2E |
+| AC4 | Retrace back to the list restores state | 7 | E2E, except remount + back-link at component |
+| AC5 | Browser back/forward | 7 | E2E only — a component test cannot prove this honestly |
+| AC6 | Filter or sort change resets to page 1 | 7 | component |
+| AC7 | Invalid params fall back safely | 14 | unit, plus component for the request itself |
+| AC8 | Default/empty values omitted | 6 | unit + component |
+| AC9 | `/api/tickets` behaviour unchanged | 5 | component regression; 1 by diff inspection |
+| AC10 | Tests added | — | satisfied by the above; no behaviour of its own |
 
 AC8's "where practical" has one reasonable reading — omit every value equal to its default — and is
 built that way rather than blocked.

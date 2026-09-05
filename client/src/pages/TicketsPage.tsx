@@ -33,8 +33,12 @@ export default function TicketsPage() {
     // all. Pushing only the first edit gives a search session exactly one entry, so one Back
     // returns to the list as it was before the search. Status and category are discrete choices
     // and always push.
+    // Clearing the box is excluded: it is the end of the search, not a refinement of it. Replacing
+    // there would overwrite the search entry with the same URL as the entry before it, and the
+    // reader's first Back would appear to do nothing.
     const refiningExistingSearch =
       params.search !== undefined &&
+      nextFilters.search !== undefined &&
       nextFilters.search !== params.search &&
       nextFilters.status === params.status &&
       nextFilters.category === params.category;

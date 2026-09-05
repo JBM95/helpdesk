@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -83,6 +84,9 @@ const lastRequestParams = () =>
   mockedAxios.get.mock.calls.at(-1)?.[1]?.params as
     | Record<string, unknown>
     | undefined;
+
+/** The filter controls are Radix Selects: buttons with role combobox, in render order. */
+const statusFilterTrigger = () => screen.getAllByRole("combobox")[0];
 
 const mockTickets = [
   {
@@ -257,6 +261,9 @@ describe("TicketsPage", () => {
     expect(screen.getByText("No tickets")).toBeInTheDocument();
   });
 
+  // CASE-980cc3885141 — the AC9 control. This assertion is an exact match on a closed params
+  // object and must stay one: loosening it to objectContaining is how a new param slips into the
+  // request unnoticed.
   it("should call axios.get with default sort and pagination params", async () => {
     mockedAxios.get.mockResolvedValue(mockResponse([], 0));
     renderWithQuery(<TicketsPage />);
@@ -410,6 +417,8 @@ describe("TicketsPage", () => {
     });
   });
 
+  // CASE-47298dac3ca4 — the { tickets, total, page, pageSize } response is still consumed the same
+  // way: rows, total count and footer text all read as they did before the change
   it("should display pagination info and controls", async () => {
     mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
     renderWithQuery(<TicketsPage />);
@@ -539,7 +548,8 @@ describe("TicketsPage — list state in the URL", () => {
       expect(lastNavigation()).toBe("PUSH");
     });
 
-    // The counterpart: a discrete choice is a real navigation, so Back undoes it.
+    // CASE-e08e0e3c793c, and the counterpart to the rule above: a discrete choice is a real
+    // navigation, so Back undoes it.
     it("should push history when a status is selected", async () => {
       const user = userEvent.setup();
       mockedAxios.get.mockResolvedValue(mockResponse());
@@ -555,7 +565,121 @@ describe("TicketsPage — list state in the URL", () => {
       expect(lastNavigation()).toBe("PUSH");
     });
 
-    // CASE-337c883e0c29
+    // Regression guard for the trim bug: the search input is controlled by the URL, so trimming on
+    // read discarded every typed space before the next character arrived.
+    it("should let a multi-word search term be typed", async () => {
+      const user = userEvent.setup();
+      mockedAxios.get.mockResolvedValue(mockResponse());
+      renderTicketsAt();
+
+      const input = screen.getByPlaceholderText("Search tickets...");
+      await user.type(input, "vpn access");
+
+      await waitFor(() => expect(input).toHaveValue("vpn access"));
+      expect(currentSearch()).toBe("?search=vpn+access");
+      await waitFor(() =>
+        expect(lastRequestParams()).toMatchObject({ search: "vpn access" })
+      );
+    });
+
+    // CASE-5e855865f6b2
+    it("should write the category to the URL when one is selected", async () => {
+      const user = userEvent.setup();
+      mockedAxios.get.mockResolvedValue(mockResponse());
+      renderTicketsAt();
+
+      const [, categoryTrigger] = screen.getAllByRole("combobox");
+      await user.click(categoryTrigger);
+      await user.click(
+        await screen.findByRole("option", { name: "Refund request" })
+      );
+
+      await waitFor(() =>
+        expect(currentSearch()).toBe("?category=refund_request")
+      );
+      expect(lastRequestParams()).toMatchObject({
+        category: "refund_request",
+      });
+    });
+
+    // CASE-f3e86fed5d68
+    it("should carry all three filters in the URL at once", async () => {
+      const user = userEvent.setup();
+      mockedAxios.get.mockResolvedValue(mockResponse());
+      renderTicketsAt();
+
+      const [statusTrigger, categoryTrigger] = screen.getAllByRole("combobox");
+      await user.click(statusTrigger);
+      await user.click(await screen.findByRole("option", { name: "Closed" }));
+      await waitFor(() => expect(currentSearch()).toBe("?status=closed"));
+
+      await user.click(categoryTrigger);
+      await user.click(
+        await screen.findByRole("option", { name: "General question" })
+      );
+      await user.type(screen.getByPlaceholderText("Search tickets..."), "vpn");
+
+      await waitFor(() =>
+        expect(lastRequestParams()).toMatchObject({
+          status: "closed",
+          category: "general_question",
+          search: "vpn",
+        })
+      );
+      expect(currentSearch()).toBe(
+        "?status=closed&category=general_question&search=vpn"
+      );
+    });
+
+    // CASE-b545d0a5c4bf
+    it("should keep both filters when a second is chosen before the first settles", async () => {
+      const user = userEvent.setup();
+      let release: () => void = () => {};
+      const held = new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      mockedAxios.get.mockImplementation(
+        async () => {
+          await held;
+          return mockResponse();
+        }
+      );
+      renderTicketsAt();
+
+      const [statusTrigger, categoryTrigger] = screen.getAllByRole("combobox");
+      await user.click(statusTrigger);
+      await user.click(await screen.findByRole("option", { name: "Open" }));
+      await user.click(categoryTrigger);
+      await user.click(
+        await screen.findByRole("option", { name: "Refund request" })
+      );
+
+      release();
+
+      await waitFor(() =>
+        expect(currentSearch()).toBe("?status=open&category=refund_request")
+      );
+      await waitFor(() =>
+        expect(lastRequestParams()).toMatchObject({
+          status: "open",
+          category: "refund_request",
+        })
+      );
+    });
+
+    // CASE-2845362e6dfc — the filter has to survive the failure, or the reader cannot correct it
+    it("should keep the filter in the URL when the request fails", async () => {
+      mockedAxios.get.mockRejectedValue(new Error("Network Error"));
+      renderTicketsAt("/tickets?status=open");
+
+      await waitFor(() =>
+        expect(screen.getByText("Failed to fetch tickets")).toBeInTheDocument()
+      );
+      expect(currentSearch()).toBe("?status=open");
+    });
+
+    // CASE-337c883e0c29, CASE-e8fb8a4bf179 — typed character by character, so the URL settling on
+    // the whole term is also the assertion that a fast typist does not leave it on a prefix
     it("should write the search term to the URL as it is typed", async () => {
       const user = userEvent.setup();
       mockedAxios.get.mockResolvedValue(mockResponse());
@@ -586,6 +710,58 @@ describe("TicketsPage — list state in the URL", () => {
       // lucide renders the icon as an svg inside the header button
       const subjectHeader = screen.getByRole("button", { name: /Subject/ });
       expect(subjectHeader.querySelector(".lucide-arrow-up")).toBeTruthy();
+      // CASE-12efbff9d879 also requires that no other header claims a direction
+      for (const name of [/Sender/, /Status/, /Category/, /Created/]) {
+        const header = screen.getByRole("button", { name });
+        expect(header.querySelector(".lucide-arrow-up")).toBeNull();
+        expect(header.querySelector(".lucide-arrow-down")).toBeNull();
+      }
+    });
+
+    // CASE-1d6a0684e1d0
+    it.each([
+      ["asc", "lucide-arrow-up"],
+      ["desc", "lucide-arrow-down"],
+    ])("should show the %s arrow for that direction in the URL", async (
+      order,
+      icon
+    ) => {
+      mockedAxios.get.mockResolvedValue(mockResponse());
+      renderTicketsAt(`/tickets?sortBy=subject&sortOrder=${order}`);
+
+      await waitFor(() =>
+        expect(lastRequestParams()).toMatchObject({ sortOrder: order })
+      );
+      const subjectHeader = screen.getByRole("button", { name: /Subject/ });
+      expect(subjectHeader.querySelector(`.${icon}`)).toBeTruthy();
+    });
+
+    // CASE-33e9012af743
+    it("should settle on the second column when two headers are clicked in flight", async () => {
+      const user = userEvent.setup();
+      let release: () => void = () => {};
+      const held = new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      mockedAxios.get.mockImplementation(async () => {
+        await held;
+        return mockResponse();
+      });
+      renderTicketsAt();
+
+      await user.click(screen.getByRole("button", { name: /Subject/ }));
+      await user.click(screen.getByRole("button", { name: /Sender/ }));
+
+      release();
+
+      // The case is about which column wins the race. The direction is not asserted: with rows
+      // still in flight the table has no values to infer the column type from, so TanStack falls
+      // back to sorting descending first — incidental here, and covered by its own cases above.
+      await waitFor(() => expect(currentSearch()).toMatch(/sortBy=senderName/));
+      await waitFor(() =>
+        expect(lastRequestParams()).toMatchObject({ sortBy: "senderName" })
+      );
+      expect(currentSearch()).not.toMatch(/sortBy=subject/);
     });
 
     // CASE-fabda9180a68
@@ -678,13 +854,84 @@ describe("TicketsPage — list state in the URL", () => {
     // are derived from search params a fresh object per render would reset the page every render.
     it("should keep the page across a re-render with unchanged filters", async () => {
       mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
+
+      // A real re-render, forced from inside the tree. Calling rerender() with the same element
+      // object does nothing: React sees oldProps === newProps and skips the subtree, so the
+      // assertions below would pass against any implementation at all. The token proves the
+      // re-render actually happened — TicketsPage sits in these children with no memo boundary, so
+      // it re-renders whenever this does.
+      function Harness() {
+        const [renders, force] = useState(0);
+        return (
+          <>
+            <span data-testid="render-token">{renders}</span>
+            <button onClick={() => force((n) => n + 1)}>force re-render</button>
+            <Routes>
+              <Route path="/tickets" element={<TicketsPage />} />
+            </Routes>
+            <LocationProbe />
+          </>
+        );
+      }
+
+      const user = userEvent.setup();
+      render(
+        <MemoryRouter initialEntries={["/tickets?status=open&page=2"]}>
+          <QueryClientProvider
+            client={
+              new QueryClient({ defaultOptions: { queries: { retry: false } } })
+            }
+          >
+            <Harness />
+          </QueryClientProvider>
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText("Page 2 of 5")).toBeInTheDocument();
+      });
+      expect(lastRequestParams()).toMatchObject({ page: 2, status: "open" });
+      expect(screen.getByTestId("render-token")).toHaveTextContent("0");
+
+      mockedAxios.get.mockClear();
+      await user.click(screen.getByRole("button", { name: "force re-render" }));
+
+      // The token moved, so the subtree really did re-render
+      await waitFor(() =>
+        expect(screen.getByTestId("render-token")).toHaveTextContent("1")
+      );
+      expect(screen.getByText("Page 2 of 5")).toBeInTheDocument();
+      expect(currentSearch()).toBe("?status=open&page=2");
+      // A page reset would show up as a page-1 request. The old effect-based implementation would
+      // have fired one here, because `filters` is a fresh object on every render.
+      const pages = mockedAxios.get.mock.calls
+        .map((call) => (call[1]?.params as { page?: number } | undefined)?.page)
+        .filter((page) => page !== undefined);
+      expect(pages).not.toContain(1);
+    });
+
+    // CASE-752a41e3d870
+    it("should disable the forward controls on the last page from the URL", async () => {
+      mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
+      renderTicketsAt("/tickets?page=5");
+
+      await waitFor(() =>
+        expect(screen.getByText("Page 5 of 5")).toBeInTheDocument()
+      );
+      expect(screen.getByRole("button", { name: "Next page" })).toBeDisabled();
+      expect(screen.getByRole("button", { name: "Last page" })).toBeDisabled();
+      expect(screen.getByRole("button", { name: "Previous page" })).toBeEnabled();
+      expect(screen.getByRole("button", { name: "First page" })).toBeEnabled();
+    });
+
+    // CASE-33183e39dc55
+    it("should request the same page on a refetch", async () => {
+      mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
       const queryClient = new QueryClient({
         defaultOptions: { queries: { retry: false } },
       });
-      // The same element and the same client on both renders, so this is a genuine re-render rather
-      // than a remount with a cold cache.
-      const tree = (
-        <MemoryRouter initialEntries={["/tickets?status=open&page=2"]}>
+      render(
+        <MemoryRouter initialEntries={["/tickets?page=2"]}>
           <QueryClientProvider client={queryClient}>
             <Routes>
               <Route path="/tickets" element={<TicketsPage />} />
@@ -693,27 +940,46 @@ describe("TicketsPage — list state in the URL", () => {
           </QueryClientProvider>
         </MemoryRouter>
       );
-      const { rerender } = render(tree);
 
-      await waitFor(() => {
-        expect(screen.getByText("Page 2 of 5")).toBeInTheDocument();
-      });
-      expect(lastRequestParams()).toMatchObject({ page: 2, status: "open" });
+      await waitFor(() =>
+        expect(screen.getByText("Page 2 of 5")).toBeInTheDocument()
+      );
 
       mockedAxios.get.mockClear();
-      rerender(tree);
+      await queryClient.refetchQueries({ queryKey: ["tickets"] });
 
-      expect(screen.getByText("Page 2 of 5")).toBeInTheDocument();
-      expect(currentSearch()).toBe("?status=open&page=2");
-      // A page reset would show up as a page-1 request; the old effect-based implementation would
-      // have fired one here, because `filters` is a fresh object on every render.
-      const pages = mockedAxios.get.mock.calls
-        .map((call) => (call[1]?.params as { page?: number } | undefined)?.page)
-        .filter((page) => page !== undefined);
-      expect(pages).not.toContain(1);
+      await waitFor(() => expect(mockedAxios.get).toHaveBeenCalled());
+      expect(lastRequestParams()).toMatchObject({ page: 2 });
+      expect(currentSearch()).toBe("?page=2");
     });
 
-    // CASE-093514dfd0070 (double-click) — TanStack advances one page per click
+    // CASE-9be39e305430
+    it("should keep the page in the URL when the request fails", async () => {
+      mockedAxios.get.mockRejectedValue(new Error("Network Error"));
+      renderTicketsAt("/tickets?page=2");
+
+      await waitFor(() =>
+        expect(screen.getByText("Failed to fetch tickets")).toBeInTheDocument()
+      );
+      expect(currentSearch()).toBe("?page=2");
+    });
+
+    // CASE-c27e798cbe1d — the page is URL-controllable now, so it can name a page past the end.
+    // The footer used to read "Showing 981–50 of 50 tickets".
+    it("should not show a nonsensical range for a page past the end", async () => {
+      mockedAxios.get.mockResolvedValue(mockResponse([], 50));
+      renderTicketsAt("/tickets?page=99");
+
+      await waitFor(() =>
+        expect(
+          screen.getByText("No tickets on page 99 — 50 tickets across 5 pages")
+        ).toBeInTheDocument()
+      );
+      expect(screen.queryByText(/Showing 981/)).not.toBeInTheDocument();
+      expect(screen.queryByText("Failed to fetch tickets")).not.toBeInTheDocument();
+    });
+
+    // CASE-93514dfd0070 (double-click) — TanStack advances one page per click
     it("should advance exactly one page on a double-click of Next", async () => {
       const user = userEvent.setup();
       mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
@@ -740,8 +1006,99 @@ describe("TicketsPage — list state in the URL", () => {
     });
   });
 
+  describe("AC4 — state comes from the URL alone", () => {
+    // CASE-8d69642c9b08 — nothing is held outside the URL, so a remount reproduces the view
+    it("should reproduce the same view on a remount at the same URL", async () => {
+      mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
+      const url = "/tickets?status=open&sortBy=subject&sortOrder=asc&page=2";
+
+      const first = renderTicketsAt(url);
+      await waitFor(() =>
+        expect(screen.getByText("Page 2 of 5")).toBeInTheDocument()
+      );
+      const firstParams = lastRequestParams();
+      first.unmount();
+
+      mockedAxios.get.mockClear();
+      renderTicketsAt(url);
+      await waitFor(() =>
+        expect(screen.getByText("Page 2 of 5")).toBeInTheDocument()
+      );
+
+      expect(lastRequestParams()).toEqual(firstParams);
+      expect(statusFilterTrigger()).toHaveTextContent("Open");
+      expect(currentSearch()).toBe(
+        "?status=open&sortBy=subject&sortOrder=asc&page=2"
+      );
+    });
+  });
+
   describe("AC6 — a filter or sort change resets to page 1", () => {
     // CASE-54ddb84f8d5c
+    it("should reset to page 1 when the status changes", async () => {
+      const user = userEvent.setup();
+      mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
+      renderTicketsAt("/tickets?page=3");
+
+      await waitFor(() =>
+        expect(lastRequestParams()).toMatchObject({ page: 3 })
+      );
+
+      await user.click(statusFilterTrigger());
+      await user.click(await screen.findByRole("option", { name: "Open" }));
+
+      await waitFor(() =>
+        expect(lastRequestParams()).toMatchObject({ page: 1, status: "open" })
+      );
+      expect(currentSearch()).toBe("?status=open");
+    });
+
+    // CASE-1f30bb0a8eee
+    it("should reset to page 1 when the category changes", async () => {
+      const user = userEvent.setup();
+      mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
+      renderTicketsAt("/tickets?page=3");
+
+      await waitFor(() =>
+        expect(lastRequestParams()).toMatchObject({ page: 3 })
+      );
+
+      const [, categoryTrigger] = screen.getAllByRole("combobox");
+      await user.click(categoryTrigger);
+      await user.click(
+        await screen.findByRole("option", { name: "Refund request" })
+      );
+
+      await waitFor(() =>
+        expect(lastRequestParams()).toMatchObject({
+          page: 1,
+          category: "refund_request",
+        })
+      );
+      expect(currentSearch()).toBe("?category=refund_request");
+    });
+
+    // CASE-b7a0968876d3
+    it("should reset to page 1 and drop both params when a filter is cleared", async () => {
+      const user = userEvent.setup();
+      mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
+      renderTicketsAt("/tickets?status=open&page=3");
+
+      await waitFor(() =>
+        expect(lastRequestParams()).toMatchObject({ page: 3, status: "open" })
+      );
+
+      await user.click(statusFilterTrigger());
+      await user.click(
+        await screen.findByRole("option", { name: "All statuses" })
+      );
+
+      await waitFor(() => expect(currentSearch()).toBe(""));
+      expect(lastRequestParams()).toMatchObject({ page: 1 });
+      expect(lastRequestParams()).not.toHaveProperty("status");
+    });
+
+    // CASE-1e9fb05ae79a
     it("should reset to page 1 when the search term changes", async () => {
       const user = userEvent.setup();
       mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));

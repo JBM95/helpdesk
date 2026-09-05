@@ -60,7 +60,12 @@ function parsePage(value: string | null): number {
 export function parseTicketListParams(
   searchParams: URLSearchParams
 ): TicketListParams {
-  const search = searchParams.get("search")?.trim();
+  // Deliberately NOT trimmed. The search input is controlled by this value, so trimming on read
+  // while writing untrimmed means React restores the trimmed props value after each keystroke and
+  // a typed space is discarded before the next character arrives — "vpn access" becomes
+  // "vpnaccess". Absent means the param is missing or empty, nothing more. The server's
+  // `search: z.string().optional()` does not trim either, so this matches it.
+  const search = searchParams.get("search");
 
   return {
     status: oneOf(agentTicketStatuses, searchParams.get("status")),

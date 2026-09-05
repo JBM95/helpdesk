@@ -75,8 +75,21 @@ describe("parseTicketListParams", () => {
     expect(parse(`?search=${term}`).search).toBe(term);
   });
 
-  it("should treat a whitespace-only search term as absent", () => {
-    expect(parse("?search=%20%20").search).toBeUndefined();
+  // Regression: parse used to trim while serialize wrote untrimmed. Because the search input is
+  // controlled by this value, React restored the trimmed value after each keystroke and every typed
+  // space was discarded — "vpn access" became "vpnaccess". Whitespace is preserved on purpose, and
+  // the server's `search: z.string().optional()` does not trim either.
+  it("should preserve spaces inside a search term", () => {
+    expect(parse("?search=vpn+access").search).toBe("vpn access");
+  });
+
+  it("should preserve a trailing space so it can be typed through", () => {
+    expect(parse("?search=vpn+").search).toBe("vpn ");
+  });
+
+  it("should treat only a missing or empty search param as absent", () => {
+    expect(parse("").search).toBeUndefined();
+    expect(parse("?search=").search).toBeUndefined();
   });
 
   describe("AC7 — unsupported values fall back to defaults", () => {

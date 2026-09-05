@@ -161,6 +161,7 @@ export default function TicketsTable({
 
   const total = data?.total ?? 0;
   const pageCount = Math.ceil(total / pagination.pageSize);
+  const firstRowOnPage = pagination.pageIndex * pagination.pageSize + 1;
 
   const table = useReactTable({
     data: data?.tickets ?? [],
@@ -268,7 +269,11 @@ export default function TicketsTable({
           <p className="text-sm text-muted-foreground">
             {total === 0
               ? "No tickets"
-              : `Showing ${pagination.pageIndex * pagination.pageSize + 1}–${Math.min((pagination.pageIndex + 1) * pagination.pageSize, total)} of ${total} tickets`}
+              : firstRowOnPage > total
+                ? // The page is now URL-controllable, so it can name a page past the end of the
+                  // result set. Without this the range reads "Showing 981–50 of 50".
+                  `No tickets on page ${page} — ${total} tickets across ${pageCount} pages`
+                : `Showing ${firstRowOnPage}–${Math.min(firstRowOnPage + pagination.pageSize - 1, total)} of ${total} tickets`}
           </p>
           <div className="flex items-center gap-1">
             <Button

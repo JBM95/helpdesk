@@ -25,10 +25,12 @@ const API_BASE_URL = process.env.BETTER_AUTH_URL!;
  * behind `requireAuth` and only `page.request` carries the browser context's session cookie. Call
  * this after `loginAsAdmin`.
  *
- * KNOWN FRAGILITY: the patch races the AI jobs the webhook enqueues, which may move the ticket to
- * `resolved` after this returns. The tests below assert on counts and pages rather than on a
- * specific ticket's status, so a lost race changes nothing they check. If a dedicated seed route is
- * ever added, replace this whole helper with a call to it.
+ * KNOWN FRAGILITY: the patch races the `auto-resolve-ticket` job the webhook enqueues, which may
+ * move a ticket to `resolved` after this returns. That matters for the tests that page **while a
+ * `status=open` filter is applied** — if enough tickets get resolved, there is no second page, Next
+ * is disabled, and the click times out rather than failing on an assertion. Those tests are the
+ * AC4 retrace and nav-link ones and the AC5 unwind and rapid-history ones. Replace this helper with
+ * a dedicated seed route when one exists; that is the real fix.
  */
 async function seedOpenTickets(page: Page, count: number) {
   for (let i = 0; i < count; i++) {
@@ -368,6 +370,19 @@ test.describe("Ticket list URL state (GH-1)", () => {
       await expect(page).toHaveURL(/status=open/);
       await expect(page).not.toHaveURL(/sortBy=/);
       await expect(statusFilter(page)).toHaveText("Open");
+
+      // The URL and the trigger are both derived from the URL, so they cannot detect a stale render
+      // on their own. The row order is what actually distinguishes the superseded response: the
+      // sorted request that was in flight would have returned subject-ascending rows.
+      const subjects = await page
+        .getByRole("table")
+        .getByRole("link")
+        .allInnerTexts();
+      const sortedBySubject = [...subjects].sort((a, b) => a.localeCompare(b));
+      expect(
+        subjects,
+        "rows should be in the default createdAt order, not the superseded subject sort"
+      ).not.toEqual(sortedBySubject);
     });
   });
 });

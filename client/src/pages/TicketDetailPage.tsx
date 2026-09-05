@@ -16,8 +16,10 @@ export default function TicketDetailPage() {
   const { state } = useLocation();
 
   // Set by the ticket list when the reader clicked through, so "Back to tickets" returns to the
-  // filters, sort and page they left. Absent on a deep link or after a reload, which falls back to
-  // the plain list rather than guessing.
+  // filters, sort and page they left. It survives a reload, because the browser persists
+  // history.state and React Router reads it back. Absent only when this page was reached without
+  // going through the list — a shared or typed URL — which falls back to the plain list rather than
+  // guessing a filter the reader never chose.
   const listSearch = (state as { listSearch?: string } | null)?.listSearch ?? "";
 
   const { data: ticket, isLoading, error } = useQuery({
