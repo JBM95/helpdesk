@@ -2,7 +2,13 @@
   "id": "GH-1",
   "tier": "T2",
   "tierConfirmedBy": "JB Mccallaghan",
-  "phase": "pr",
+  "phase": "merge-gate",
+  "pr": {
+    "number": 2,
+    "url": "https://github.com/JBM95/helpdesk/pull/2",
+    "base": "test/solvo",
+    "openedAt": "2026-09-05T18:25:00.000Z"
+  },
   "blastRadius": {
     "files": 7,
     "callers": 10,
@@ -28,7 +34,7 @@
     "green": true,
     "at": "2026-09-05T18:21:51.000Z",
     "command": "cd client && bun run test (vitest run)",
-    "commit": "9f9da41be4fce1981e2317cf0161ea7675472e36",
+    "commit": "5b17fe9b7b19f3561c318dbeeaff52b4d6a566f6",
     "tests": {
       "files": 9,
       "passed": 229,
