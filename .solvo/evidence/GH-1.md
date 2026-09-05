@@ -8,9 +8,10 @@ status: INCOMPLETE
 
 # GH-1 — Evidence pack
 
-**INCOMPLETE.** Two sections cannot be filled from a record: the E2E half of section 6 (13 scenarios
-written, none executed — no working database credential on this machine) and the QA verification half
-of section 7 (`/qa-verify` has not run). Both are named in place below.
+**INCOMPLETE.** One thing that was outstanding is now closed: the E2E obligation is discharged —
+82/82 twice, the 13 new scenarios 13/13 (section 6). What remains unfillable is in section 7 and is
+human work, not agent work: `/qa-verify` has not run (`state.qa` absent), and neither of the two
+approved exploratory charters has been performed. Both are named in place below.
 
 ## 1. Work item
 
@@ -77,6 +78,7 @@ commits, which belong to the trial rather than to this story.
 
 | Commit | Subject | `SOLVO-Run` | `SOLVO-Why` |
 |---|---|---|---|
+| `093cef0` | fix(GH-1): make the E2E suite runnable and its new specs reliable | ✓ | ✓ |
 | `ec4ef62` | fix(GH-1): close the round-3 review findings | ✓ | ✓ |
 | `ccc0d34` | fix(GH-1): resolve round-2 review blockers | ✓ | ✓ |
 | `967ba1b` | fix(GH-1): resolve fresh-review blockers | ✓ | ✓ |
@@ -85,10 +87,10 @@ commits, which belong to the trial rather than to this story.
 | `153eaaa` | chore: widen the LF pin to all of .solvo | ✓ | ✓ |
 | `91476c3` | chore(GH-1): record recon, spec and GATE 1 approval | ✓ | ✓ |
 
-All seven are agent-authored and all seven carry both trailers. No human hotfix commits on this
+All eight are agent-authored and all eight carry both trailers. No human hotfix commits on this
 branch. Commits after this pack are, per the PR-phase order, the pack itself plus the vault memory,
-then state-file-only commits — `checks.commit` therefore names the last commit carrying code, which
-is what the freshness gate expects and explicitly tolerates.
+then state-file-only commits — `checks.commit` therefore names `093cef0`, the last commit carrying
+code, which is what the freshness gate expects and explicitly tolerates.
 
 ## 6. Tests
 
@@ -104,24 +106,66 @@ a touched file but pre-exists, because the base calls `useReactTable` too.
 `ReplyForm.test.tsx:19`, `TicketSummary.test.tsx:19`, `vite.config.ts:41` and
 `server/prisma/seed-replies.ts:377`. `bun run build` is red on the base branch as well.
 
+The root project (`tsc --noEmit -p tsconfig.json`, which is what covers `e2e/`) was not previously
+recorded and is added here for completeness: **2 errors**, both in pre-existing e2e files this branch
+does not touch — `e2e/fixtures/auth.ts:2` (`TS5097`, a `.ts` import extension) and
+`e2e/tests/webhook-inbound-email.spec.ts:166` (`TS2578`, unused `@ts-expect-error`). The new spec and
+its `node:crypto` import add none.
+
 **Coverage**: `not run`. `solvo.json → quality.coverageArtifact` is an `n/a:` marker, no coverage
 script exists in this repo, and `@vitest/coverage-v8` is not installed. The coverage gate was
 **waived for this story by JB Mccallaghan at the QA plan gate**; `solvo doctor` reports the waiver as
 a standing `coverage-waiver` WARN.
 
-**E2E — obligation NOT discharged.** 13 scenarios written at
-`e2e/tests/ticket-list-url-state.spec.ts` (AC3 ×1, AC4 ×5, AC5 ×7); **0 executed**.
-`playwright.config.ts` starts the server with `--env-file=.env.test`, and `server/.env.test` carries a
-`DATABASE_URL` whose password this machine's PostgreSQL rejects — `password authentication failed for
-user "postgres"`, reproduced directly, not inferred. Postgres is listening on 5432; only the
-credential is wrong, and that file is gitignored so it is per-machine. The specs parse, type-check and
-are discovered by `playwright test --list`. **Nobody has seen them pass.** This is the section that
-makes the pack INCOMPLETE.
+**E2E — obligation discharged.** `bun run test:e2e` (`playwright test`), full suite, run twice:
+**82 passed / 82** both times (4.3m, then 2.4m). The 13 new scenarios at
+`e2e/tests/ticket-list-url-state.spec.ts` (AC3 ×1, AC4 ×5, AC5 ×7) are **13 passed / 13**.
 
-AC5 is not left unverified by that. All seven of its behaviour instances have component tests that
-drive a real router POP (and forward) through `useNavigate`, asserting that the controls, the footer,
-the rows and the request all follow the popped URL. The E2E specs cover the real Back button on top of
-that. AC3's real reload and AC4's real retrace and nav-link paths remain browser-only.
+This section previously read "0 executed, nobody has seen them pass". Executing them corrected two
+claims recorded here and found three real defects, all in test infrastructure rather than in the
+story's code.
+
+**The credential was not the only blocker, and the pack said it was.** `playwright.config.ts` started
+the client `webServer` with a POSIX `VITE_API_URL=... bun run` prefix; Playwright spawns `webServer`
+through the platform shell, so cmd.exe read `VITE_API_URL` as a program name and the suite could not
+start on Windows at all. Present since the initial commit `65da45b` and on `main`, and this branch had
+never touched the file — verified with `git show main:playwright.config.ts` and an empty
+`git diff test/solvo...HEAD -- playwright.config.ts`. So the obligation was blocked by two independent
+faults, and the earlier record attributed it wholly to the database password.
+
+**One of the 13 was badly flaky and would have shipped that way.** `CASE-6e5a5e6f195f` (AC5, superseded
+in-flight response) passed when its file ran alone and failed **6 runs in 10** under `--repeat-each=10`.
+It held every request matching `**/api/tickets?*`, so `goBack()`'s own list request was parked against
+a promise the test resolves only afterwards, and `page.unroute()` then raced those parked handlers into
+`route.continue: Route is already handled!`. Now matched on `sortBy=subject` — the one request the
+scenario means to hold — and **10/10**. Non-vacuity checked by inverting the expected row order, which
+fails the test, so the assertion discriminates on real data.
+
+A mutation of the guarded mechanism was attempted and is reported as inconclusive rather than as
+coverage: collapsing the React Query key to `["tickets"]` did **not** fail the test, because that stops
+the refetch on param change and so removes the superseded response instead of rendering it. The property
+this case guards comes from React Query's key-scoped cache, not from code in this repo, so no small
+mutation here uniquely catches it.
+
+**This story's specs broke two pre-existing specs, and `workers: 1` is why the suite is now serial.**
+Under the config's `fullyParallel`, `tickets.spec.ts:97` and `ticket-detail.spec.ts:170` failed on data
+they did not create: both `goto("/tickets")` unfiltered and expect their own just-created ticket on
+page 1, and this story's 8 tests × 11 seeded tickets pushed it off. Attributed by measurement, not
+inference — 69/69 in parallel with the new spec excluded (`--grep-invert "GH-1"`), 3 failures with it
+included, both pre-existing specs passing at `--workers=1`. There is no `DELETE /api/tickets` to clean
+up with, so the fix is serialisation until per-test data isolation exists. The cost is real and is
+recorded: 32s parallel → 2.4–4.3m serial.
+
+**A caveat on the recorded seed race.** The known fragility — the seed helper racing
+`auto-resolve-ticket` — did not bite, but partly for the wrong reason: `OPENAI_API_KEY` is unset on this
+machine, so auto-resolve throws and cannot move a seeded ticket to `resolved`. On a machine with a real
+key the race is still live. These 13 passes are therefore evidence from an environment with the AI
+provider absent.
+
+AC5 does not rest on these specs in any case. All seven of its behaviour instances have component tests
+that drive a real router POP (and forward) through `useNavigate`, asserting that the controls, the
+footer, the rows and the request all follow the popped URL. The E2E specs cover the real Back button on
+top of that.
 
 ## 7. Reviews
 
@@ -183,7 +227,18 @@ merge-blocking in the reviewer's own assessment):
   with per-field `.catch()`. That divergence is what produced two of the blockers above, so it is a
   real argument for the refactor — later, deliberately.
 - The E2E seed helper races `auto-resolve-ticket`; the 4 scenarios that page behind a status filter
-  can time out rather than fail an assertion when that race is lost. Worth knowing before the first real run.
+  can time out rather than fail an assertion when that race is lost. It did not bite across two full
+  runs, but `OPENAI_API_KEY` is unset here so auto-resolve cannot complete — the race is untested
+  rather than disproven.
+- **The E2E suite has no per-test data isolation, and that is now what holds it to one worker.** Specs
+  assert on page 1 of an unfiltered shared list, so any spec creating enough tickets displaces another's
+  rows. `workers: 1` is a containment, not a fix; the fix is a per-spec data namespace or a teardown
+  path (there is no `DELETE /api/tickets` today). Doing it would restore ~30s parallel runs and touch
+  several pre-existing specs, which is why it is not in this story.
+- Serial execution costs 2.4–4.3m against 32s parallel. Most of it is `seedOpenTickets` issuing 11
+  webhook POSTs plus 11 PATCHes strictly sequentially, ×8 tests. Only `CASE-6e5a5e6f195f` needs
+  creation order to be deterministic, so the rest could seed concurrently — deliberately not done
+  here, so that the run recorded in this pack is the one the suite actually shipped with.
 
 **Human reviewers**: none yet — the PR has not opened.
 
