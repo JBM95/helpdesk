@@ -4,8 +4,9 @@
   "tierConfirmedBy": "JB Mccallaghan",
   "phase": "pr",
   "blastRadius": {
-    "files": 5,
-    "callers": 10
+    "files": 7,
+    "callers": 10,
+    "note": "Recon predicted 5 files; the delivered diff touches 7 source files — the two extra are core/constants/ticket-sort.ts and core/schemas/tickets.ts from the GATE 1 allow-list decision. Still under the 15-file escalation threshold, so no tier change."
   },
   "run": {
     "id": "89340d21-97bd-4c1a-9f65-d9e43ce99f27",
@@ -25,12 +26,12 @@
       "justification": "AC 4 ('opening a ticket and returning to the Tickets page restores the previous list state') admitted two honest readings of 'returning': (A) any navigation back to /tickets restores the state, requiring the global nav Tickets link (client/src/components/Layout.tsx:52) to carry preserved state and therefore a store of the last list URL outside the URL itself; (B) only retracing the path back — browser Back, or the ticket-detail back link (client/src/pages/TicketDetailPage.tsx:27) — restores it, while the global nav link keeps meaning 'fresh default list'. JB Mccallaghan resolved this to reading B at the spec gate on 2026-09-05. Reading B keeps the URL as the single source of truth, which is the story's own stated premise; reading A would have reintroduced non-URL list state. Layout.tsx:52 is therefore explicitly out of scope and the nav link continues to land on a clean /tickets."
     },
     "green": true,
-    "at": "2026-09-05T12:54:57.034Z",
+    "at": "2026-09-05T13:38:43.295Z",
     "command": "cd client && bun run test (vitest run)",
-    "commit": "e16a1aabfa33b2cd51a59cb3874930fa10d97bf5",
+    "commit": "effa8aeae0b68b90006a73cc39331e6968b975be",
     "tests": {
       "files": 9,
-      "passed": 225,
+      "passed": 229,
       "failed": 0,
       "baselinePassed": 114
     },
@@ -52,7 +53,8 @@
       "scenariosWritten": 13,
       "executed": 0,
       "spec": "e2e/tests/ticket-list-url-state.spec.ts"
-    }
+    },
+    "note": "Re-run at checks.commit, which is the last commit carrying code. Only state-file commits follow it, which the freshness gate tolerates by design. Timestamps are write times taken immediately after the run completed."
   },
   "attempts": {
     "recon": 1,
@@ -73,16 +75,16 @@
   "grounding": [],
   "autoExplored": [],
   "review": {
-    "verdict": "REQUEST_CHANGES",
+    "verdict": "APPROVE",
     "blockersOpen": 0,
     "by": "fresh-reviewer",
-    "at": "2026-09-05T12:54:57.117Z",
+    "at": "2026-09-05T13:37:07.348Z",
     "lenses": {
-      "blind": 0,
+      "blind": 4,
       "edge": 2,
-      "acceptance": 1
+      "acceptance": 11
     },
-    "rounds": 3,
-    "note": "Three rounds ran, which is the cycle cap. Rounds 1 and 2 raised four blockers each, all fixed and mutation-verified by the following round. Round 3 raised one: checks.green.commit named a commit whose suite had 190 tests while the count said 217. That is resolved by this PR-phase re-run, recorded at the commit being shipped. Round 3 on the code itself: \"the implementation itself I would merge.\" No APPROVE was issued because no round remained to issue one, so the verdict stays as returned rather than being upgraded. Carried to the human at the merge gate."
+    "rounds": 4,
+    "note": "Four rounds. Rounds 1 and 2 raised four blockers each and round 3 raised one; every one was fixed and mutation-verified by the following round. Round 4 applied 10 mutations, all caught, and independently re-measured the test, lint, typecheck and case-reconciliation figures in this state file against its own runs. Round 4 also disproved a claim in the spec — that AC5 could not be honestly component-tested — by demonstrating a passing router-POP test, so all seven AC5 instances are now component-tested. Its remaining items are decision-needed, not defects, and are carried to the human: the checks.e2e schema value and the unexecuted E2E specs."
   }
 }
