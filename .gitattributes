@@ -14,8 +14,10 @@
 /solvo.manifest.json eol=lf
 # SOLVO:END
 
-# `solvo qa-scope` hashes test plans and case sets byte for byte, the same way it hashes the
-# JSON above, but the generated block only covers /.solvo/**/*.json. With core.autocrlf=true a
-# Windows checkout would rewrite these to CRLF and every recorded plan and case-set approval
-# would read as drifted.
-/.solvo/testplans/** eol=lf
+# The generated block above covers /.solvo/**/*.json, but the markdown records beside it are
+# hashed too — `solvo qa-scope` hashes test plans and case sets byte for byte, and the evidence
+# pack digests the recon log and story spec. With core.autocrlf=true a Windows checkout rewrites
+# them to CRLF and every recorded approval reads as drifted.
+#
+# Scoped to *.md rather than ** so a future binary under .solvo/ is not corrupted by an eol filter.
+/.solvo/**/*.md eol=lf

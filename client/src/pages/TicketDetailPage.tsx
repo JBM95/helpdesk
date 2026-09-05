@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { useLocation, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { type Ticket } from "core/constants/ticket.ts";
@@ -13,6 +13,14 @@ import TicketSummary from "@/components/TicketSummary";
 
 export default function TicketDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const { state } = useLocation();
+
+  // Set by the ticket list when the reader clicked through, so "Back to tickets" returns to the
+  // filters, sort and page they left. It survives a reload, because the browser persists
+  // history.state and React Router reads it back. Absent only when this page was reached without
+  // going through the list — a shared or typed URL — which falls back to the plain list rather than
+  // guessing a filter the reader never chose.
+  const listSearch = (state as { listSearch?: string } | null)?.listSearch ?? "";
 
   const { data: ticket, isLoading, error } = useQuery({
     queryKey: ["ticket", id],
@@ -24,7 +32,7 @@ export default function TicketDetailPage() {
 
   return (
     <div className="space-y-6">
-      <BackLink to="/tickets">Back to tickets</BackLink>
+      <BackLink to={`/tickets${listSearch}`}>Back to tickets</BackLink>
 
       {isLoading && <TicketDetailSkeleton />}
 

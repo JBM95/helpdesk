@@ -66,7 +66,7 @@ to prove.
 | `CASE-d901f3d998b8` | happy | mounting at a sort URL sends that sort to the API | Mount at /tickets?sortBy=senderName&sortOrder=asc | The first request carries sortBy: "senderName", sortOrder: "asc" instead of the createdAt/desc default | pending |
 | `CASE-32e17db60aa6` | boundary | each sortable column round-trips through the URL | For each of subject, senderName, status, category, createdAt: mount at /tickets?sortBy=<column><br>Read the header indicator and the request params | Every column in core/schemas/tickets.ts sortableColumns is accepted from the URL and sent through | pending |
 | `CASE-1d6a0684e1d0` | boundary | both sort directions round-trip through the URL | Mount at /tickets?sortBy=subject&sortOrder=asc, then at sortOrder=desc | Each mount shows the matching arrow and sends the matching sortOrder | pending |
-| `CASE-33e9012af743` | concurrency | clicking two different headers before the first request settles leaves the URL on the second | Mount at /tickets with a slow response<br>Click the Subject header, then immediately click the Created header | The URL and the settled list both reflect sortBy=createdAt; the Subject sort does not win the race | pending |
+| `CASE-33e9012af743` | concurrency | clicking two different headers before the first request settles leaves the URL on the second | Mount at /tickets with a slow response<br>Click the Subject header, then immediately click the Created header | The settled list is sorted by Created and the Subject sort does not win the race. Created descending is the default pair, so AC8 requires the sort params be omitted — the URL therefore empties rather than naming createdAt, and the request that produced the settled rows carries sortBy=createdAt | pending |
 
 ## AC3 — Current page is reflected in the URL
 
@@ -155,7 +155,7 @@ to prove.
 | `CASE-980cc3885141` | happy | the default request params are unchanged | Mount the tickets list with no URL params<br>Assert the axios call with an exact params object | axios.get is called with { sortBy: "createdAt", sortOrder: "desc", page: 1, pageSize: 10 } — the existing exact-match test passes unmodified, not loosened to objectContaining | pending |
 | `CASE-08476f34d947` | negative | pageSize stays fixed and is not made URL-controllable | Mount at /tickets?pageSize=100 | The request still sends pageSize: 10 — page size is out of scope for this story | pending |
 | `CASE-a6d60258881b` | happy | no new query param is introduced on the API call | Exercise every filter, sort and page control<br>Collect the params of every outgoing request | Every request's params are a subset of the keys ticketListQuerySchema already accepts | pending |
-| `CASE-071ab822b94e` | happy | the server and shared schema are untouched | Inspect the diff for server/** and core/schemas/tickets.ts | Neither is modified; the change is confined to the client. There is no server test suite in this repo, so diff inspection is the control | pending |
+| `CASE-f338402aae86` | happy | the API contract is unchanged even though the sortable-column list is relocated | Inspect the diff for server/** — expect no changes<br>Compare the sortableColumns values before and after the move to core/constants/ticket-sort.ts<br>Confirm core/schemas/tickets.ts imports the list rather than redeclaring it | server/** is untouched. ticketListQuerySchema accepts exactly the same five sortBy values as before, so the API contract is unchanged; the only change to core/schemas/tickets.ts is importing the list instead of declaring it inline. There is no server test suite in this repo, so diff inspection plus the value comparison is the control | pending |
 | `CASE-47298dac3ca4` | happy | the response shape is consumed unchanged | Return the existing { tickets, total, page, pageSize } shape<br>Read the table body and the pagination footer | Rows, total count and footer text render exactly as before the change | pending |
 
 ## Exploratory charters (from the approved plan)
@@ -172,8 +172,33 @@ of a finding.
 
 Component (Vitest + RTL, `cd client && bun run test`) carries everything except the cases that need a
 real browser: `CASE-e51a15eb56e6`, `CASE-f3c0d3dae2bb`, `CASE-f4309d9553e2`, `CASE-b66a9cb01fd3`,
-`CASE-afaeaa6a68a1` and the whole of AC5 — real Back/Forward, a real reload and a real
+`CASE-8e3d236b21a9` and the whole of AC5 — real Back/Forward, a real reload and a real
 `ProtectedRoute` redirect. Those go to Playwright (`bun run test:e2e`).
 
-`CASE-071ab822b94e` is proven by diff inspection, not by a runner: this repo has no server test
+`CASE-f338402aae86` is proven by diff inspection, not by a runner: this repo has no server test
 suite, which is why `quality.tests.backend` stays an `n/a:` marker.
+
+## Amendment — case-set revision 4
+
+Two corrections, both found by the round-2 fresh review.
+
+`CASE-33e9012af743`'s expected result named an outcome the ACs cannot both produce. It said the URL
+would "reflect sortBy=createdAt", but Created descending is the default sort pair and AC8 requires
+defaults be omitted, so landing there empties the sort params instead. The behaviour under test is
+unchanged — the second header click wins — and the expectation now states it in terms AC2 and AC8 can
+both hold. The test drives Subject then Created, as the steps always said.
+
+The Execution split above named `CASE-afaeaa6a68a1`, which was pruned at case-set revision 2 (it
+asserted role-independent list state, and `/tickets` has no admin gate — `AdminRoute` wraps only
+`/users`). It is replaced by `CASE-8e3d236b21a9`, the nav-link case added in the same revision, which
+does belong to Playwright.
+
+## Amendment — case-set revision 3
+
+`CASE-071ab822b94e` ("the server and shared schema are untouched") was pruned and replaced by
+`CASE-f338402aae86` above. GATE 1 on GH-1 resolved to move `sortableColumns` out of
+`core/schemas/tickets.ts` into `core/constants/ticket-sort.ts`, so the client can validate `sortBy`
+against the same list the server does instead of duplicating it. The original case asserted that file
+was unmodified, which would have forced the duplicate-and-drift option it was never written to
+protect. The replacement asserts what the original meant: the **accepted values** and the API contract
+are unchanged. Decided by JB Mccallaghan at GATE 1.

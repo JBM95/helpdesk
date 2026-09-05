@@ -1,6 +1,7 @@
 import { z } from "zod/v4";
 import { agentTicketStatuses } from "../constants/ticket-status";
 import { ticketCategories } from "../constants/ticket-category";
+import { sortableColumns, sortOrders } from "../constants/ticket-sort";
 
 export const inboundEmailSchema = z.object({
   from: z.email("Invalid email address"),
@@ -12,15 +13,9 @@ export const inboundEmailSchema = z.object({
 
 export type InboundEmailInput = z.infer<typeof inboundEmailSchema>;
 
-const sortableColumns = [
-  "subject",
-  "senderName",
-  "status",
-  "category",
-  "createdAt",
-] as const;
-
-export type TicketSortField = (typeof sortableColumns)[number];
+// The sortable-column list lives in core/constants/ticket-sort.ts, alongside the status and category
+// lists, so the client can validate sortBy against the same values this schema accepts instead of
+// duplicating them. Import TicketSortField from there.
 
 export const updateTicketSchema = z.object({
   assignedToId: z.string().nullable().optional(),
@@ -30,7 +25,7 @@ export const updateTicketSchema = z.object({
 
 export const ticketListQuerySchema = z.object({
   sortBy: z.enum(sortableColumns).default("createdAt"),
-  sortOrder: z.enum(["asc", "desc"]).default("desc"),
+  sortOrder: z.enum(sortOrders).default("desc"),
   status: z.enum(agentTicketStatuses).optional(),
   category: z.enum(ticketCategories).optional(),
   search: z.string().optional(),
