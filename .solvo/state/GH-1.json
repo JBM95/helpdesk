@@ -26,9 +26,9 @@
       "justification": "AC 4 ('opening a ticket and returning to the Tickets page restores the previous list state') admitted two honest readings of 'returning': (A) any navigation back to /tickets restores the state, requiring the global nav Tickets link (client/src/components/Layout.tsx:52) to carry preserved state and therefore a store of the last list URL outside the URL itself; (B) only retracing the path back — browser Back, or the ticket-detail back link (client/src/pages/TicketDetailPage.tsx:27) — restores it, while the global nav link keeps meaning 'fresh default list'. JB Mccallaghan resolved this to reading B at the spec gate on 2026-09-05. Reading B keeps the URL as the single source of truth, which is the story's own stated premise; reading A would have reintroduced non-URL list state. Layout.tsx:52 is therefore explicitly out of scope and the nav link continues to land on a clean /tickets."
     },
     "green": true,
-    "at": "2026-09-05T13:38:43.295Z",
+    "at": "2026-09-05T17:53:39.000Z",
     "command": "cd client && bun run test (vitest run)",
-    "commit": "effa8aeae0b68b90006a73cc39331e6968b975be",
+    "commit": "093cef03ab9a2e5253d2bea1d9eceada2a83d072",
     "tests": {
       "files": 9,
       "passed": 229,
@@ -45,14 +45,19 @@
       "command": "tsc -b (client) + tsc --noEmit -p server/tsconfig.json",
       "errors": 4,
       "newErrors": 0,
-      "note": "4 pre-existing errors, none in files this branch touches: client ReplyForm.test.tsx:19 and TicketSummary.test.tsx:19 (incomplete Ticket mocks), client vite.config.ts:41 (test key on UserConfigExport), and server prisma/seed-replies.ts:377. Verified against the stashed base — bun run build is red on the base branch too."
+      "note": "4 pre-existing errors, none in files this branch touches: client ReplyForm.test.tsx:19 and TicketSummary.test.tsx:19 (incomplete Ticket mocks), client vite.config.ts:41 (test key on UserConfigExport), and server prisma/seed-replies.ts:377. Verified against the stashed base — bun run build is red on the base branch too. Additionally recorded at this commit, not previously measured: the root project (tsc --noEmit -p tsconfig.json, which is what covers e2e/) reports 2 errors, both in pre-existing e2e files this branch does not touch — e2e/fixtures/auth.ts:2 (TS5097) and e2e/tests/webhook-inbound-email.spec.ts:166 (TS2578). The new spec and its node:crypto import add none."
     },
     "coverage": "n/a: no coverage script exists in this repo and quality.coverageArtifact is an n/a marker; the coverage gate was waived for this story at the /qa-plan gate by JB Mccallaghan",
     "e2e": {
-      "obligation": "n/a: 13 scenarios written at e2e/tests/ticket-list-url-state.spec.ts (AC3 x1, AC4 x5, AC5 x7) but NONE EXECUTED, so there is no execution evidence to record. playwright.config.ts starts the server with --env-file=.env.test and server/.env.test carries a DATABASE_URL whose password this machine PostgreSQL rejects (password authentication failed for user postgres), reproduced directly rather than inferred. Postgres is listening on 5432; only the credential is wrong, and that file is gitignored so it is per-machine. The specs parse, type-check and are discovered by playwright test --list. This is an absence with a reason, NOT a claim that the obligation does not apply - it does. AC5 is not left unverified by it: three component tests drive a real router POP via useNavigate(-1) and assert the list re-derives from the popped URL.",
-      "scenariosWritten": 13,
-      "executed": 0,
-      "spec": "e2e/tests/ticket-list-url-state.spec.ts"
+      "obligation": "covered",
+      "command": "bun run test:e2e (playwright test)",
+      "scenarios": 13,
+      "passed": 13,
+      "suiteScenarios": 82,
+      "suitePassed": 82,
+      "suiteRuns": 2,
+      "spec": "e2e/tests/ticket-list-url-state.spec.ts",
+      "note": "First actual execution. Full suite run twice at this commit: 82/82 both times (4.3m, then 2.4m); the 13 new scenarios 13/13. This replaces an 'n/a' record that named the database credential as the sole blocker - it was not. playwright.config.ts started the client webServer with a POSIX 'VITE_API_URL=... bun run' prefix, and Playwright spawns webServer through the platform shell, so cmd.exe read VITE_API_URL as a program name and the suite could not start on Windows at all. Present since initial commit 65da45b and on main; this branch had never touched the file. Fixed via the webServer env field. Two further defects found by running them: CASE-6e5a5e6f195f failed 6 runs in 10 (a page.route pattern broad enough to park goBack()'s own request, then unroute racing the parked handlers into 'Route is already handled!') - now matched on sortBy=subject, 10/10, and non-vacuity confirmed by inverting the expected row order; and this story's 8 tests x 11 seeded tickets pushed tickets.spec.ts's and ticket-detail.spec.ts's own tickets off page 1 of an unfiltered list under fullyParallel, so workers:1 is now set. Attribution measured, not inferred: 69/69 in parallel with the new spec excluded, 3 failures with it included, both pre-existing specs green at --workers=1. Caveat on the evidence: OPENAI_API_KEY is unset here, so auto-resolve-ticket throws and the recorded seed race never fired - it is untested rather than disproven."
     },
     "note": "Re-run at checks.commit, which is the last commit carrying code. Only state-file commits follow it, which the freshness gate tolerates by design. Timestamps are write times taken immediately after the run completed."
   },
