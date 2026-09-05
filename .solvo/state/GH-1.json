@@ -2,7 +2,7 @@
   "id": "GH-1",
   "tier": "T2",
   "tierConfirmedBy": "JB Mccallaghan",
-  "phase": "build",
+  "phase": "pr",
   "blastRadius": {
     "files": 5,
     "callers": 10
@@ -23,22 +23,67 @@
     "ambiguityScan": {
       "reason": "resolved-with-stakeholder",
       "justification": "AC 4 ('opening a ticket and returning to the Tickets page restores the previous list state') admitted two honest readings of 'returning': (A) any navigation back to /tickets restores the state, requiring the global nav Tickets link (client/src/components/Layout.tsx:52) to carry preserved state and therefore a store of the last list URL outside the URL itself; (B) only retracing the path back — browser Back, or the ticket-detail back link (client/src/pages/TicketDetailPage.tsx:27) — restores it, while the global nav link keeps meaning 'fresh default list'. JB Mccallaghan resolved this to reading B at the spec gate on 2026-09-05. Reading B keeps the URL as the single source of truth, which is the story's own stated premise; reading A would have reintroduced non-URL list state. Layout.tsx:52 is therefore explicitly out of scope and the nav link continues to land on a clean /tickets."
+    },
+    "green": true,
+    "at": "2026-09-05T12:54:57.034Z",
+    "command": "cd client && bun run test (vitest run)",
+    "commit": "e16a1aabfa33b2cd51a59cb3874930fa10d97bf5",
+    "tests": {
+      "files": 9,
+      "passed": 225,
+      "failed": 0,
+      "baselinePassed": 114
+    },
+    "lint": {
+      "command": "cd client && bun run lint",
+      "problems": 7,
+      "newProblems": 0,
+      "note": "5 errors + 2 warnings, identical to the base branch — verified by linting the stashed base. Four errors and one warning are in files this story does not touch; the react-hooks/incompatible-library warning at TicketsTable.tsx is in a touched file but pre-exists (the base calls useReactTable too)."
+    },
+    "typecheck": {
+      "command": "tsc -b (client) + tsc --noEmit -p server/tsconfig.json",
+      "errors": 4,
+      "newErrors": 0,
+      "note": "4 pre-existing errors, none in files this branch touches: client ReplyForm.test.tsx:19 and TicketSummary.test.tsx:19 (incomplete Ticket mocks), client vite.config.ts:41 (test key on UserConfigExport), and server prisma/seed-replies.ts:377. Verified against the stashed base — bun run build is red on the base branch too."
+    },
+    "coverage": "n/a: no coverage script exists in this repo and quality.coverageArtifact is an n/a marker; the coverage gate was waived for this story at the /qa-plan gate by JB Mccallaghan",
+    "e2e": {
+      "obligation": "written-not-executed",
+      "scenarios": 13,
+      "passed": 0,
+      "spec": "e2e/tests/ticket-list-url-state.spec.ts",
+      "blocker": "server/.env.test carries a DATABASE_URL whose password this machine PostgreSQL rejects (password authentication failed for user \"postgres\"); playwright.config.ts starts the server with --env-file=.env.test. Postgres is listening on 5432, only the credential is wrong, and the file is gitignored so it is per-machine. Specs parse, type-check and are discovered by playwright test --list. Verified the failure directly, not inferred."
     }
   },
   "attempts": {
     "recon": 1,
-    "build": 0
+    "build": 1
   },
   "artifacts": {
     "recon": ".solvo/reconnaissance/GH-1-recon.md",
     "testplan": ".solvo/testplans/GH-1-plan.md",
     "testcases": ".solvo/testplans/GH-1-cases.md",
-    "spec": ".solvo/stories/GH-1-spec.md"
+    "spec": ".solvo/stories/GH-1-spec.md",
+    "evidence": ".solvo/evidence/GH-1.md",
+    "memory": "docs/repo-wiki/_memories/GH-1.md"
   },
   "readyBarGaps": [
     "Grounding",
     "Open questions"
   ],
   "grounding": [],
-  "autoExplored": []
+  "autoExplored": [],
+  "review": {
+    "verdict": "REQUEST_CHANGES",
+    "blockersOpen": 0,
+    "by": "fresh-reviewer",
+    "at": "2026-09-05T12:54:57.117Z",
+    "lenses": {
+      "blind": 0,
+      "edge": 2,
+      "acceptance": 1
+    },
+    "rounds": 3,
+    "note": "Three rounds ran, which is the cycle cap. Rounds 1 and 2 raised four blockers each, all fixed and mutation-verified by the following round. Round 3 raised one: checks.green.commit named a commit whose suite had 190 tests while the count said 217. That is resolved by this PR-phase re-run, recorded at the commit being shipped. Round 3 on the code itself: \"the implementation itself I would merge.\" No APPROVE was issued because no round remained to issue one, so the verdict stays as returned rather than being upgraded. Carried to the human at the merge gate."
+  }
 }
