@@ -28,7 +28,7 @@
     "green": true,
     "at": "2026-09-05T18:21:51.000Z",
     "command": "cd client && bun run test (vitest run)",
-    "commit": "1174a2c3a1c664efae1353f1741cfa07429f0666",
+    "commit": "9f9da41be4fce1981e2317cf0161ea7675472e36",
     "tests": {
       "files": 9,
       "passed": 229,
@@ -59,7 +59,7 @@
       "spec": "e2e/tests/ticket-list-url-state.spec.ts",
       "note": "First actual execution. Full suite run three times: 82/82 every time (4.3m, 2.4m, 3.9m); the 13 new scenarios 13/13. The third run was at this checks.commit; the first two were at 093cef0, whose tree differs only in .solvo and docs markdown (git diff --stat 093cef0..1174a2c touches no source or test file). This replaces an 'n/a' record that named the database credential as the sole blocker - it was not. playwright.config.ts started the client webServer with a POSIX 'VITE_API_URL=... bun run' prefix, and Playwright spawns webServer through the platform shell, so cmd.exe read VITE_API_URL as a program name and the suite could not start on Windows at all. Present since initial commit 65da45b and on main; this branch had never touched the file. Fixed via the webServer env field. Two further defects found by running them: CASE-6e5a5e6f195f failed 6 runs in 10 (a page.route pattern broad enough to park goBack()'s own request, then unroute racing the parked handlers into 'Route is already handled!') - now matched on sortBy=subject, 10/10, and non-vacuity confirmed by inverting the expected row order; and this story's 8 tests x 11 seeded tickets pushed tickets.spec.ts's and ticket-detail.spec.ts's own tickets off page 1 of an unfiltered list under fullyParallel, so workers:1 is now set. Attribution measured, not inferred: 69/69 in parallel with the new spec excluded, 3 failures with it included, both pre-existing specs green at --workers=1. Caveat on the evidence: OPENAI_API_KEY is unset here, so auto-resolve-ticket throws and the recorded seed race never fired - it is untested rather than disproven."
     },
-    "note": "Re-run at checks.commit, which is the last commit carrying code. Only state-file commits follow it, which the freshness gate tolerates by design. Timestamps are write times taken immediately after the run completed."
+    "note": "The last commit carrying source or test code is 093cef0. Everything after it changes only .solvo/ and docs/ markdown plus this state file — verified with git diff --stat 093cef0..HEAD, which lists no source or test file — so every commit in that range presents the identical tree to both suites, and checks.commit names the one the freshness arm accepts (it tolerates a single trailing state-file-only commit, so the value has to trail HEAD by exactly one). Timestamps are write times taken immediately after the run completed."
   },
   "attempts": {
     "recon": 1,
