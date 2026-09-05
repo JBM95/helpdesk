@@ -36,7 +36,7 @@
   },
   "casesArtifact": {
     "path": ".solvo/testplans/GH-1-cases.md",
-    "sha256": "8a637cc21c6f526fd336829cfd247358798d07a16eec9833cf55c5fe1cc69ceb"
+    "sha256": "e0a065f38655431913da5f2ed680024e1006eb745012519abaaeb4ce672bb9bf"
   },
   "caseSetRevisions": [
     {
@@ -50,14 +50,20 @@
       "definitionHash": "c1ab34a65812fcf426e1ecfb7e8565046372c8e3058430cfda9b06e52282dfd1",
       "supersedesVersion": 1,
       "createdAt": "2026-09-05T09:50:30.756Z"
+    },
+    {
+      "version": 3,
+      "definitionHash": "2b422c90613c63479e7ac0852a0b8a6624779915ea5f8bd679e336fb14027ba4",
+      "supersedesVersion": 2,
+      "createdAt": "2026-09-05T11:06:52.457Z"
     }
   ],
   "caseSetApproval": {
     "status": "approved",
     "by": "JB Mccallaghan",
-    "approvedAt": "2026-09-05T09:50:41.205Z",
-    "approvedVersion": 2,
-    "approvedHash": "c1ab34a65812fcf426e1ecfb7e8565046372c8e3058430cfda9b06e52282dfd1"
+    "approvedAt": "2026-09-05T11:06:54.955Z",
+    "approvedVersion": 3,
+    "approvedHash": "2b422c90613c63479e7ac0852a0b8a6624779915ea5f8bd679e336fb14027ba4"
   },
   "cases": [
     {
@@ -1038,19 +1044,6 @@
       "origin": "approved"
     },
     {
-      "caseId": "CASE-071ab822b94e",
-      "definitionHash": "ecfff4b142f179c961294d529259250b1f7820dbc9a523a90f70ea41082c2f4a",
-      "ac": "AC9",
-      "instance": "the server and shared schema are untouched",
-      "title": "No server-side or shared-schema change in the diff",
-      "steps": [
-        "Inspect the diff for server/** and core/schemas/tickets.ts"
-      ],
-      "expected": "Neither is modified; the change is confined to the client. There is no server test suite in this repo, so diff inspection is the control",
-      "caseClass": "happy",
-      "origin": "approved"
-    },
-    {
       "caseId": "CASE-47298dac3ca4",
       "definitionHash": "d04bfc8201e402b3ae9a8185e00aa27ea2670ae1a41a7989575f09826de868bd",
       "ac": "AC9",
@@ -1078,6 +1071,21 @@
       "expected": "The destination is deliberate and repeatable — either the preserved parameterised URL or a clean /tickets. The story does not say which, so whichever is implemented must be consistent and stated; it must not vary by how the nav link is reached",
       "caseClass": "happy",
       "origin": "approved"
+    },
+    {
+      "caseId": "CASE-f338402aae86",
+      "definitionHash": "2c77e0a475a760d0723e6c1a4d34dd162ba2dda457f52ba8956b47f3bbf10ea0",
+      "ac": "AC9",
+      "instance": "the API contract is unchanged even though the sortable-column list is relocated",
+      "title": "No API behaviour change from relocating sortableColumns",
+      "steps": [
+        "Inspect the diff for server/** — expect no changes",
+        "Compare the sortableColumns values before and after the move to core/constants/ticket-sort.ts",
+        "Confirm core/schemas/tickets.ts imports the list rather than redeclaring it"
+      ],
+      "expected": "server/** is untouched. ticketListQuerySchema accepts exactly the same five sortBy values as before, so the API contract is unchanged; the only change to core/schemas/tickets.ts is importing the list instead of declaring it inline. There is no server test suite in this repo, so diff inspection plus the value comparison is the control",
+      "caseClass": "happy",
+      "origin": "approved"
     }
   ],
   "classDispositions": [],
@@ -1098,5 +1106,5 @@
     }
   ],
   "createdAt": "2026-09-05T09:28:07.773Z",
-  "updatedAt": "2026-09-05T09:50:41.205Z"
+  "updatedAt": "2026-09-05T11:06:54.955Z"
 }

@@ -1,0 +1,44 @@
+{
+  "id": "GH-1",
+  "tier": "T2",
+  "tierConfirmedBy": "JB Mccallaghan",
+  "phase": "build",
+  "blastRadius": {
+    "files": 5,
+    "callers": 10
+  },
+  "run": {
+    "id": "89340d21-97bd-4c1a-9f65-d9e43ce99f27",
+    "agent": "claude-code",
+    "model": "eu.anthropic.claude-opus-5[1m]"
+  },
+  "gates": {
+    "gate1": {
+      "approved": true,
+      "by": "JB Mccallaghan",
+      "at": "2026-09-05T11:07:04.818Z"
+    }
+  },
+  "checks": {
+    "ambiguityScan": {
+      "reason": "resolved-with-stakeholder",
+      "justification": "AC 4 ('opening a ticket and returning to the Tickets page restores the previous list state') admitted two honest readings of 'returning': (A) any navigation back to /tickets restores the state, requiring the global nav Tickets link (client/src/components/Layout.tsx:52) to carry preserved state and therefore a store of the last list URL outside the URL itself; (B) only retracing the path back — browser Back, or the ticket-detail back link (client/src/pages/TicketDetailPage.tsx:27) — restores it, while the global nav link keeps meaning 'fresh default list'. JB Mccallaghan resolved this to reading B at the spec gate on 2026-09-05. Reading B keeps the URL as the single source of truth, which is the story's own stated premise; reading A would have reintroduced non-URL list state. Layout.tsx:52 is therefore explicitly out of scope and the nav link continues to land on a clean /tickets."
+    }
+  },
+  "attempts": {
+    "recon": 1,
+    "build": 0
+  },
+  "artifacts": {
+    "recon": ".solvo/reconnaissance/GH-1-recon.md",
+    "testplan": ".solvo/testplans/GH-1-plan.md",
+    "testcases": ".solvo/testplans/GH-1-cases.md",
+    "spec": ".solvo/stories/GH-1-spec.md"
+  },
+  "readyBarGaps": [
+    "Grounding",
+    "Open questions"
+  ],
+  "grounding": [],
+  "autoExplored": []
+}

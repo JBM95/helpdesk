@@ -155,7 +155,7 @@ to prove.
 | `CASE-980cc3885141` | happy | the default request params are unchanged | Mount the tickets list with no URL params<br>Assert the axios call with an exact params object | axios.get is called with { sortBy: "createdAt", sortOrder: "desc", page: 1, pageSize: 10 } — the existing exact-match test passes unmodified, not loosened to objectContaining | pending |
 | `CASE-08476f34d947` | negative | pageSize stays fixed and is not made URL-controllable | Mount at /tickets?pageSize=100 | The request still sends pageSize: 10 — page size is out of scope for this story | pending |
 | `CASE-a6d60258881b` | happy | no new query param is introduced on the API call | Exercise every filter, sort and page control<br>Collect the params of every outgoing request | Every request's params are a subset of the keys ticketListQuerySchema already accepts | pending |
-| `CASE-071ab822b94e` | happy | the server and shared schema are untouched | Inspect the diff for server/** and core/schemas/tickets.ts | Neither is modified; the change is confined to the client. There is no server test suite in this repo, so diff inspection is the control | pending |
+| `CASE-f338402aae86` | happy | the API contract is unchanged even though the sortable-column list is relocated | Inspect the diff for server/** — expect no changes<br>Compare the sortableColumns values before and after the move to core/constants/ticket-sort.ts<br>Confirm core/schemas/tickets.ts imports the list rather than redeclaring it | server/** is untouched. ticketListQuerySchema accepts exactly the same five sortBy values as before, so the API contract is unchanged; the only change to core/schemas/tickets.ts is importing the list instead of declaring it inline. There is no server test suite in this repo, so diff inspection plus the value comparison is the control | pending |
 | `CASE-47298dac3ca4` | happy | the response shape is consumed unchanged | Return the existing { tickets, total, page, pageSize } shape<br>Read the table body and the pagination footer | Rows, total count and footer text render exactly as before the change | pending |
 
 ## Exploratory charters (from the approved plan)
@@ -175,5 +175,15 @@ real browser: `CASE-e51a15eb56e6`, `CASE-f3c0d3dae2bb`, `CASE-f4309d9553e2`, `CA
 `CASE-afaeaa6a68a1` and the whole of AC5 — real Back/Forward, a real reload and a real
 `ProtectedRoute` redirect. Those go to Playwright (`bun run test:e2e`).
 
-`CASE-071ab822b94e` is proven by diff inspection, not by a runner: this repo has no server test
+`CASE-f338402aae86` is proven by diff inspection, not by a runner: this repo has no server test
 suite, which is why `quality.tests.backend` stays an `n/a:` marker.
+
+## Amendment — case-set revision 3
+
+`CASE-071ab822b94e` ("the server and shared schema are untouched") was pruned and replaced by
+`CASE-f338402aae86` above. GATE 1 on GH-1 resolved to move `sortableColumns` out of
+`core/schemas/tickets.ts` into `core/constants/ticket-sort.ts`, so the client can validate `sortBy`
+against the same list the server does instead of duplicating it. The original case asserted that file
+was unmodified, which would have forced the duplicate-and-drift option it was never written to
+protect. The replacement asserts what the original meant: the **accepted values** and the API contract
+are unchanged. Decided by JB Mccallaghan at GATE 1.
