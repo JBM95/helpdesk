@@ -11,5 +11,12 @@
   "enabledPlugins": {
     "solvo@solvd": true
   },
-  "extraKnownMarketplaces": {}
+  "extraKnownMarketplaces": {
+    "solvd": {
+      "source": {
+        "source": "url",
+        "url": "git@gitlab.com:solvd1/ai-first-sdlc/plugin-marketplace.git"
+      }
+    }
+  }
 }
