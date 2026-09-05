@@ -13,3 +13,9 @@
 /solvo.lock.json eol=lf
 /solvo.manifest.json eol=lf
 # SOLVO:END
+
+# `solvo qa-scope` hashes test plans and case sets byte for byte, the same way it hashes the
+# JSON above, but the generated block only covers /.solvo/**/*.json. With core.autocrlf=true a
+# Windows checkout would rewrite these to CRLF and every recorded plan and case-set approval
+# would read as drifted.
+/.solvo/testplans/** eol=lf
