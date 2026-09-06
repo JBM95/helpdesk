@@ -294,12 +294,12 @@ Four findings were created and all four have since been **triaged by JB Mccallag
 human gate (`independent: false`, which T2 permits — the independence requirement applies at T3 and only
 to dispositions that suppress product-defect signal):
 
-| Finding | AC | Disposition | Suspect path | State |
-|---|---|---|---|---|
-| `FIND-86cc706fc23c` | AC1 | **product-defect**, S3 | `client/src/pages/TicketsPage.tsx` | `triaged` |
-| `FIND-5232572f9eda` | AC3 | **product-defect**, S3 | `client/src/pages/TicketsTable.tsx` | `triaged` |
-| `FIND-7a2fd129a089` | AC4 | **duplicate** of `FIND-5232572f9eda` | — | `superseded` |
-| `FIND-b1e8ee9068bc` | AC8 | **ac-ambiguity** → BA refinement | `client/src/lib/ticket-list-params.ts` | `triaged` |
+| Finding | AC | Disposition | Suspect path | State | `resultingBug` |
+|---|---|---|---|---|---|
+| `FIND-86cc706fc23c` | AC1 | **product-defect**, S3 | `client/src/pages/TicketsPage.tsx` | `triaged` | **`GH-3`** |
+| `FIND-5232572f9eda` | AC3 | **product-defect**, S3 | `client/src/pages/TicketsTable.tsx` | `triaged` | none yet |
+| `FIND-7a2fd129a089` | AC4 | **duplicate** of `FIND-5232572f9eda` | — | `superseded` | none — never gets one |
+| `FIND-b1e8ee9068bc` | AC8 | **ac-ambiguity** → BA refinement | `client/src/lib/ticket-list-params.ts` | `triaged` | none — never gets one |
 
 Recorded at `.solvo/evidence/qa/GH-1-findings.json`; triage ids `TRI-39894cdd1547`, `TRI-b86b326dc105`,
 `TRI-fe9063cfb2ec`, `TRI-6f7f4576f06f`.
@@ -312,8 +312,12 @@ functional-updater form, so two writes from one committed render clobber each ot
 refetch). Both were confirmed against the source, not inferred from the failure.
 
 **Neither is closed.** `product-defect` completes on a `cleared` observation recorded strictly later than
-both the latest `observed` observation and the triage decision — not on the decision itself. Neither has
-a `resultingBug` yet; `/qa-bug --finding` is the next step for each.
+both the latest `observed` observation and the triage decision — not on the decision itself, and not on a
+bug existing. `FIND-86cc706fc23c` now records `resultingBug: GH-3`
+(https://github.com/JBM95/helpdesk/issues/3, `bug` · `sev:S3` · `tier:T2`), filed through
+`/qa-bug --finding` after the disposition, which is the only order that route permits. It carries no
+charter-marker lines: the origin is `verifier`, and those three lines belong only to an
+`exploratory-charter` finding. `FIND-5232572f9eda` still awaits its own `/qa-bug --finding`.
 
 `assertionIdentity` is `null` on all four observations, which foreclosed `test-issue` as a usable
 disposition on this record: clearing one on a `verifier`-origin finding needs that value present and

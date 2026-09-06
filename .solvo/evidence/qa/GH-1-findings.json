@@ -45,10 +45,10 @@
         }
       ],
       "nextAction": null,
-      "resultingBug": null,
+      "resultingBug": "GH-3",
       "refinementRef": null,
       "duplicates": [],
-      "updatedAt": "2026-09-06T06:44:18.000Z"
+      "updatedAt": "2026-09-06T07:02:28.507Z"
     },
     {
       "findingId": "FIND-5232572f9eda",
