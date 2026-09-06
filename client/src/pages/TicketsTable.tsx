@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Link, useLocation } from "react-router";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import {
   type ColumnDef,
@@ -153,6 +153,13 @@ export default function TicketsTable({
     error,
   } = useQuery({
     queryKey: ["tickets", sortBy, sortOrder, filters, pagination.pageIndex],
+    // Keep the previous page's data while the next one loads, so `isLoading` stays false across a
+    // query-key change. Without this the whole footer below — Next included — unmounted and remounted
+    // around every refetch, and a click landing in that window reached no handler at all: the URL
+    // never changed and nothing surfaced (FIND-5232572f9eda, triaged product-defect). The visible
+    // trade is that the rows are the previous page's for a moment instead of skeletons; only the
+    // first load has no previous data and still shows them.
+    placeholderData: keepPreviousData,
     queryFn: async () => {
       const { data } = await axios.get<TicketsResponse>("/api/tickets", {
         params: {

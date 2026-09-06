@@ -6,6 +6,7 @@ import {
   type TicketFilters,
   type TicketListParams,
 } from "@/lib/ticket-list-params";
+import { useLatestTicketListParams } from "@/lib/use-latest-ticket-list-params";
 import type { TicketSortField, TicketSortOrder } from "core/constants/ticket-sort.ts";
 import TicketsTable from "./TicketsTable";
 import TicketsFilters from "./TicketsFilters";
@@ -22,7 +23,15 @@ export default function TicketsPage() {
     search: params.search,
   };
 
+  // Render from the committed params above; write from the latest params here. react-router updates
+  // the URL synchronously but defers its React state update in a transition, so two writes issued
+  // from one committed render would otherwise both merge into the same stale snapshot and the second
+  // would discard the first (GH-3). The hook explains why setSearchParams' functional updater does
+  // not solve this.
+  const latest = useLatestTicketListParams(params);
+
   function write(next: TicketListParams, replace = false) {
+    latest.noteWritten(next);
     setSearchParams(serializeTicketListParams(next), { replace });
   }
 
@@ -36,17 +45,20 @@ export default function TicketsPage() {
     // Clearing the box is excluded: it is the end of the search, not a refinement of it. Replacing
     // there would overwrite the search entry with the same URL as the entry before it, and the
     // reader's first Back would appear to do nothing.
+    // Read from the latest params, not the render snapshot: otherwise the push-versus-replace
+    // decision is made against a URL that is already one write out of date.
+    const current = latest.read();
     const refiningExistingSearch =
-      params.search !== undefined &&
+      current.search !== undefined &&
       nextFilters.search !== undefined &&
-      nextFilters.search !== params.search &&
-      nextFilters.status === params.status &&
-      nextFilters.category === params.category;
+      nextFilters.search !== current.search &&
+      nextFilters.status === current.status &&
+      nextFilters.category === current.category;
 
     // Narrowing the list makes the current page meaningless, so pagination resets here — at the
     // point the user changed something — rather than being inferred from a changed reference.
     write(
-      { ...params, ...nextFilters, page: DEFAULT_PAGE },
+      { ...current, ...nextFilters, page: DEFAULT_PAGE },
       refiningExistingSearch
     );
   }
@@ -55,11 +67,11 @@ export default function TicketsPage() {
     sortBy: TicketSortField,
     sortOrder: TicketSortOrder
   ) {
-    write({ ...params, sortBy, sortOrder, page: DEFAULT_PAGE });
+    write({ ...latest.read(), sortBy, sortOrder, page: DEFAULT_PAGE });
   }
 
   function handlePageChange(page: number) {
-    write({ ...params, page });
+    write({ ...latest.read(), page });
   }
 
   return (

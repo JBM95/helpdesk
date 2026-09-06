@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
@@ -1084,8 +1084,17 @@ describe("TicketsPage — list state in the URL", () => {
       ).not.toBeInTheDocument();
     });
 
-    // CASE-93514dfd0070 (double-click) — TanStack advances one page per click
-    it("should advance exactly one page on a double-click of Next", async () => {
+    // CASE-93514dfd0070. This asserted `?page=2` and passed for the wrong reason: the footer was
+    // gated on `!isLoading`, so the second click of the double-click landed on a Next button that
+    // had just unmounted for the refetch and reached no handler. The comment here used to credit
+    // "TanStack advances one page per click", which was never the mechanism. With
+    // FIND-5232572f9eda fixed the button stays mounted, both clicks land, and two page requests
+    // advance two pages. Isolated by removing the footer fix alone, which returns this to `?page=2`.
+    //
+    // JB Mccallaghan decided at the GH-3 build that two clicks mean two pages. The approved case's
+    // expectation therefore moves, and that needs a case-set revision and re-approval through
+    // /qa-cases — this file is not where an approved case's definition changes.
+    it("should advance one page per click when Next is double-clicked", async () => {
       const user = userEvent.setup();
       mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
       renderTicketsAt();
@@ -1096,7 +1105,7 @@ describe("TicketsPage — list state in the URL", () => {
 
       await user.dblClick(screen.getByRole("button", { name: "Next page" }));
 
-      await waitFor(() => expect(currentSearch()).toBe("?page=2"));
+      await waitFor(() => expect(currentSearch()).toBe("?page=3"));
     });
 
     // CASE-095552a8995f
@@ -1708,5 +1717,115 @@ describe("TicketsPage — list state in the URL", () => {
         expect(Object.keys(params).filter((key) => !allowed.has(key))).toEqual([]);
       }
     });
+  });
+});
+
+/**
+ * GH-3 and FIND-5232572f9eda.
+ *
+ * An honest note on what these can and cannot prove. **The GH-3 race itself is not reproducible in
+ * jsdom.** React Testing Library's act environment flushes react-router's transition synchronously
+ * between two events, so the second write always sees fresh params here — measured with a probe, which
+ * showed the URL already committed immediately after the first `fireEvent`. That is exactly why all
+ * 229 tests were green while the defect was live in a real browser.
+ *
+ * So the split is: the race is guarded by `use-latest-ticket-list-params.test.ts` (which drives the
+ * sequence by hand) and by the Playwright scenarios. The tests below guard the composed behaviour and
+ * the footer defect, both of which jsdom can see.
+ */
+describe("TicketsPage — the pagination footer must survive a refetch", () => {
+  // FIND-5232572f9eda, triaged product-defect. The footer was gated on `!isLoading`, and a query-key
+  // change makes a new cache entry, so Next was destroyed and recreated around every refetch — a
+  // click landing in that window reached no handler. QA recorded this as browser-only; it reproduces
+  // here, which makes it far cheaper to guard.
+  it("should keep the pagination controls mounted while a sort refetch is in flight", async () => {
+    let release: () => void = () => {};
+    const held = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    let calls = 0;
+    mockedAxios.get.mockImplementation(async () => {
+      calls += 1;
+      if (calls > 1) await held;
+      return mockResponse(mockTickets, 50);
+    });
+    renderTicketsAt();
+    await waitFor(() =>
+      expect(screen.getByText("Showing 1–10 of 50 tickets")).toBeInTheDocument()
+    );
+
+    // Sorting changes the query key, which is what used to unmount the footer.
+    fireEvent.click(screen.getByRole("button", { name: /Subject/ }));
+
+    // Asserted while the second request is still outstanding: this is the window the click was lost in.
+    expect(
+      screen.queryByRole("button", { name: "Next page" })
+    ).toBeInTheDocument();
+
+    release();
+  });
+});
+
+describe("TicketsPage — GH-3, both settings survive a filter or sort followed by a page change", () => {
+  // These pass in jsdom whether or not the GH-3 fix is present, because jsdom serialises the two
+  // writes. They are regression guards on the composed behaviour, not proof of the race fix — see the
+  // note above. Kept because "a filter plus a page both reach the URL and the request" is worth
+  // pinning regardless of which mechanism could break it.
+  it("should keep the sort when Next is clicked after it", async () => {
+    const user = userEvent.setup();
+    mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
+    renderTicketsAt();
+    await waitFor(() =>
+      expect(screen.getByText("Showing 1–10 of 50 tickets")).toBeInTheDocument()
+    );
+
+    await user.click(screen.getByRole("button", { name: /Subject/ }));
+    await user.click(screen.getByRole("button", { name: "Next page" }));
+
+    await waitFor(() =>
+      expect(currentSearch()).toBe("?sortBy=subject&sortOrder=asc&page=2")
+    );
+    // Asserted on the request too: a URL that agrees with the controls while the list below it was
+    // fetched with different params is the failure a URL-only assertion misses.
+    expect(lastRequestParams()).toEqual({
+      sortBy: "subject",
+      sortOrder: "asc",
+      page: 2,
+      pageSize: 10,
+    });
+  });
+
+  it("should keep the status filter when Next is clicked after it", async () => {
+    const user = userEvent.setup();
+    mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
+    renderTicketsAt();
+    await waitFor(() =>
+      expect(screen.getByText("Showing 1–10 of 50 tickets")).toBeInTheDocument()
+    );
+
+    await user.click(statusFilterTrigger());
+    await user.click(screen.getByRole("option", { name: "Open" }));
+    await user.click(screen.getByRole("button", { name: "Next page" }));
+
+    await waitFor(() => expect(currentSearch()).toBe("?status=open&page=2"));
+  });
+
+  it("should still reset to page 1 when a filter change follows a page change", async () => {
+    const user = userEvent.setup();
+    mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
+    renderTicketsAt();
+    await waitFor(() =>
+      expect(screen.getByText("Showing 1–10 of 50 tickets")).toBeInTheDocument()
+    );
+
+    // The other ordering. Merging against the latest params must not resurrect the page the filter
+    // change is supposed to clear — GH-1's AC6 still holds.
+    await user.click(screen.getByRole("button", { name: "Next page" }));
+    await waitFor(() => expect(currentSearch()).toBe("?page=2"));
+
+    await user.click(statusFilterTrigger());
+    await user.click(screen.getByRole("option", { name: "Open" }));
+
+    await waitFor(() => expect(currentSearch()).toBe("?status=open"));
   });
 });
