@@ -290,17 +290,36 @@ their current revisions.
 | AC9 | verified |
 | AC10 | verified |
 
-Four findings were created, all **open and untriaged** — a verifier reading is not a disposition, so the
-cause of each belongs to `/qa-triage` with a named human, not to this pack:
+Four findings were created and all four have since been **triaged by JB Mccallaghan** at the `/qa-triage`
+human gate (`independent: false`, which T2 permits — the independence requirement applies at T3 and only
+to dispositions that suppress product-defect signal):
 
-| Finding | AC | Kind | Suspect path |
-|---|---|---|---|
-| `FIND-86cc706fc23c` | AC1 | implementation-defect | `client/src/pages/TicketsPage.tsx` |
-| `FIND-5232572f9eda` | AC3 | implementation-defect | `client/src/pages/TicketsTable.tsx` |
-| `FIND-7a2fd129a089` | AC4 | implementation-defect | `client/src/pages/TicketsPage.tsx` |
-| `FIND-b1e8ee9068bc` | AC8 | ac-ambiguity | `client/src/lib/ticket-list-params.ts` |
+| Finding | AC | Disposition | Suspect path | State |
+|---|---|---|---|---|
+| `FIND-86cc706fc23c` | AC1 | **product-defect**, S3 | `client/src/pages/TicketsPage.tsx` | `triaged` |
+| `FIND-5232572f9eda` | AC3 | **product-defect**, S3 | `client/src/pages/TicketsTable.tsx` | `triaged` |
+| `FIND-7a2fd129a089` | AC4 | **duplicate** of `FIND-5232572f9eda` | — | `superseded` |
+| `FIND-b1e8ee9068bc` | AC8 | **ac-ambiguity** → BA refinement | `client/src/lib/ticket-list-params.ts` | `triaged` |
 
-Recorded at `.solvo/evidence/qa/GH-1-findings.json`.
+Recorded at `.solvo/evidence/qa/GH-1-findings.json`; triage ids `TRI-39894cdd1547`, `TRI-b86b326dc105`,
+`TRI-fe9063cfb2ec`, `TRI-6f7f4576f06f`.
+
+The two `product-defect` findings were separated deliberately rather than merged: `FIND-86cc706fc23c`
+lost a URL write that did happen (`write()` spreads a render-snapshot `params` instead of using the
+functional-updater form, so two writes from one committed render clobber each other), while
+`FIND-5232572f9eda` lost the click so no write happened at all (the pagination footer is gated on
+`{!isLoading && !error}` with no `placeholderData`, so Next is unmounted and remounted around every
+refetch). Both were confirmed against the source, not inferred from the failure.
+
+**Neither is closed.** `product-defect` completes on a `cleared` observation recorded strictly later than
+both the latest `observed` observation and the triage decision — not on the decision itself. Neither has
+a `resultingBug` yet; `/qa-bug --finding` is the next step for each.
+
+`assertionIdentity` is `null` on all four observations, which foreclosed `test-issue` as a usable
+disposition on this record: clearing one on a `verifier`-origin finding needs that value present and
+materially changed after the repair, it is never written in retrospectively, and the human-attested route
+is open only to `manual` and `exploratory-charter` origins. Noted because it constrained the gate, not as
+a defect in its own right.
 
 The two suspect paths the verifier traced, stated as its reading rather than as established cause:
 `TicketsPage.tsx` `write()` serialises a render-snapshot `params` object and calls `setSearchParams(value)`

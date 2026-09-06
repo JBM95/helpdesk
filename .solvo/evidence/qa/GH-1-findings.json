@@ -11,7 +11,7 @@
       "signature": "e2e/tests/ticket-list-url-state.spec.ts::Ticket list URL state (GH-1) › AC4 — returning to the list › should land on a clean list when using the nav Tickets link",
       "origin": "verifier",
       "charterProvenance": null,
-      "state": "open",
+      "state": "triaged",
       "observations": [
         {
           "observationId": "OBS-d6b77c7df216",
@@ -30,12 +30,25 @@
         }
       ],
       "evidence": [],
-      "triageHistory": [],
+      "triageHistory": [
+        {
+          "triageId": "TRI-39894cdd1547",
+          "supersedesTriageId": null,
+          "by": "JB Mccallaghan",
+          "at": "2026-09-06T06:44:18.000Z",
+          "rationale": "Confirmed in the source, not inferred from the failure alone. client/src/pages/TicketsPage.tsx write() serialises `next` built by spreading the render-snapshot `params` and calls setSearchParams(value) rather than the functional-updater form, so two writes issued from one committed render both start from the same snapshot and the second discards the first. The observation is the user-visible consequence: choosing a status and then clicking Next left ?page=2 with no status=open and the trigger back at 'All statuses'. A user can perform those two actions as quickly as the test did, so this is product behaviour rather than a test artefact. Disposed by JB Mccallaghan at the /qa-triage human gate.",
+          "independent": false,
+          "disposition": "product-defect",
+          "severityProposal": "S3",
+          "suspectPath": "client/src/pages/TicketsPage.tsx",
+          "contradictedBehaviour": "AC1 — Status, category and search filters are reflected in the URL. The selected status never reached the URL when a second navigation followed it, so the URL disagreed with the control the user had just set."
+        }
+      ],
       "nextAction": null,
       "resultingBug": null,
       "refinementRef": null,
       "duplicates": [],
-      "updatedAt": "2026-09-06T05:41:12.714Z"
+      "updatedAt": "2026-09-06T06:44:18.000Z"
     },
     {
       "findingId": "FIND-5232572f9eda",
@@ -45,7 +58,7 @@
       "signature": "e2e/tests/ticket-list-url-state.spec.ts::Ticket list URL state (GH-1) › AC4 — returning to the list › should restore filter, sort and page when returning from a ticket",
       "origin": "verifier",
       "charterProvenance": null,
-      "state": "open",
+      "state": "triaged",
       "observations": [
         {
           "observationId": "OBS-7dee35f59c81",
@@ -64,12 +77,27 @@
         }
       ],
       "evidence": [],
-      "triageHistory": [],
+      "triageHistory": [
+        {
+          "triageId": "TRI-b86b326dc105",
+          "supersedesTriageId": null,
+          "by": "JB Mccallaghan",
+          "at": "2026-09-06T06:45:00.000Z",
+          "rationale": "Confirmed in the source. client/src/pages/TicketsTable.tsx gates the entire pagination footer on {!isLoading && !error}, and the query sets no placeholderData, so every change of query key unmounts the Next button and remounts it after the refetch. In this observation the status and sort writes had already settled in the URL, so the lost-update path is ruled out: Next was enabled with 22 open tickets across 3 pages, it was clicked, and no page param was written at all. A control that disappears and reappears around every refetch is product behaviour, and a click that lands in that window reaches no handler. Distinct from FIND-86cc706fc23c, which lost a write that did happen; this lost the click so no write happened. Disposed by JB Mccallaghan at the /qa-triage human gate.",
+          "independent": false,
+          "disposition": "product-defect",
+          "severityProposal": "S3",
+          "suspectPath": "client/src/pages/TicketsTable.tsx",
+          "contradictedBehaviour": "AC3 — Current page is reflected in the URL. Clicking Next while it was enabled, on a list with 3 pages, wrote no page param, so the URL did not reflect the page the user asked for."
+        }
+      ],
       "nextAction": null,
       "resultingBug": null,
       "refinementRef": null,
-      "duplicates": [],
-      "updatedAt": "2026-09-06T05:41:12.714Z"
+      "duplicates": [
+        "FIND-7a2fd129a089"
+      ],
+      "updatedAt": "2026-09-06T06:45:30.000Z"
     },
     {
       "findingId": "FIND-7a2fd129a089",
@@ -79,7 +107,7 @@
       "signature": "e2e/tests/ticket-list-url-state.spec.ts::Ticket list URL state (GH-1) › AC4 — returning to the list",
       "origin": "verifier",
       "charterProvenance": null,
-      "state": "open",
+      "state": "superseded",
       "observations": [
         {
           "observationId": "OBS-efe9d6563117",
@@ -98,12 +126,23 @@
         }
       ],
       "evidence": [],
-      "triageHistory": [],
+      "triageHistory": [
+        {
+          "triageId": "TRI-fe9063cfb2ec",
+          "supersedesTriageId": null,
+          "by": "JB Mccallaghan",
+          "at": "2026-09-06T06:45:30.000Z",
+          "rationale": "This finding is keyed to the parent suite 'AC4 — returning to the list' and records that both of its scenarios died on their setup steps. It has no cause of its own: those two setup failures are exactly FIND-86cc706fc23c and FIND-5232572f9eda, both now disposed product-defect. Recording it as a third defect would count one underlying pair of defects three times. Named canonical FIND-5232572f9eda because the failing setup step in 'should restore filter, sort and page when returning from a ticket' is the one that most directly blocks AC4's own claim. AC4 remains recorded as a gap in state.qa, so treating this as a duplicate loses no signal about AC4 being unverified. Disposed by JB Mccallaghan at the /qa-triage human gate.",
+          "independent": false,
+          "disposition": "duplicate",
+          "duplicateOf": "FIND-5232572f9eda"
+        }
+      ],
       "nextAction": null,
       "resultingBug": null,
       "refinementRef": null,
       "duplicates": [],
-      "updatedAt": "2026-09-06T05:41:12.714Z"
+      "updatedAt": "2026-09-06T06:45:30.000Z"
     },
     {
       "findingId": "FIND-b1e8ee9068bc",
@@ -113,7 +152,7 @@
       "signature": "client/src/lib/ticket-list-params.test.ts::serializeTicketListParams › should write both halves of the sort when only the direction differs",
       "origin": "verifier",
       "charterProvenance": null,
-      "state": "open",
+      "state": "triaged",
       "observations": [
         {
           "observationId": "OBS-e700e4ad481b",
@@ -132,12 +171,31 @@
         }
       ],
       "evidence": [],
-      "triageHistory": [],
+      "triageHistory": [
+        {
+          "triageId": "TRI-6f7f4576f06f",
+          "supersedesTriageId": null,
+          "by": "JB Mccallaghan",
+          "at": "2026-09-06T06:46:00.000Z",
+          "rationale": "Two honest readings of 'omitted where practical', and the approved case set does not adjudicate the instance where only the sort direction differs from the default. This is a refinement item for the BA who wrote the AC, not a defect: deciding it here would settle the ambiguity by fiat. Routed to BA refinement and explicitly not to /qa-bug, which is what keeps the bug signal clean. Disposed by JB Mccallaghan at the /qa-triage human gate.",
+          "independent": false,
+          "disposition": "ac-ambiguity",
+          "affectedAc": "AC8",
+          "readingA": "Omit every value equal to its default, taken individually. The spec states this as the only reasonable reading (.solvo/stories/GH-1-spec.md). Under it, a view whose sort column is the default and whose direction is not should serialise to ?sortOrder=asc, because sortBy=createdAt equals its default and is therefore omitted.",
+          "readingB": "The sort is one setting expressed as a pair, so a URL that mentions sorting at all names both halves. This is what client/src/lib/ticket-list-params.ts implements and what the unit assertion locks in: serialize({sortBy: 'createdAt', sortOrder: 'asc'}) === 'sortBy=createdAt&sortOrder=asc'. Under it sortBy=createdAt legitimately appears in a URL while equalling its default, and the URL stays self-describing rather than needing the reader to know the default column.",
+          "evidenceRefs": [
+            {
+              "owningRecordPath": ".solvo/evidence/qa/GH-1-run-9db55dd8152718a92b839d5a6dfcf05bd992a4a2.json",
+              "evidenceId": "EV-0b9eb673ac15"
+            }
+          ]
+        }
+      ],
       "nextAction": null,
       "resultingBug": null,
       "refinementRef": null,
       "duplicates": [],
-      "updatedAt": "2026-09-06T05:41:12.714Z"
+      "updatedAt": "2026-09-06T06:46:00.000Z"
     }
   ]
 }
