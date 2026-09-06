@@ -49,8 +49,11 @@ below prove.
   speculative extension.
 - **AC-c** — AC6 still holds: changing a filter or sort resets to page 1, including when a page change
   preceded it in the same render.
-- **AC-d** — No behaviour that GH-1's approved case set already fixes changes. In particular
-  `CASE-93514dfd0070` ("advance exactly one page on a double-click of Next") stays green.
+- **AC-d** — No behaviour that GH-1's approved case set already fixes changes, with one deliberate
+  exception: `CASE-93514dfd0070` ("advance exactly one page on a double-click of Next"). Its expectation
+  moves from `?page=2` to `?page=3`, because the old expectation was only ever satisfied by the sibling
+  defect this cycle also fixes. See "AC-d's revised expectation" below. Every other approved case stays
+  green as written.
 
 ### Ambiguity scan
 
@@ -88,35 +91,44 @@ component test mounts `MemoryRouter`, which never touches `window.location`, so 
 229 tests exercise a code path production does not use — and rewriting them onto `BrowserRouter` would
 widen the blast radius from 1 file to every test file that renders this page.
 
+**Tracking the pending write was tried and abandoned.** It was the delivered mechanism for two review
+rounds, and it cannot be made correct. A Back that returns to the exact history entry an in-flight write
+was issued from leaves the committed search, `location.key` and `useNavigationType()` all unchanged —
+measured, not reasoned — so an abandoned write is indistinguishable from one still in flight by anything
+React has committed. The consequence was a regression in the same class as GH-3 itself: the next control
+the reader touched merged onto the abandoned write and resurrected the filter they had just navigated
+away from. Both attempts to bound it (a single pending slot, then a queue) failed on the same case.
+
 ## Approach
 
 Separate the two jobs the snapshot is currently doing. **Render from the committed params; write from
-the latest params.**
+the live URL.**
 
 - Keep `params = parseTicketListParams(searchParams)` exactly as it is for rendering. A render must use
   the committed value, and nothing about that is wrong today.
-- Add a ref holding the latest params known to the component, and merge every write against it:
-  - each write sets the ref to what it just wrote, synchronously, before `setSearchParams`, and queues
-    the serialised URL it sent
-  - an effect keyed on the committed `params` re-syncs the ref, which is what keeps Back, Forward, a
-    reload and any external URL change authoritative
-- The ref is written in the handler and in an effect, never during render. A render-phase mutation
-  would be unsound under a transition: a discarded pending render would still have moved the ref.
+- Merge every write against the router's **live** location instead of the render snapshot. The live
+  location already reflects any `pushState` this component has issued and any history navigation the
+  reader has made, whether or not React has committed either — which is precisely the gap the defect
+  lived in. Measured on both sides: during the race the live search reads
+  `?sortBy=subject&sortOrder=asc` while the committed snapshot is still empty, and after an abandoned
+  write plus a Back it reads the popped URL rather than the write.
+- The live location is reachable through `UNSAFE_NavigationContext`'s navigator, which is authoritative
+  under `BrowserRouter` and `MemoryRouter` alike — unlike `window.location`, which the component tests
+  never touch.
 
-Two details the effect cannot get right without them, both found in review:
+There is nothing to keep in sync, so there is no ref, no effect, no pending state and no window in which
+this component's idea of the URL can disagree with the router's. That is the point of the design: the
+two rejected mechanisms above both failed by trying to model the URL rather than read it.
 
-- **The pending write is a queue, not a slot.** The race issues two writes before either commits, so the
-  first commit to arrive is the older one. With a single slot it is unrecognisable as ours, and adopting
-  it would discard the newer write — reintroducing the defect on the very sequence being fixed.
-- **An outside navigation must beat a write in flight.** A commit that is neither one of our queued
-  writes nor the current URL is Back, Forward, a reload or a hand-edited URL, and it wins: the queue is
-  dropped and the ref adopts it. An earlier revision instead kept the written value and documented that
-  as a bound "no worse than before"; review traced that to be false — pre-fix wrote the popped value,
-  whereas pinning it makes the next write resurrect a filter the reader navigated away from. Comparing
-  against the previous commit is what separates that case from an ordinary re-render (a query resolving
-  re-runs the effect with the URL unchanged, and must not discard a live write).
+**The cost, stated rather than buried.** `UNSAFE_NavigationContext` is a private react-router export and
+a live `location` on its navigator is not a documented guarantee, so a future upgrade could remove it.
+Two things contain that, and both are asserted by tests: the read falls back to the committed params when
+no live location is present, so an upgrade degrades to the pre-fix snapshot behaviour instead of
+crashing; and the live read is asserted directly, so such an upgrade fails a test naming this file rather
+than resurfacing as a URL bug months later. Approved by JB Mccallaghan against the two alternatives —
+documenting the residue, or owning the history object via `unstable_HistoryRouter` (7 test files).
 
-`handleFiltersChange`'s `refiningExistingSearch` comparison must read from the same latest params, not
+`handleFiltersChange`'s `refiningExistingSearch` comparison must read from the same live location, not
 from the render snapshot — otherwise the push-versus-replace decision stays one write behind and the
 history rule GH-1 established silently regresses.
 
@@ -125,8 +137,8 @@ history rule GH-1 established silently regresses.
 | File | Change |
 |---|---|
 `client/src/pages/TicketsPage.tsx` | `write()` merging against the latest params, and the three handlers plus the refining comparison reading from them |
-`client/src/lib/use-latest-ticket-list-params.ts` | **added after GATE 1** — the ref and the effect, extracted so the commit sequences can be driven directly. Approved at a scope-drift pause |
-`client/src/lib/use-latest-ticket-list-params.test.ts` | the hook's own commit-sequence tests |
+`client/src/lib/use-latest-ticket-list-params.ts` | **added after GATE 1** — the live-location read, behind one hook so the private-API dependency has exactly one site. Approved at a scope-drift pause |
+`client/src/lib/use-latest-ticket-list-params.test.ts` | the two properties a react-router upgrade could break: that the read is live, and that it degrades to the committed params rather than throwing |
 `client/src/pages/TicketsPage.test.tsx` | new tests per the AC map below |
 `client/src/pages/TicketsTable.tsx` | **added after GATE 1** — the sibling defect `FIND-5232572f9eda` (the footer unmounting on refetch), plus the loading affordance that fix requires. Approved at the same pause |
 `e2e/tests/ticket-list-url-state.spec.ts` | the intermediate-URL assertion that separates the two competing readings (see Open question) |
@@ -145,11 +157,18 @@ so the tier is unchanged.
 |---|---|
 | AC-a | component: "should keep both writes when a search and a page change are issued in the same render" — both events inside one `act`, asserting `?search=login&page=2`. E2E: `CASE-8e3d236b21a9`, which was failing and is now green |
 | AC-b | component: "should keep both writes when a sort and a page change are issued in the same render", asserting `?sortBy=subject&sortOrder=asc&page=2` |
-| AC-c | component: the existing AC6 cases stay green, plus "should still reset to page 1 when a filter change follows a page change". The same-render half of AC-c is covered by the two AC-a/AC-b tests above, which are exactly that ordering |
+| AC-c | component: the existing AC6 cases stay green, plus "should still reset to page 1 when a filter change follows a page change" (serialised) and "should drop the page when a page change and a filter are issued in the same render" (the same-render half, asserting `?search=login` with the page gone) |
 | AC-d | component: `CASE-93514dfd0070` **with a revised expectation** — `?page=3`, not `?page=2`. See the note below |
 
 Both AC-a and AC-b tests are mutation-verified: unwiring the hook from `TicketsPage` (reading `params`
-instead of `latest.read()`) fails both and nothing else in the 246-test suite.
+instead of `latest.read()`) fails both and nothing else in the suite. Making the hook return the
+committed params instead of the live ones fails those two plus the two hook tests; removing the fallback
+fails the third hook test.
+
+Beyond the ACs, one regression guard: "should not resurrect a filter the reader abandoned by navigating
+back". It fails against the pending-write mechanism this spec previously described, with exactly the value
+review observed (`?search=login&page=2` where `?page=2` is required), so it pins the class rather than
+just the current implementation.
 
 A component test can only catch this class if the two actions land in the **same** `act`. Sequential
 `fireEvent`s do not: React Testing Library wraps each in its own `act`, which flushes react-router's
@@ -162,6 +181,16 @@ claim was wrong: it rested on a probe that used sequential `fireEvent`s and so m
 the race. Two events inside one `act` reproduce it exactly. The hook extraction was justified on that
 false premise; it is kept because the commit-sequence tests it enables are worth having on their own,
 but it was not the only route to a guard.
+
+### E2E coverage is deliberately thin, and one placement needs a decision
+
+Only AC-a has an E2E scenario, and it rides as an added assertion inside `CASE-8e3d236b21a9` — an
+approved GH-1 AC4 case about the nav link returning a clean list. AC-b and AC-c have no E2E scenario at
+all. Two repo rules pull against each other here: `CLAUDE.md` directs component-first and forbids
+duplicating component coverage in E2E, while mixing a GH-3 race assertion into another AC's approved case
+muddies what that case attests. Left as it is because the assertion is what resolves this spec's open
+question and the racing sequence is already in that scenario; flagged for the merge gate to accept or
+send to `/qa-cases` as a case-set change.
 
 ### AC-d's revised expectation
 
@@ -182,7 +211,7 @@ edited from a dev cycle.
   into this cycle at a scope-drift pause and must therefore also go green rather than being reported red.
 - The suite runs at `workers: 1`; do not raise it to make anything pass.
 
-**Result.** Client suite 246/246, up from the 229 baseline. E2E across three full runs: 81/82, 82/82,
+**Result.** Client suite 242/242, up from the 229 baseline. E2E across three full runs: 81/82, 82/82,
 82/82. The single failure was `CASE-f8fac94b30ab` ("should undo a filter change on Back"), which passes
 5/5 in isolation and 13/13 with its own spec file — the suite's known shared-database ordering
 flakiness, not a regression from this change. `checks.e2e` in the state file records this.

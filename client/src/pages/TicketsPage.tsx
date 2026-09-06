@@ -23,15 +23,14 @@ export default function TicketsPage() {
     search: params.search,
   };
 
-  // Render from the committed params above; write from the latest params here. react-router updates
-  // the URL synchronously but defers its React state update in a transition, so two writes issued
-  // from one committed render would otherwise both merge into the same stale snapshot and the second
-  // would discard the first (GH-3). The hook explains why setSearchParams' functional updater does
-  // not solve this.
+  // Render from the committed params above; write from the live URL here. react-router updates the URL
+  // synchronously but defers its React state update in a transition, so two writes issued from one
+  // committed render would otherwise both merge into the same stale snapshot and the second would
+  // discard the first (GH-3). The hook explains why neither setSearchParams' functional updater nor
+  // tracking the pending write solves this.
   const latest = useLatestTicketListParams(params);
 
   function write(next: TicketListParams, replace = false) {
-    latest.noteWritten(next);
     setSearchParams(serializeTicketListParams(next), { replace });
   }
 

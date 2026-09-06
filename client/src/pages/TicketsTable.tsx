@@ -186,6 +186,14 @@ export default function TicketsTable({
   // The page is URL-controllable now, so it can name a page past the end of the result set. Written
   // against pageCount rather than `total > 0` so a filter that matches nothing is covered too:
   // there, pageCount is 0 and every page above the first is out of range.
+  //
+  // It is also how the one remaining `keepPreviousData` window resolves. While a filter change is in
+  // flight, `total` is still the previous filter's, so Next stays enabled against bounds that no longer
+  // apply and a click can ask for a page the new filter does not have. Disabling the controls whenever
+  // placeholder data shows would close that, but it would also swallow the second of two quick Next
+  // clicks — the behaviour CASE-93514dfd0070 pins, where two clicks must advance two pages. So the
+  // click is allowed through and the out-of-range state below catches it: the reader gets an explicit
+  // "page N does not exist" and one click back to safety, instead of a dead control.
   const lastPage = Math.max(pageCount, 1);
   const isBeyondEnd = page > lastPage;
 

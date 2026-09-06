@@ -1741,17 +1741,29 @@ describe("TicketsPage — the pagination footer must survive a refetch", () => {
   // change makes a new cache entry, so Next was destroyed and recreated around every refetch — a
   // click landing in that window reached no handler. QA recorded this as browser-only; it reproduces
   // here, which makes it far cheaper to guard.
-  it("should keep the pagination controls mounted while a sort refetch is in flight", async () => {
+  /**
+   * Holds every request after the first, so a test can assert what the list looks like while a refetch
+   * is genuinely outstanding. `release()` lets it finish. The echoed page matters: the footer's row
+   * range is read off the response, so a mock that always claimed page 1 would describe rows the
+   * response is not.
+   */
+  function holdRefetches(total: number) {
     let release: () => void = () => {};
     const held = new Promise<void>((resolve) => {
       release = resolve;
     });
     let calls = 0;
-    mockedAxios.get.mockImplementation(async () => {
+    mockedAxios.get.mockImplementation(async (_url, config) => {
       calls += 1;
       if (calls > 1) await held;
-      return mockResponse(mockTickets, 50);
+      const { page } = config?.params as { page: number };
+      return mockResponse(mockTickets, total, page);
     });
+    return { release: () => release() };
+  }
+
+  it("should keep the pagination controls mounted while a sort refetch is in flight", async () => {
+    const { release } = holdRefetches(50);
     renderTicketsAt();
     await waitFor(() =>
       expect(screen.getByText("Showing 1–10 of 50 tickets")).toBeInTheDocument()
@@ -1771,17 +1783,7 @@ describe("TicketsPage — the pagination footer must survive a refetch", () => {
   // The cost of keeping the previous rows mounted: without these two, the list reads as settled while
   // the next page is still loading, and the range text describes rows that are not on screen.
   it("should describe the rows it is actually showing, and say it is busy, while the next page loads", async () => {
-    let release: () => void = () => {};
-    const held = new Promise<void>((resolve) => {
-      release = resolve;
-    });
-    let calls = 0;
-    mockedAxios.get.mockImplementation(async (_url, config) => {
-      calls += 1;
-      if (calls > 1) await held;
-      const page = (config?.params as { page: number }).page;
-      return mockResponse(mockTickets, 50, page);
-    });
+    const { release } = holdRefetches(50);
     renderTicketsAt();
     await waitFor(() =>
       expect(screen.getByText("Showing 1–10 of 50 tickets")).toBeInTheDocument()
@@ -1794,6 +1796,9 @@ describe("TicketsPage — the pagination footer must survive a refetch", () => {
     await waitFor(() => expect(screen.getByText("Page 2 of 5")).toBeInTheDocument());
     expect(screen.getByText("Showing 1–10 of 50 tickets")).toBeInTheDocument();
     expect(document.querySelector("tbody")).toHaveAttribute("aria-busy", "true");
+    // The sighted half of the same affordance. Asserted because aria-busy alone would let the dimming
+    // be dropped silently, leaving the list looking settled while it is not.
+    expect(document.querySelector("tbody")).toHaveClass("opacity-60");
 
     release();
     // Once page 2's own response lands, both halves move together.
@@ -1801,6 +1806,92 @@ describe("TicketsPage — the pagination footer must survive a refetch", () => {
       expect(screen.getByText("Showing 11–20 of 50 tickets")).toBeInTheDocument()
     );
     expect(document.querySelector("tbody")).toHaveAttribute("aria-busy", "false");
+  });
+});
+
+describe("TicketsPage — paging past the end of a filter still settling", () => {
+  /**
+   * The `keepPreviousData` window's remaining rough edge, pinned rather than left to chance. Mid-filter-
+   * change the previous filter's `total` is still what the controls are bounded by, so Next can ask for
+   * a page the new filter does not have. The out-of-range state has to catch that, because the
+   * alternative — disabling the controls while placeholder data shows — would swallow the second of two
+   * quick Next clicks, which CASE-93514dfd0070 forbids.
+   */
+  it("should offer a way back when a mid-flight page change lands past the end of a filter", async () => {
+    mockedAxios.get.mockImplementation(async (_url, config) => {
+      const params = config?.params as { status?: string; page: number };
+      // The filtered list has three tickets, so it has exactly one page.
+      return params.status
+        ? mockResponse(mockTickets, 3, params.page)
+        : mockResponse(mockTickets, 50, params.page);
+    });
+    renderTicketsAt("/tickets?status=open&page=2");
+
+    await waitFor(() =>
+      expect(
+        screen.getByText("Page 2 does not exist — 3 tickets across 1 page")
+      ).toBeInTheDocument()
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Go to last page" }));
+
+    await waitFor(() => expect(currentSearch()).toBe("?status=open"));
+  });
+});
+
+describe("TicketsPage — GH-3, a write abandoned by a history navigation", () => {
+  function renderWithBack(entries: string[]) {
+    function BackButton() {
+      const navigate = useNavigate();
+      return <button onClick={() => navigate(-1)}>go back</button>;
+    }
+    return render(
+      <MemoryRouter initialEntries={entries} initialIndex={entries.length - 1}>
+        <QueryClientProvider
+          client={
+            new QueryClient({ defaultOptions: { queries: { retry: false } } })
+          }
+        >
+          <BackButton />
+          <Routes>
+            <Route path="/tickets" element={<TicketsPage />} />
+          </Routes>
+          <LocationProbe />
+        </QueryClientProvider>
+      </MemoryRouter>
+    );
+  }
+
+  /**
+   * The hardest case, and the one that ruled out tracking the pending write. The reader types a search
+   * and hits Back before React commits it. The Back returns to the exact entry the write was issued
+   * from, so the committed search, `location.key` and `useNavigationType()` are all unchanged from
+   * before the write — an abandoned write is indistinguishable from one still in flight by anything
+   * React has committed. Reading the router's live location is what resolves it.
+   */
+  it("should not resurrect a filter the reader abandoned by navigating back", async () => {
+    mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
+    renderWithBack(["/tickets?sortBy=subject&sortOrder=asc", "/tickets"]);
+    await waitFor(() =>
+      expect(screen.getByText("Showing 1–10 of 50 tickets")).toBeInTheDocument()
+    );
+
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText("Search tickets..."), {
+        target: { value: "login" },
+      });
+      fireEvent.click(screen.getByText("go back"));
+    });
+
+    // The Back won: the search never reaches the URL.
+    expect(currentSearch()).toBe("");
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Next page" }));
+    });
+
+    // And the next control the reader touches must not bring it back.
+    expect(currentSearch()).toBe("?page=2");
   });
 });
 
@@ -1834,6 +1925,28 @@ describe("TicketsPage — GH-3, two writes issued before either commits", () => 
    * select because Radix renders its options in a portal that aria-hides the footer while it is open,
    * so Next is not reachable in the same act as an option click.
    */
+  /**
+   * The other ordering, in the same render — AC-c's same-render half. Merging against the live URL must
+   * not resurrect the page a filter change is supposed to clear, so this is the guard that the fix did
+   * not simply trade GH-3 for a violation of GH-1's AC6.
+   */
+  it("should drop the page when a page change and a filter are issued in the same render", async () => {
+    mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
+    renderTicketsAt();
+    await waitFor(() =>
+      expect(screen.getByText("Showing 1–10 of 50 tickets")).toBeInTheDocument()
+    );
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Next page" }));
+      fireEvent.change(screen.getByPlaceholderText("Search tickets..."), {
+        target: { value: "login" },
+      });
+    });
+
+    expect(currentSearch()).toBe("?search=login");
+  });
+
   it("should keep both writes when a search and a page change are issued in the same render", async () => {
     mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
     renderTicketsAt();
