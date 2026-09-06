@@ -25,6 +25,12 @@ import {
  * an abandoned write is indistinguishable from one still in flight. Tracking made the next write
  * resurrect the filter the reader had just navigated away from.
  *
+ * **The order matters, and only one order is guaranteed.** A navigation that happens *after* a write in
+ * the same render wins, which is the case this exists to handle. A navigation that happens *before* one
+ * loses — a `navigate("/")` followed by a filter write in the same render lands back on
+ * `/tickets?search=...`. That is last-write-wins, consistent with the recorded decision, and not
+ * reachable by mouse, since clicking a nav link blurs the search input before the navigation dispatches.
+ *
  * **Why not `window.location.search`.** It is authoritative under `BrowserRouter`, but every component
  * test mounts `MemoryRouter`, which never touches it. The navigator below is authoritative under both.
  *

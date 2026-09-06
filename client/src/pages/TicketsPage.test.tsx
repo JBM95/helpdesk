@@ -71,6 +71,7 @@ const lastRequestParams = () =>
 
 /** The filter controls are Radix Selects: buttons with role combobox, in render order. */
 const statusFilterTrigger = () => screen.getAllByRole("combobox")[0];
+const categoryFilterTrigger = () => screen.getAllByRole("combobox")[1];
 
 /**
  * Picks an already-visible Select option synchronously, so it can share an `act` with another event.
@@ -2039,6 +2040,38 @@ describe("TicketsPage — GH-3, two writes issued before either commits", () => 
 
     await waitFor(() =>
       expect(currentSearch()).toBe("?status=open&search=login")
+    );
+  });
+
+  /**
+   * The third control. Round 4 shipped with the category control unguarded and the suite stayed green,
+   * so this is the ordering in which that control writes second — the only one that can expose it.
+   *
+   * The payload shape of all three controls is asserted directly in `TicketsFilters.test.tsx`, which is
+   * what closes the class; this is the user-visible half for the control the page-level pair missed.
+   */
+  it("should keep both writes when a search and a category change land in the same render", async () => {
+    const user = userEvent.setup();
+    mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
+    renderTicketsAt();
+    await waitFor(() =>
+      expect(screen.getByText("Showing 1–10 of 50 tickets")).toBeInTheDocument()
+    );
+
+    await user.click(categoryFilterTrigger());
+    const refundOption = await screen.findByRole("option", {
+      name: "Refund request",
+    });
+
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText("Search tickets..."), {
+        target: { value: "login" },
+      });
+      selectOption(refundOption);
+    });
+
+    await waitFor(() =>
+      expect(currentSearch()).toBe("?category=refund_request&search=login")
     );
   });
 

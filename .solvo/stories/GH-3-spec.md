@@ -186,7 +186,8 @@ the ordering in which that control writes second.
 |---|---|
 `client/src/pages/TicketsPage.tsx` | `write()` merging against the latest params, and the three handlers plus the refining comparison reading from them; from round 4, merging the filter delta against them too |
 `client/src/lib/use-latest-ticket-list-params.ts` | **added after GATE 1** — the live-location read, behind one hook so the private-API dependency has exactly one site. Approved at a scope-drift pause |
-`client/src/lib/use-latest-ticket-list-params.test.ts` | the three properties a react-router upgrade could break: that the read is live, that an empty live search means the bare list rather than a missing location, and that it degrades to the committed params rather than throwing |
+`client/src/lib/use-latest-ticket-list-params.test.ts` | four tests, covering what a react-router upgrade could break: that the read is live, that it follows the live location without a re-render, that an empty live search means the bare list rather than a missing location, and that it degrades to the committed params rather than throwing |
+`client/src/pages/TicketsFilters.test.tsx` | **added at round 5** — the delta payload contract asserted for all three controls, set and cleared. Round 4's page-level pair covered search and status only, and the category control shipped unguarded |
 `client/src/pages/TicketsPage.test.tsx` | new tests per the AC map below |
 `client/src/pages/TicketsTable.tsx` | **added after GATE 1** — the sibling defect `FIND-5232572f9eda` (the footer unmounting on refetch), plus the loading affordance that fix requires. Approved at the same pause |
 `client/src/pages/TicketsFilters.tsx` | **added at round 4** — each control emits only the key it owns, instead of spreading the committed filter set. Approved by JB Mccallaghan; see the section above for why the hook alone does not cover this |
@@ -214,18 +215,32 @@ unchanged.
 | AC-b | component: "should keep both writes when a sort and a page change are issued in the same render", asserting `?sortBy=subject&sortOrder=asc&page=2` |
 | AC-c | component: the existing AC6 cases stay green, plus "should still reset to page 1 when a filter change follows a page change" (serialised) and "should drop the page when a page change and a filter are issued in the same render" (the same-render half, asserting `?search=login` with the page gone) |
 | AC-d | component: `CASE-93514dfd0070` **with a revised expectation** — `?page=3`, not `?page=2`. See the note below |
-| AC-e | component: "should keep both writes when two different filters change in the same render" and "...the other way round", both asserting `?status=open&search=login`. The select is opened before the `act` so its portal render does not sit between the two writes |
+| AC-e | component, two levels. Cause: `TicketsFilters.test.tsx` asserts every control's payload is its own key alone, set and cleared — 6 tests, and the only place all three controls are covered. Consequence: three page-level same-render pairs, one per control writing second, asserting `?status=open&search=login` and `?category=refund_request&search=login`. Each select is opened before the `act` so its portal render does not sit between the two writes |
 
-Both AC-a and AC-b tests are mutation-verified: unwiring the hook from `TicketsPage` (reading `params`
-instead of `latest.read()`) fails both and nothing else in the suite. Making the hook return the
-committed params instead of the live ones fails those two plus the two hook tests; removing the fallback
-fails the third hook test.
+Every mutation below was run and its counts are the observed ones. An earlier revision of this paragraph
+carried two scoping clauses — "fails both **and nothing else** in the suite", and "fails those two **plus
+the two hook tests**" — that were never measured and were both false: round 4's review put them at 6 and
+9 failures against a suite of 247. That is the same species of unverified clause that let AC-e's defect
+through three rounds, so the counts are now stated rather than characterised.
 
-AC-e's two tests are mutation-verified one control at a time, and each ordering is pinned separately
-rather than redundantly: reverting the search control to `{ ...filters, search }` fails only the ordering
-where the search writes second (`?search=login`, status lost), and reverting the status control fails
-only the other one (`?status=open`, search lost). A stale set clobbers whatever landed before it, so the
-control that writes first cannot expose its own bug.
+Measured against the 254-test suite:
+
+| Mutation | Fails |
+|---|---|
+| Unwire the hook from `TicketsPage` — all three `latest.read()` call sites read `params` | 7 |
+| Make the hook return the committed params instead of the live ones | 10 |
+| Remove the fallback line entirely | 1 — the fallback test, on a `TypeError` |
+| Weaken the fallback to `!live?.search` | 2 — the empty-live-search hook test and the Back-onto-unfiltered page guard |
+| Revert `refiningExistingSearch`'s operands to the render snapshot | 1 — the same-render push-versus-replace guard |
+| Any one of the three filter controls reverted to `{ ...filters, <key> }` | 3 each — its two payload tests, plus the page-level ordering in which that control writes second |
+
+AC-e is pinned per control and per ordering, not once for the file. Round 4 shipped with the **category**
+control unguarded — its mutation left all 247 tests green — because the page-level pair only covered
+search and status. The payload contract is now asserted for all three controls in
+`client/src/pages/TicketsFilters.test.tsx`, which closes the class rather than the two instances that
+happened to have race tests, and each control also has the page-level ordering where it writes second. A
+stale set only clobbers whatever landed before it, so the control that writes first cannot expose its own
+bug — which is why the orderings are not redundant.
 
 Beyond the ACs, three regression guards:
 
@@ -245,8 +260,9 @@ Beyond the ACs, three regression guards:
 A component test can only catch this class if the two actions land in the **same** `act`. Sequential
 `fireEvent`s do not: React Testing Library wraps each in its own `act`, which flushes react-router's
 transition in between, so the second write sees fresh params. Every existing racing-pair test
-serialises them that way — `TicketsPage.test.tsx:773` polls the URL between the two header clicks —
-which is why the whole 229-test suite was green while the defect was live.
+serialises them that way — "should settle on the second column when two headers are clicked in flight"
+polls the URL between the two header clicks — which is why the whole 229-test suite was green while the
+defect was live. (Cited by test name, not line: round 3 and round 4 each found this reference had drifted.)
 
 An earlier revision of this spec claimed the race was **not reproducible in jsdom at all**, and that
 claim was wrong: it rested on a probe that used sequential `fireEvent`s and so measured the flush, not
@@ -284,9 +300,9 @@ edited from a dev cycle.
   into this cycle at a scope-drift pause and must therefore also go green rather than being reported red.
 - The suite runs at `workers: 1`; do not raise it to make anything pass.
 
-**Result.** Client suite 247/247, up from the 229 baseline.
+**Result.** Client suite 254/254, up from the 229 baseline.
 
-E2E across seven full runs. The mechanism changed twice during this cycle, so the runs are grouped by
+E2E across eight full runs. The mechanism changed twice during this cycle, so the runs are grouped by
 what they actually measured — an earlier revision of this section reported "three full runs: 81/82,
 82/82, 82/82" without saying that all three predate the delivered code, which is what round 3 raised as
 B-R3-4:
@@ -295,18 +311,18 @@ B-R3-4:
 |---|---|---|
 | pending-write queue — **deleted, measures nothing shipped** | 3 | 81/82, 82/82, 82/82 |
 | live location, before the round-4 filter-delta fix | 2 | 82/82, 82/82 |
-| live location + filter deltas — **the delivered code** | 2 | 82/82 (4.8m), 82/82 (2.7m) |
+| live location + filter deltas — **the delivered code** | 3 | 82/82 (4.8m), 82/82 (2.7m), 82/82 (4.3m) |
 
-The single failure across all seven was `CASE-f8fac94b30ab` ("should undo a filter change on Back"), on
+The single failure across all eight was `CASE-f8fac94b30ab` ("should undo a filter change on Back"), on
 the first run only, under a mechanism no longer in the tree. It passes 5/5 in isolation and 13/13 with
 its own spec file — the suite's known shared-database ordering flakiness, not a regression from this
 change.
 
-The first of the two delivered-code runs had a doc comment in
+Three delivered-code runs rather than one, for a reason worth stating. The first had a doc comment in
 `client/src/lib/use-latest-ticket-list-params.ts` edited while it was in flight, so Vite reloaded that
-module mid-suite. Comment-only, no behaviour, and it passed — but the second run exists because a number
-measured against a tree that changed underneath it is the exact defect B-R3-4 named, and recording it
-without re-running would have repeated it.
+module mid-suite; the second was clean; the third followed round 5's changes. A number measured against a
+tree that shifted underneath it is the exact defect B-R3-4 named, so each time the tree moved the suite
+was re-run rather than the number qualified.
 
 `OPENAI_API_KEY` is unset on this machine in every run, so `auto-resolve-ticket` throws
 `AI_LoadAPIKeyError` and no seeded ticket transitions to `resolved`. That is unchanged from GH-1's runs
