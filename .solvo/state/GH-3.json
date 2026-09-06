@@ -1,0 +1,180 @@
+{
+  "id": "GH-3",
+  "tier": "T2",
+  "tierConfirmedBy": "JB Mccallaghan",
+  "phase": "fresh-review",
+  "blastRadius": {
+    "files": 3,
+    "callers": 8,
+    "note": "Recon predicted 1 file. The delivered diff touches 3 source files: client/src/pages/TicketsPage.tsx, the new client/src/lib/use-latest-ticket-list-params.ts (extracted so the race sequence can be driven by hand in a unit test - approved by JB Mccallaghan at a scope-drift pause), and client/src/pages/TicketsTable.tsx (the sibling defect FIND-5232572f9eda, added to this cycle by JB Mccallaghan at the same pause). Still far under the 15-file / 40-caller escalation threshold, so no tier change."
+  },
+  "run": {
+    "id": "ff7a0a01-b093-4daf-b3a6-da75209436f2",
+    "agent": "claude-code",
+    "model": "eu.anthropic.claude-opus-5[1m]"
+  },
+  "gates": {
+    "gate1": {
+      "approved": true,
+      "by": "JB Mccallaghan",
+      "at": "2026-09-06T07:05:00.000Z"
+    }
+  },
+  "checks": {
+    "commit": "cda1c035efd6f2cdc5b23d95d323a30a37cd4773",
+    "commitNote": "The last commit carrying source, test or spec content. This state file is the single trailing commit after it, which is what the gate-guard freshness arm accepts.",
+    "ambiguityScan": {
+      "cleared": true,
+      "note": "The fix's expected behaviour admits one reading. The two orderings do not compete: a filter change after a page change resets to page 1 (GH-1 AC6), and a page change after a filter change lands on page 2 of the filtered list (GH-1 AC1). Two rapid writes to different keys both land; two to the same key resolve last-write-wins, which is what the user's second action asked for. #3 carries no Gherkin because ticket-standard has no bug variant - a known gap in that standard - so the acceptance criteria are derived in the spec from GH-1's AC1 and AC6, which are the ACs the defect contradicts."
+    },
+    "green": true,
+    "at": "2026-09-06T09:20:00.000Z",
+    "command": "cd client && bun run test (vitest run)",
+    "tests": {
+      "files": 10,
+      "passed": 246,
+      "failed": 0,
+      "baselinePassed": 229
+    },
+    "e2e": {
+      "command": "bun run test:e2e (playwright, workers: 1)",
+      "obligation": "covered",
+      "runs": [
+        {
+          "passed": 81,
+          "failed": 1,
+          "total": 82
+        },
+        {
+          "passed": 82,
+          "failed": 0,
+          "total": 82
+        },
+        {
+          "passed": 82,
+          "failed": 0,
+          "total": 82
+        }
+      ],
+      "targetScenarios": {
+        "CASE-8e3d236b21a9": "green - was failing before this fix; now also carries the intermediate-URL assertion that resolves the spec's open question",
+        "CASE-e51a15eb56e6": "green - the sibling defect FIND-5232572f9eda, brought into this cycle at a scope-drift pause"
+      },
+      "flake": "The single failure across the three runs was CASE-f8fac94b30ab ('should undo a filter change on Back'). It passes 5/5 under --repeat-each in isolation and 13/13 with its own spec file, so it is the suite's known shared-database ordering flakiness rather than a regression from this change. Not asserted as fixed and not suppressed.",
+      "note": "The suite had never run on Windows before this branch: playwright.config.ts used a POSIX 'VAR=value cmd' prefix, which cmd.exe does not accept. Fixed on this branch along with workers: 1, which a shared database without per-test isolation requires."
+    },
+    "lint": {
+      "command": "cd client && bun run lint",
+      "problems": 7,
+      "newProblems": 0,
+      "note": "5 errors + 2 warnings, identical to the branch baseline."
+    },
+    "typecheck": {
+      "command": "tsc -b client",
+      "errors": 3,
+      "newErrors": 0,
+      "note": "All pre-existing: ReplyForm.test.tsx:19, TicketSummary.test.tsx:19, vite.config.ts:41. None in the files this cycle touched, and the new hook typechecks clean."
+    },
+    "coverage": "n/a: no coverage script exists in this repo and quality.coverageArtifact is an n/a marker"
+  },
+  "attempts": {
+    "recon": 1,
+    "build": 0
+  },
+  "artifacts": {
+    "recon": ".solvo/reconnaissance/GH-3-recon.md",
+    "spec": ".solvo/stories/GH-3-spec.md"
+  },
+  "readyBarGaps": [
+    "Context",
+    "Scope",
+    "Negative space",
+    "Acceptance criteria",
+    "Open questions"
+  ],
+  "grounding": [],
+  "autoExplored": [],
+  "originFinding": {
+    "findingId": "FIND-86cc706fc23c",
+    "workItem": "GH-1",
+    "triageId": "TRI-39894cdd1547",
+    "disposition": "product-defect",
+    "observedOnCommit": "9db55dd8152718a92b839d5a6dfcf05bd992a4a2",
+    "runId": "RUN-22425dc46b2e",
+    "note": "Filed through /qa-bug --finding after a named human confirmed the cause. Closure of the finding needs a cleared observation from a later /qa-verify read, which this fix is a prerequisite for but does not itself produce."
+  },
+  "branchDecision": {
+    "branch": "gh/1-preserve-ticket-list-view-state",
+    "pullRequest": 2,
+    "decidedBy": "JB Mccallaghan",
+    "note": "The defect exists only on this branch: on test/solvo, TicketsPage.tsx holds filters in useState and never calls setSearchParams, so a branch cut from test/solvo would have nothing to modify. Confirmed in recon. The fix lands inside PR #2 so the defect never reaches test/solvo; PR #2 already carries a fail QA verdict and should not merge as it stands. No separate gh/3-* branch and no separate PR."
+  },
+  "scopeChanges": [
+    {
+      "at": "2026-09-06T07:40:00.000Z",
+      "decidedBy": "JB Mccallaghan",
+      "change": "Extract the latest-params tracking into client/src/lib/use-latest-ticket-list-params.ts rather than inlining it, so the write-write-then-commit sequence can be driven with renderHook.",
+      "why": "Stated at the time as: a probe showed React Testing Library's act environment flushes react-router's transition between two fireEvents, so the GH-3 race is NOT reproducible in jsdom at all, and without the extracted hook the fix would be verified by two Playwright scenarios and nothing else.",
+      "premiseCorrected": "2026-09-06T09:25:00.000Z - that premise was FALSE, found by the fresh reviewer. The probe used two SEQUENTIAL fireEvents, which RTL wraps in separate act calls; two inside ONE act reproduce the race exactly, so a page-level guard was available all along and now exists. The extraction is kept because the hook's commit-sequence tests are worth having in their own right, not because it was the only route to a guard. The decision stands; the reason recorded for it did not."
+    },
+    {
+      "at": "2026-09-06T07:40:00.000Z",
+      "decidedBy": "JB Mccallaghan",
+      "change": "Also fix the sibling defect FIND-5232572f9eda (the pagination footer unmounting on refetch) in this cycle.",
+      "why": "New evidence after the #3-only scope was set: the footer defect IS reproducible in jsdom, and it blocked GH-3's own component tests by removing the Next button after any refetch. Both must be green before PR #2 can merge."
+    },
+    {
+      "at": "2026-09-06T07:55:00.000Z",
+      "decidedBy": "JB Mccallaghan",
+      "change": "CASE-93514dfd0070's expectation moves from ?page=2 to ?page=3: two clicks mean two pages.",
+      "why": "The case passed only because the footer defect swallowed the second click - isolated by removing the footer fix alone, which returns it to ?page=2. An approved case whose expectation was satisfied by a defect. Needs a case-set revision and re-approval through /qa-cases; the cases artifact was NOT edited here."
+    }
+  ],
+  "review": {
+    "verdict": "REQUEST_CHANGES",
+    "blockersOpen": 5,
+    "by": "fresh-reviewer",
+    "at": "2026-09-06T08:30:00.000Z",
+    "lenses": {
+      "blind": 5,
+      "edge": 3,
+      "acceptance": 6
+    },
+    "rounds": 1,
+    "round1Resolution": {
+      "at": "2026-09-06T09:25:00.000Z",
+      "by": "claude-code",
+      "blockers": {
+        "1": "Resolved. Two page-level race guards added to TicketsPage.test.tsx, both dispatching their events inside one act(). Mutation-verified: unwiring the hook (latest.read() -> params, noteWritten deleted) fails exactly those two and nothing else in the 246-test suite.",
+        "2": "Accepted as a correct finding. The 'not reproducible in jsdom' claim was false and rested on a probe of sequential fireEvents. The claim is removed from both test files and from the spec, and the spec now records that the hook extraction was justified on a false premise (kept for the commit-sequence tests it enables, not as the only route to a guard).",
+        "3": "Resolved. CASE-8e3d236b21a9 now collects the URLs the page passes through and asserts one carries status=open without page=2, which separates the two readings. Collected rather than awaited between the clicks, because awaiting would remove the race window. It passes, so the spec's open question is resolved in favour of the first reading.",
+        "4": "Resolved. checks.e2e recorded above, with three full-run results, both target scenarios and the one flake named.",
+        "5": "Resolved. The spec, recon and this state file are committed in this round."
+      },
+      "decisionsNeeded": {
+        "6": "Fixed. The pending value is now a queue drained by the commit that matches it, and the adopt-external branch is guarded by three tests. Deleting the drain, the length check, or the unchanged-URL guard each fails a different test.",
+        "7": "Fixed, and the finding was right: the documented bound was a regression, not a neutral one. An outside navigation now beats a write in flight - the queue is dropped and the ref adopts the committed URL. The false 'no worse than before' comment is gone.",
+        "8": "Fixed. The footer's row range is derived from the page the rendered rows came from (data.page, which the endpoint echoes) rather than from the URL, and the table body carries aria-busy plus a dimmed state while placeholder data is showing. Both halves mutation-verified. The page indicator deliberately stays on the URL: that is the control state.",
+        "9": "Out of a dev cycle's scope and left open. GH-1-cases.md still records CASE-93514dfd0070's old ?page=2 expectation and needs a case-set revision through /qa-cases. The spec now states the revised expectation and why, so the disagreement is visible rather than silent.",
+        "10": "Fixed. The spec's Files-to-touch table now lists all five files with the two post-GATE-1 additions marked as such, and no longer claims TicketsTable.tsx is unchanged.",
+        "11": "Fixed for AC-a/AC-b/AC-c. Each now names a same-render test; AC-c's same-render half is covered by the AC-a/AC-b tests, which are exactly that ordering."
+      }
+    },
+    "blockers": [
+      "1. The GH-3 fix is unguarded: unwiring the hook from TicketsPage (latest.read() -> params, noteWritten deleted) leaves the whole client suite at 239/239 and both target E2E scenarios passing. The six hook tests pass because the hook file itself is untouched - they test the hook, never that the page uses it.",
+      "2. My claim that the race is not reproducible in jsdom is FALSE. My probe used two SEQUENTIAL fireEvents, which act-flushes between; wrapping both in ONE act() reproduces it exactly - as committed gives ?sortBy=subject&sortOrder=asc&page=2, unwired gives ?page=2. So a real race guard is possible, and the justification written into two test files for not having one does not hold.",
+      "3. The spec declares an e2e/ change (the intermediate-URL assertion separating the two competing readings) and the diff touches no file under e2e/. The spec's own Open question is still unseparated.",
+      "4. No checks.e2e record at T2, despite the anti-regression plan requiring a full run with CASE-8e3d236b21a9 green and CASE-e51a15eb56e6 reported.",
+      "5. The GH-3 spec, recon and state file are all untracked - the code shipped with no committed spec, recon, check record or scope-change trail."
+    ],
+    "decisionNeeded": [
+      "6. Deleting `pending.current = null` fails no test: pending would stay non-null forever after the first write, so the adopt-external branch never runs again and Back/Forward/reload are ignored for the component's life. Missing case: write -> commit -> external change adopted.",
+      "7. The documented 'known bound' is worse than pre-fix, not neutral: on a POP during an in-flight write, latest pins the written value and the next write resurrects a filter the user navigated away from. Pre-fix wrote the popped value. Fix: clear pending on POP or key it on location.key.",
+      "8. keepPreviousData leaves the footer and rows disagreeing with no loading affordance - 'Showing 11-20 of 50' above page 1's rows, 0 skeletons - and the skeleton branch is now dead outside first mount. Neither isFetching nor isPlaceholderData is consumed.",
+      "9. CASE-93514dfd0070's move to ?page=3 is legitimate (verified by isolation) but GH-1-cases.md still states the old expectation and spec AC-d still says the case 'stays green' on that old definition.",
+      "10. The spec still says TicketsTable.tsx is not changed, while the diff changes it; the scope changes live only in the uncommitted state file.",
+      "11. AC-a/AC-b/AC-c are proven only by serialised tests, which the spec explicitly ruled out; AC-c's 'in the same render' half has no test at all."
+    ],
+    "verifiedClean": "The functional-updater dead end was independently confirmed at chunk-HMDR2CVH.js:711-713. GH-1's push/replace history rule holds and in fact tightens. React 19 + StrictMode sound: refs written only in handler and effect. Baseline re-measured and matches exactly - 239/239, lint 7 problems none new, tsc 3 errors none in touched files. placeholderData and adopt-always mutations are both killed by real guards. Duplication count 0. No security surface."
+  }
+}
