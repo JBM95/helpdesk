@@ -21,3 +21,9 @@
 #
 # Scoped to *.md rather than ** so a future binary under .solvo/ is not corrupted by an eol filter.
 /.solvo/**/*.md eol=lf
+
+# Captured QA evidence. A QaRun records each log's sha256 and byte count, and `/qa-verify` re-hashes
+# them and refuses to read a file whose bytes have moved. These arrive LF from the capture, so
+# without this a Windows checkout rewrites them to CRLF and the run's own evidence stops
+# reconciling — the proof state degrades even though nothing was edited.
+/.solvo/evidence/qa/**/*.log eol=lf
