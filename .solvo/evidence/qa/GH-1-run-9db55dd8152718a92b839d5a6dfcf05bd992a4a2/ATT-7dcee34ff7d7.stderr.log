@@ -1,0 +1,18 @@
+$ vitest run
+(node:22000) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[90mstderr[2m | src/pages/UsersPage.test.tsx[2m > [22m[2mUsersPage[2m > [22m[2mshould open the create user dialog when clicking New User
+[22m[39mWarning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+[90mstderr[2m | src/pages/UsersPage.test.tsx[2m > [22m[2mUsersPage[2m > [22m[2mshould close the dialog when pressing Escape
+[22m[39mWarning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+[90mstderr[2m | src/pages/UsersPage.test.tsx[2m > [22m[2mUsersPage[2m > [22m[2mshould close the dialog when clicking the overlay
+[22m[39mWarning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+[90mstderr[2m | src/pages/UsersPage.test.tsx[2m > [22m[2mUsersPage[2m > [22m[2mshould open edit dialog with 'Edit User' title when clicking edit button
+[22m[39mWarning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+[90mstderr[2m | src/pages/UsersPage.test.tsx[2m > [22m[2mUsersPage[2m > [22m[2mshould pre-populate edit form with user data
+[22m[39mWarning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+

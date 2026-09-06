@@ -1,0 +1,143 @@
+{
+  "schemaVersion": "1.0.0",
+  "producerVersion": "6.34.1",
+  "workItem": "GH-1",
+  "findings": [
+    {
+      "findingId": "FIND-86cc706fc23c",
+      "workItem": "GH-1",
+      "ac": "AC1",
+      "obligationId": null,
+      "signature": "e2e/tests/ticket-list-url-state.spec.ts::Ticket list URL state (GH-1) › AC4 — returning to the list › should land on a clean list when using the nav Tickets link",
+      "origin": "verifier",
+      "charterProvenance": null,
+      "state": "open",
+      "observations": [
+        {
+          "observationId": "OBS-d6b77c7df216",
+          "at": "2026-09-06T05:41:12.714Z",
+          "producer": "qa-verify",
+          "outcome": "observed",
+          "candidateCommit": "9db55dd8152718a92b839d5a6dfcf05bd992a4a2",
+          "runId": "RUN-22425dc46b2e",
+          "recordPath": ".solvo/evidence/qa/GH-1-run-9db55dd8152718a92b839d5a6dfcf05bd992a4a2.json",
+          "executionSource": null,
+          "evidenceRefs": [],
+          "assertionIdentity": null,
+          "detail": "All 12 approved instances assert their observable and pass at component level. But a real browser shows the selected status never reaching the URL: in ATT-2a4de7cca678, after chooseStatus(page, 'Open') followed immediately by Next, expect(page).toHaveURL(/status=open/) received 'http://localhost:5174/tickets?page=2' and retried 8 times over 5s. The failure snapshot shows the status combobox back at 'All statuses' on page 2 of an unfiltered list. Suspect path traced: client/src/pages/TicketsPage.tsx write() serialises a render-snapshot params object and calls setSearchParams(value) rather than the functional-updater form, so two writes issued from one committed render clobber each other. Competing reading that cannot be separated by reading alone: the Radix option click was itself lost. Same observable either way - a selection the user made did not reach the URL.",
+          "clearedBehaviour": null,
+          "humanAttestation": null
+        }
+      ],
+      "evidence": [],
+      "triageHistory": [],
+      "nextAction": null,
+      "resultingBug": null,
+      "refinementRef": null,
+      "duplicates": [],
+      "updatedAt": "2026-09-06T05:41:12.714Z"
+    },
+    {
+      "findingId": "FIND-5232572f9eda",
+      "workItem": "GH-1",
+      "ac": "AC3",
+      "obligationId": null,
+      "signature": "e2e/tests/ticket-list-url-state.spec.ts::Ticket list URL state (GH-1) › AC4 — returning to the list › should restore filter, sort and page when returning from a ticket",
+      "origin": "verifier",
+      "charterProvenance": null,
+      "state": "open",
+      "observations": [
+        {
+          "observationId": "OBS-7dee35f59c81",
+          "at": "2026-09-06T05:41:12.714Z",
+          "producer": "qa-verify",
+          "outcome": "observed",
+          "candidateCommit": "9db55dd8152718a92b839d5a6dfcf05bd992a4a2",
+          "runId": "RUN-22425dc46b2e",
+          "recordPath": ".solvo/evidence/qa/GH-1-run-9db55dd8152718a92b839d5a6dfcf05bd992a4a2.json",
+          "executionSource": null,
+          "evidenceRefs": [],
+          "assertionIdentity": null,
+          "detail": "All 9 enumerated instances pass, including the re-render and refetch traps. The gap is real-browser only: in ATT-2a4de7cca678, with status and sort already settled in the URL, Next was clicked and toHaveURL(/page=2/) failed on '?status=open&sortBy=subject&sortOrder=desc'. The snapshot shows 'Showing 1-10 of 22 tickets', 'Page 1 of 3' and Next ENABLED, so the button was clickable and the write never happened. The spec's own named excuse for this test - auto-resolve stealing page 2 - is ruled out: OPENAI_API_KEY is unset per environmentProfile and 22 open tickets across 3 pages are in the snapshot. Candidate mechanism: client/src/pages/TicketsTable.tsx renders the whole pagination footer under {!isLoading && !error && ...} and useQuery sets no placeholderData, so every new query key destroys and re-creates the Next button; a click landing on the pre-transition node reaches no React handler.",
+          "clearedBehaviour": null,
+          "humanAttestation": null
+        }
+      ],
+      "evidence": [],
+      "triageHistory": [],
+      "nextAction": null,
+      "resultingBug": null,
+      "refinementRef": null,
+      "duplicates": [],
+      "updatedAt": "2026-09-06T05:41:12.714Z"
+    },
+    {
+      "findingId": "FIND-7a2fd129a089",
+      "workItem": "GH-1",
+      "ac": "AC4",
+      "obligationId": null,
+      "signature": "e2e/tests/ticket-list-url-state.spec.ts::Ticket list URL state (GH-1) › AC4 — returning to the list",
+      "origin": "verifier",
+      "charterProvenance": null,
+      "state": "open",
+      "observations": [
+        {
+          "observationId": "OBS-efe9d6563117",
+          "at": "2026-09-06T05:41:12.714Z",
+          "producer": "qa-verify",
+          "outcome": "observed",
+          "candidateCommit": "9db55dd8152718a92b839d5a6dfcf05bd992a4a2",
+          "runId": "RUN-22425dc46b2e",
+          "recordPath": ".solvo/evidence/qa/GH-1-run-9db55dd8152718a92b839d5a6dfcf05bd992a4a2.json",
+          "executionSource": null,
+          "evidenceRefs": [],
+          "assertionIdentity": null,
+          "detail": "The two instances the spec assigns to E2E as their only proof both failed: CASE-e51a15eb56e6 and CASE-8e3d236b21a9. Neither failure reached its own claim - both died on the setup step - so the retrace restore and the nav-link destination are unproven as well as failing. The producer and consumer halves are genuinely asserted at component level (exact listSearch on the Link state, and an exact href on the detail back link), so the mechanism works in jsdom; what is unproven is the behaviour in a real browser.",
+          "clearedBehaviour": null,
+          "humanAttestation": null
+        }
+      ],
+      "evidence": [],
+      "triageHistory": [],
+      "nextAction": null,
+      "resultingBug": null,
+      "refinementRef": null,
+      "duplicates": [],
+      "updatedAt": "2026-09-06T05:41:12.714Z"
+    },
+    {
+      "findingId": "FIND-b1e8ee9068bc",
+      "workItem": "GH-1",
+      "ac": "AC8",
+      "obligationId": null,
+      "signature": "client/src/lib/ticket-list-params.test.ts::serializeTicketListParams › should write both halves of the sort when only the direction differs",
+      "origin": "verifier",
+      "charterProvenance": null,
+      "state": "open",
+      "observations": [
+        {
+          "observationId": "OBS-e700e4ad481b",
+          "at": "2026-09-06T05:41:12.714Z",
+          "producer": "qa-verify",
+          "outcome": "observed",
+          "candidateCommit": "9db55dd8152718a92b839d5a6dfcf05bd992a4a2",
+          "runId": "RUN-22425dc46b2e",
+          "recordPath": ".solvo/evidence/qa/GH-1-run-9db55dd8152718a92b839d5a6dfcf05bd992a4a2.json",
+          "executionSource": null,
+          "evidenceRefs": [],
+          "assertionIdentity": null,
+          "detail": "All 6 approved instances verified. The ambiguity is the sort pair, and both readings are honest. Reading A, which the spec states as the only reasonable one ('omit every value equal to its default'): when only the direction differs the URL should be '?sortOrder=asc'. Reading B, implemented in client/src/lib/ticket-list-params.ts and locked in by a unit assertion that serialize({sortBy: 'createdAt', sortOrder: 'asc'}) === 'sortBy=createdAt&sortOrder=asc': the sort is a pair, so a URL that mentions sorting names both halves, and sortBy=createdAt therefore appears while equalling its default. No approved case covers 'only the direction differs', so neither the case set nor the plan adjudicates it. The code and the spec text disagree.",
+          "clearedBehaviour": null,
+          "humanAttestation": null
+        }
+      ],
+      "evidence": [],
+      "triageHistory": [],
+      "nextAction": null,
+      "resultingBug": null,
+      "refinementRef": null,
+      "duplicates": [],
+      "updatedAt": "2026-09-06T05:41:12.714Z"
+    }
+  ]
+}

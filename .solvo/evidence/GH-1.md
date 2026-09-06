@@ -8,10 +8,18 @@ status: INCOMPLETE
 
 # GH-1 — Evidence pack
 
-**INCOMPLETE.** One thing that was outstanding is now closed: the E2E obligation is discharged —
-82/82 twice, the 13 new scenarios 13/13 (section 6). What remains unfillable is in section 7 and is
-human work, not agent work: `/qa-verify` has not run (`state.qa` absent), and neither of the two
-approved exploratory charters has been performed. Both are named in place below.
+**INCOMPLETE.** `/qa-verify` has now run and returned **`fail`** — see section 7. That supersedes an
+earlier version of this pack which recorded the E2E obligation as discharged on the strength of three
+green runs; a fourth run, the one `/qa-execute` captured as canonical evidence, was **79/82**, and two
+of this story's own scenarios are among the failures. Section 6 is corrected accordingly.
+
+What is unfillable, and why this stays INCOMPLETE:
+
+- **AC1, AC3 and AC4 are `gap`** and **AC8 is `ambiguous`** on the recorded verification. Four findings
+  are open and untriaged.
+- Neither approved exploratory charter has been performed, so `charterFindings` below still reads
+  "not yet run" for both. The `status` flip is deliberately withheld: sealing it now would seal
+  "ran, found nothing" for charters nobody has opened.
 
 ## 1. Work item
 
@@ -117,9 +125,28 @@ script exists in this repo, and `@vitest/coverage-v8` is not installed. The cove
 **waived for this story by JB Mccallaghan at the QA plan gate**; `solvo doctor` reports the waiver as
 a standing `coverage-waiver` WARN.
 
-**E2E — obligation discharged.** `bun run test:e2e` (`playwright test`), full suite, run twice:
-**82 passed / 82** both times (4.3m, then 2.4m). The 13 new scenarios at
-`e2e/tests/ticket-list-url-state.spec.ts` (AC3 ×1, AC4 ×5, AC5 ×7) are **13 passed / 13**.
+**E2E — obligation NOT discharged. This section previously claimed it was, and that was wrong.**
+
+The canonical execution record for this candidate is `RUN-22425dc46b2e` at
+`.solvo/evidence/qa/GH-1-run-9db55dd8152718a92b839d5a6dfcf05bd992a4a2.json`, written by `/qa-execute`.
+Its E2E attempt `ATT-2a4de7cca678` is **79 passed / 82, exit 1** in 7.5m, and the proof state on
+`OBL-76fc8365ceb1` is `observed-failure`. Three tests failed:
+
+| Test | Failure |
+|---|---|
+| `ticket-list-url-state.spec.ts` — AC4, "should restore filter, sort and page when returning from a ticket" (`CASE-e51a15eb56e6`) | Next clicked, `toHaveURL(/page=2/)` got `?status=open&sortBy=subject&sortOrder=desc`. Snapshot shows "Page 1 of 3", 22 open tickets, Next **enabled** — the button was clickable and the write never happened. |
+| `ticket-list-url-state.spec.ts` — AC4, "should land on a clean list when using the nav Tickets link" (`CASE-8e3d236b21a9`) | `toHaveURL(/status=open/)` got `?page=2`. Snapshot shows the status trigger back at "All statuses" — the selection never reached the URL. |
+| `auth.spec.ts` — "should login successfully with valid admin credentials" | `browserContext.newPage: Test timeout of 30000ms exceeded` in `beforeEach`. No assertion reached, so this test's outcome is not observed either way. It is in the plan's regression scope. |
+
+**Three earlier runs of the same suite were 82/82** (4.3m, 2.4m, 3.9m), and those runs happened. What
+was wrong was the conclusion drawn from them: three passes do not establish determinism, and this pack
+asserted it. The verifier also ruled out the excuse this pack had pre-registered for exactly these
+scenarios — the seed helper racing `auto-resolve-ticket` cannot be the cause, because `OPENAI_API_KEY`
+is unset so auto-resolve throws before it can move a ticket, and the failure snapshot shows 22 open
+tickets across 3 pages.
+
+The 13 new scenarios at `e2e/tests/ticket-list-url-state.spec.ts` (AC3 ×1, AC4 ×5, AC5 ×7) therefore
+stand at **11 passed / 13** on the canonical run.
 
 This section previously read "0 executed, nobody has seen them pass". Executing them corrected two
 claims recorded here and found three real defects, all in test infrastructure rather than in the
@@ -242,14 +269,72 @@ merge-blocking in the reviewer's own assessment):
 
 **Human reviewers**: none yet — the PR has not opened.
 
-**QA verification**: **not run.** `/qa-verify` has not been invoked and `state.qa` is absent. At T2
-that is not itself a gate failure, but it is an unfillable section, so it is named here rather than
-guessed.
+**QA verification**: **`fail`**, performed by `claude-code (eu.anthropic.claude-opus-5[1m]) via
+/qa-verify` at 2026-09-06T05:41:12.714Z. Recorded in `state.qa`; snapshot
+`vs-ccdc5fd34272c56524892aa76fb362f2`, derived from `RUN-22425dc46b2e` @ `9db55dd8…`. This is a
+verification result and not an acceptance record — acceptance stays with a human.
 
-**charterFindings**: the approved plan names two exploratory charters —
-`CH-be78fe0e3063` (hand-edited and shared URLs) and `CH-5e072067c341` (rapid back/forward with
-in-flight requests). Both are gating obligations at T2. Neither has been performed, so both are "not
-yet run" and this subsection stays open. No `qa-result perform` attempt exists for either.
+Coverage basis was `approved-fresh`: the plan and case-set revisions copied onto the run are approved at
+their current revisions.
+
+| AC | Result |
+|---|---|
+| AC1 | **gap** |
+| AC2 | verified |
+| AC3 | **gap** |
+| AC4 | **gap** |
+| AC5 | verified |
+| AC6 | verified |
+| AC7 | verified |
+| AC8 | **ambiguous** |
+| AC9 | verified |
+| AC10 | verified |
+
+Four findings were created, all **open and untriaged** — a verifier reading is not a disposition, so the
+cause of each belongs to `/qa-triage` with a named human, not to this pack:
+
+| Finding | AC | Kind | Suspect path |
+|---|---|---|---|
+| `FIND-86cc706fc23c` | AC1 | implementation-defect | `client/src/pages/TicketsPage.tsx` |
+| `FIND-5232572f9eda` | AC3 | implementation-defect | `client/src/pages/TicketsTable.tsx` |
+| `FIND-7a2fd129a089` | AC4 | implementation-defect | `client/src/pages/TicketsPage.tsx` |
+| `FIND-b1e8ee9068bc` | AC8 | ac-ambiguity | `client/src/lib/ticket-list-params.ts` |
+
+Recorded at `.solvo/evidence/qa/GH-1-findings.json`.
+
+The two suspect paths the verifier traced, stated as its reading rather than as established cause:
+`TicketsPage.tsx` `write()` serialises a render-snapshot `params` object and calls `setSearchParams(value)`
+rather than the functional-updater form, so two writes issued from one committed render can clobber each
+other; and `TicketsTable.tsx` renders the whole pagination footer under `{!isLoading && !error && …}`
+with no `placeholderData` on the query, so the Next button is destroyed and re-created around every
+fetch and a click can land on a node with no handler attached.
+
+AC8's ambiguity is genuine and is a refinement item for the BA, not a bug: the spec states one reading
+("omit every value equal to its default", so only-direction-differs would be `?sortOrder=asc`), and
+`ticket-list-params.ts` implements another (the sort is a pair, so `sortBy=createdAt` appears while
+equalling its default). No approved case covers that instance, so neither the case set nor the plan
+adjudicates it. The code and the spec text disagree.
+
+Two execution-proof hand-off rows are recorded and write no findings, because nothing was executed for
+them: `OBL-6a8f9bc42d14` and `OBL-4cc5af08aed0`, both `missing`, both needing `qa-result perform`.
+
+**charterFindings**: the approved plan names two exploratory charters, both snapshotted onto
+`RUN-22425dc46b2e` as `manual`/`exploratory` obligations by `/qa-execute`. Both are gating obligations at
+T2. Rows are projected from the run, not from this pack's prose:
+
+| area | whatFound | verifierVerdictAtTime | resultingBug |
+|---|---|---|---|
+| tickets list URL state (`CH-be78fe0e3063`, `OBL-6a8f9bc42d14`) | not yet run | n/a | none |
+| tickets list browser history (`CH-5e072067c341`, `OBL-4cc5af08aed0`) | not yet run | n/a | none |
+
+Neither obligation has a `qa-result perform` attempt and neither carries a current waiver or deferral, so
+both rows read **"not yet run"** — a placeholder, not a closing value. **This subsection stays open and
+the frontmatter stays `status: INCOMPLETE`.** Sealing it now would record "ran, found nothing" for
+charters nobody has opened, which is precisely the fabrication this subsection exists to prevent.
+
+`verifierVerdictAtTime` is `n/a` on both rows because neither charter has an attempt to carry a
+`precedingVerification` — the `fail` verdict above is this cycle's read, not a value to mint into a row
+for a performance that has not happened.
 
 ## 8. Wikilinks
 

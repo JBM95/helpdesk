@@ -1,0 +1,1544 @@
+$ playwright test
+(node:17804) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[1A[2K[2m[WebServer] [22mAPI key does not start with "SG.".
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 101: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 102: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22mAPI key does not start with "SG.".
+[1A[2K[2m[WebServer] [22m(node:24280) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+[2m[WebServer] [22m(Use `node --trace-deprecation ...` to show where the warning was created)
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 106: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22mAPI key does not start with "SG.".
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 107: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 108: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 109: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 110: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 24: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 26: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 27: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 28: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 29: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 30: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 31: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 33: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 36: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 57: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 59: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 60: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 61: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 62: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 63: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 64: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 65: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 66: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 67: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 68: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 69: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 70: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 71: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 72: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 73: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 74: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 75: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 76: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 77: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 78: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 79: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 80: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 81: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 82: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 83: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyE[1A[2K[2m[WebServer] [22mrror[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K(node:11620) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[1A[2K[2m[WebServer] [22mAPI key does not start with "SG.".
+[1A[2K[2m[WebServer] [22mAPI key does not start with "SG.".
+[1A[2K(node:13576) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[1A[2K[2m[WebServer] [22m[0m[31m[2m2026-09-06T05:13:39.439Z[0m [31mERROR[0m [1m[Better Auth]:[0m User not found {
+[2m[WebServer] [22m  [0memail[2m:[0m [0m[32m[0m[32m"nonexistent@example.com"[0m[0m[0m[2m,[0m
+[2m[WebServer] [22m}[0m
+[1A[2K[2m[WebServer] [22m[0m[31m[2m2026-09-06T05:13:43.252Z[0m [31mERROR[0m [1m[Better Auth]:[0m Invalid password[0m
+[1A[2K[2m[WebServer] [22m[0m[31m[2m2026-09-06T05:13:53.919Z[0m [31mERROR[0m [1m[Better Auth]:[0m Invalid password[0m
+[1A[2K[2m[WebServer] [22mAPI key does not start with "SG.".
+[1A[2K[2m[WebServer] [22mAPI key does not start with "SG.".
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 20: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 23: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 14: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 16: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K(node:20232) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 17: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 35: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 36: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22mAPI key does not start with "SG.".
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 37: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 41: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 32: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 42: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 22: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 33: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 43: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K(node:9680) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 44: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 27: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22mAPI key does not start with "SG.".
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 25: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 26: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 30: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 31: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 45: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 29: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 46: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 34: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 1: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 24: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 38: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 39: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 47: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 48: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 49: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 40: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 28: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 4: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 7: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 21: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 50: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 51: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 52: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 53: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 54: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 55: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 56: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 57: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 89: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 86: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+[1A[2K[2m[WebServer] [22m[0m[31mAuto-resolve AI call failed for ticket 90: [0m[1m625 |[0m       message: [0m[32m`[0m${description}[0m[32m API key is missing. Pass it using the '[0m${apiKeyParameterName}[0m[32m' parameter. Environment variables is not supported in this environment.`[0m
+[2m[WebServer] [22m[0m[1m626 |[0m     })[0m[2m;[0m
+[2m[WebServer] [22m[0m[1m627 |[0m   }
+[2m[WebServer] [22m[0m[1m628 |[0m   apiKey = process.env[environmentVariableName][0m[2m;[0m
+[2m[WebServer] [22m[0m[1m629 |[0m   [0m[35mif[0m (apiKey == [0m[33mnull[0m) {
+[2m[WebServer] [22m[0m[1m630 |[0m     [0m[35mthrow[0m [0m[35mnew[0m [0m[1mLoadAPIKeyError[0m({
+[2m[WebServer] [22m                    [31m[1m^[0m
+[2m[WebServer] [22m[0m[31mAI_LoadAPIKeyError[0m[2m:[0m [1mOpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.[0m
+[2m[WebServer] [22m      cause[0m[2m:[0m [0m[2mundefined[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m vercel.ai.error.AI_LoadAPIKeyError[0m[2m:[0m [0m[33mtrue[0m[0m[2m,[0m
+[2m[WebServer] [22m
+[2m[WebServer] [22m[0m      [2mat [0mloadApiKey[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\provider-utils\dist\index.mjs[0m[2m:[0m[33m630[0m[2m:[33m15[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mgetHeaders[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m6164[0m[2m:[33m32[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mdoGenerate[2m ([0m[0m[36mC:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\node_modules\@ai-sdk\openai\dist\index.mjs[0m[2m:[0m[33m5533[0m[2m:[33m25[0m[2m)[0m
+[2m[WebServer] [22m[0m      [2mat [0mprocessTicksAndRejections[2m ([0m[0m[36mnative[0m[2m:[0m[33m7[0m[2m:[33m39[0m[2m)[0m
+[2m[WebServer] [22m[0m
+error: script "test:e2e" exited with code 1

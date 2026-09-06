@@ -1,0 +1,272 @@
+
+
+
+
+
+
+
+[dotenv@17.3.1] injecting env (8) from server\.env.test -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+Resetting test database...
+Datasource "db": PostgreSQL database "helpdesk_test", schema "public" at "localhost:5432"
+
+Applying migration `20260210185444_add_better_auth_tables`
+Applying migration `20260210200027_add_user_role`
+Applying migration `20260210200100_change_role_to_enum`
+Applying migration `20260218190509_add_user_deleted_at`
+Applying migration `20260219170454_add_ticket_model`
+Applying migration `20260224164447_add_reply_model`
+Applying migration `20260225181704_add_body_html_to_reply`
+Applying migration `20260227155141_add_new_and_processing_ticket_status`
+Applying migration `20260227155314_change_ticket_default_status_to_new`
+Applying migration `20260302000000_add_get_ticket_stats_function`
+
+Database reset successful
+
+The following migration(s) have been applied:
+
+migrations/
+  └─ 20260210185444_add_better_auth_tables/
+    └─ migration.sql
+  └─ 20260210200027_add_user_role/
+    └─ migration.sql
+  └─ 20260210200100_change_role_to_enum/
+    └─ migration.sql
+  └─ 20260218190509_add_user_deleted_at/
+    └─ migration.sql
+  └─ 20260219170454_add_ticket_model/
+    └─ migration.sql
+  └─ 20260224164447_add_reply_model/
+    └─ migration.sql
+  └─ 20260225181704_add_body_html_to_reply/
+    └─ migration.sql
+  └─ 20260227155141_add_new_and_processing_ticket_status/
+    └─ migration.sql
+  └─ 20260227155314_change_ticket_default_status_to_new/
+    └─ migration.sql
+  └─ 20260302000000_add_get_ticket_stats_function/
+    └─ migration.sql
+
+Running seed...
+Admin user admin@example.com created successfully.
+AI agent user created successfully.
+Test database ready.
+
+
+
+
+Running 82 tests using 1 worker
+
+
+[1A[2K[1/82] [chromium] › e2e\tests\auth.spec.ts:17:9 › Authentication › Login Page › should display login form with all elements
+[1A[2K[2/82] [chromium] › e2e\tests\auth.spec.ts:32:9 › Authentication › Login Page › should login successfully with valid admin credentials
+
+
+[1A[2K  1) [chromium] › e2e\tests\auth.spec.ts:32:9 › Authentication › Login Page › should login successfully with valid admin credentials 
+
+    [31mTest timeout of 30000ms exceeded while running "beforeEach" hook.[39m
+
+      11 | test.describe("Authentication", () => {
+      12 |   test.describe("Login Page", () => {
+    > 13 |     test.beforeEach(async ({ page }) => {
+         |          ^
+      14 |       await page.goto("/login");
+      15 |     });
+      16 |
+        at C:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\e2e\tests\auth.spec.ts:13:10
+
+    Error: browserContext.newPage: Test timeout of 30000ms exceeded.
+
+
+
+[1A[2K[3/82] [chromium] › e2e\tests\auth.spec.ts:44:9 › Authentication › Login Page › should show error with invalid email format
+[1A[2K[4/82] [chromium] › e2e\tests\auth.spec.ts:58:9 › Authentication › Login Page › should show error with empty email
+[1A[2K[5/82] [chromium] › e2e\tests\auth.spec.ts:71:9 › Authentication › Login Page › should show error with empty password
+[1A[2K[6/82] [chromium] › e2e\tests\auth.spec.ts:82:9 › Authentication › Login Page › should show error with empty email and password
+[1A[2K[7/82] [chromium] › e2e\tests\auth.spec.ts:97:9 › Authentication › Login Page › should show error with invalid email (non-existent user)
+
+[1A[2K[8/82] [chromium] › e2e\tests\auth.spec.ts:115:9 › Authentication › Login Page › should show error with incorrect password
+
+[1A[2K[9/82] [chromium] › e2e\tests\auth.spec.ts:131:9 › Authentication › Login Page › should show loading state during login
+[1A[2K[10/82] [chromium] › e2e\tests\auth.spec.ts:155:9 › Authentication › Login Page › should redirect to home if already authenticated
+[1A[2K[11/82] [chromium] › e2e\tests\auth.spec.ts:168:9 › Authentication › Login Page › should clear server error on new submission
+
+[1A[2K[12/82] [chromium] › e2e\tests\auth.spec.ts:189:9 › Authentication › Session Persistence › should maintain session after page reload
+[1A[2K[13/82] [chromium] › e2e\tests\auth.spec.ts:201:9 › Authentication › Session Persistence › should maintain session when navigating directly to protected route
+[1A[2K[14/82] [chromium] › e2e\tests\auth.spec.ts:217:9 › Authentication › Session Persistence › should maintain session across multiple page navigations
+[1A[2K[15/82] [chromium] › e2e\tests\auth.spec.ts:240:9 › Authentication › Logout › should logout successfully
+[1A[2K[16/82] [chromium] › e2e\tests\auth.spec.ts:247:9 › Authentication › Logout › should not be able to access protected routes after logout
+[1A[2K[17/82] [chromium] › e2e\tests\auth.spec.ts:259:9 › Authentication › Logout › should not be able to access admin routes after logout
+[1A[2K[18/82] [chromium] › e2e\tests\auth.spec.ts:271:9 › Authentication › Logout › should require login again after logout
+[1A[2K[19/82] [chromium] › e2e\tests\auth.spec.ts:289:9 › Authentication › Protected Routes › should redirect unauthenticated user to login when accessing root
+[1A[2K[20/82] [chromium] › e2e\tests\auth.spec.ts:296:9 › Authentication › Protected Routes › should redirect unauthenticated user to login when accessing admin route
+[1A[2K[21/82] [chromium] › e2e\tests\auth.spec.ts:303:9 › Authentication › Protected Routes › should redirect unauthenticated user from home to login
+[1A[2K[22/82] [chromium] › e2e\tests\auth.spec.ts:312:9 › Authentication › Protected Routes › should allow access to protected route after login
+[1A[2K[23/82] [chromium] › e2e\tests\auth.spec.ts:328:9 › Authentication › Admin Route Protection › should allow admin to access admin routes
+[1A[2K[24/82] [chromium] › e2e\tests\auth.spec.ts:341:9 › Authentication › Admin Route Protection › should show 'Users' link in navigation for admin
+[1A[2K[25/82] [chromium] › e2e\tests\auth.spec.ts:350:9 › Authentication › Admin Route Protection › should navigate to users page when clicking Users link
+[1A[2K[26/82] [chromium] › e2e\tests\auth.spec.ts:365:9 › Authentication › Admin Route Protection › should maintain access to home route while on admin route
+[1A[2K[27/82] [chromium] › e2e\tests\auth.spec.ts:401:9 › Authentication › URL Handling › should redirect unknown routes to home for authenticated user
+[1A[2K[28/82] [chromium] › e2e\tests\auth.spec.ts:413:9 › Authentication › URL Handling › should redirect unknown routes to login for unauthenticated user
+[1A[2K[29/82] [chromium] › e2e\tests\auth.spec.ts:429:9 › Authentication › Navigation Bar › should display correct user information
+[1A[2K[30/82] [chromium] › e2e\tests\auth.spec.ts:439:9 › Authentication › Navigation Bar › should display Helpdesk branding
+[1A[2K[31/82] [chromium] › e2e\tests\auth.spec.ts:443:9 › Authentication › Navigation Bar › should show navigation appropriate to user role
+[1A[2K[32/82] [chromium] › e2e\tests\ticket-detail.spec.ts:61:7 › Ticket Detail Page › should redirect unauthenticated user to login
+[1A[2K[33/82] [chromium] › e2e\tests\ticket-detail.spec.ts:76:7 › Ticket Detail Page › should persist ticket updates after page reload
+[1A[2K[34/82] [chromium] › e2e\tests\ticket-detail.spec.ts:139:7 › Ticket Detail Page › should persist replies after page reload
+
+[1A[2K[35/82] [chromium] › e2e\tests\ticket-detail.spec.ts:170:7 › Ticket Detail Page › should complete full agent workflow: navigate, view, update, reply, and return to list
+[1A[2K[36/82] [chromium] › e2e\tests\ticket-list-url-state.spec.ts:105:9 › Ticket list URL state (GH-1) › AC3 — current page in the URL › should still show page 2 after a full browser reload
+
+[1A[2K[37/82] [chromium] › e2e\tests\ticket-list-url-state.spec.ts:123:9 › Ticket list URL state (GH-1) › AC4 — returning to the list › should restore filter, sort and page when returning from a ticket
+
+
+
+[1A[2K  2) [chromium] › e2e\tests\ticket-list-url-state.spec.ts:123:9 › Ticket list URL state (GH-1) › AC4 — returning to the list › should restore filter, sort and page when returning from a ticket 
+
+    Error: [2mexpect([22m[31mpage[39m[2m).[22mtoHaveURL[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Expected pattern: [32m/page=2/[39m
+    Received string:  [31m"http://localhost:5174/tickets?status=open&sortBy=subject&sortOrder=desc"[39m
+    Timeout: 5000ms
+
+    Call log:
+    [2m  - Expect "toHaveURL" with timeout 5000ms[22m
+    [2m    8 × unexpected value "http://localhost:5174/tickets?status=open&sortBy=subject&sortOrder=desc"[22m
+
+
+      135 |
+      136 |       await page.getByRole("button", { name: "Next page" }).click();
+    > 137 |       await expect(page).toHaveURL(/page=2/);
+          |                          ^
+      138 |
+      139 |       const listUrl = new URL(page.url()).search;
+      140 |
+        at C:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\e2e\tests\ticket-list-url-state.spec.ts:137:26
+
+    Error Context: e2e\test-results\ticket-list-url-state-Tick-badad-hen-returning-from-a-ticket-chromium\error-context.md
+
+
+
+
+[1A[2K[38/82] [chromium] › e2e\tests\ticket-list-url-state.spec.ts:152:9 › Ticket list URL state (GH-1) › AC4 — returning to the list › should restore a filtered and paged list after a reload
+
+
+
+[1A[2K[39/82] [chromium] › e2e\tests\ticket-list-url-state.spec.ts:169:9 › Ticket list URL state (GH-1) › AC4 — returning to the list › should redirect a parameterised list URL to login with no session
+
+[1A[2K[40/82] [chromium] › e2e\tests\ticket-list-url-state.spec.ts:194:9 › Ticket list URL state (GH-1) › AC4 — returning to the list › should land on home, not the deep link, after logging in from a guarded URL
+
+[1A[2K[41/82] [chromium] › e2e\tests\ticket-list-url-state.spec.ts:207:9 › Ticket list URL state (GH-1) › AC4 — returning to the list › should land on a clean list when using the nav Tickets link
+
+
+
+
+
+[1A[2K  3) [chromium] › e2e\tests\ticket-list-url-state.spec.ts:207:9 › Ticket list URL state (GH-1) › AC4 — returning to the list › should land on a clean list when using the nav Tickets link 
+
+    Error: [2mexpect([22m[31mpage[39m[2m).[22mtoHaveURL[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Expected pattern: [32m/status=open/[39m
+    Received string:  [31m"http://localhost:5174/tickets?page=2"[39m
+    Timeout: 5000ms
+
+    Call log:
+    [2m  - Expect "toHaveURL" with timeout 5000ms[22m
+    [2m    8 × unexpected value "http://localhost:5174/tickets?page=2"[22m
+
+
+      214 |       await chooseStatus(page, "Open");
+      215 |       await page.getByRole("button", { name: "Next page" }).click();
+    > 216 |       await expect(page).toHaveURL(/status=open/);
+          |                          ^
+      217 |       await expect(page).toHaveURL(/page=2/);
+      218 |
+      219 |       // The nav link to "/" is labelled Dashboard, not Home
+        at C:\Users\JBMccallaghan\Downloads\Personal Projects\helpdesk\e2e\tests\ticket-list-url-state.spec.ts:216:26
+
+    Error Context: e2e\test-results\ticket-list-url-state-Tick-dc000--using-the-nav-Tickets-link-chromium\error-context.md
+
+
+
+
+[1A[2K[42/82] [chromium] › e2e\tests\ticket-list-url-state.spec.ts:231:9 › Ticket list URL state (GH-1) › AC5 — browser back and forward › should undo a filter change on Back
+
+
+[1A[2K[43/82] [chromium] › e2e\tests\ticket-list-url-state.spec.ts:245:9 › Ticket list URL state (GH-1) › AC5 — browser back and forward › should undo a page change on Back
+
+
+[1A[2K[44/82] [chromium] › e2e\tests\ticket-list-url-state.spec.ts:260:9 › Ticket list URL state (GH-1) › AC5 — browser back and forward › should re-apply the state on Forward after Back
+
+
+[1A[2K[45/82] [chromium] › e2e\tests\ticket-list-url-state.spec.ts:277:9 › Ticket list URL state (GH-1) › AC5 — browser back and forward › should unwind three successive states in order
+
+
+[1A[2K[46/82] [chromium] › e2e\tests\ticket-list-url-state.spec.ts:307:9 › Ticket list URL state (GH-1) › AC5 — browser back and forward › should leave the tickets page on Back when no control was touched
+
+[1A[2K[47/82] [chromium] › e2e\tests\ticket-list-url-state.spec.ts:322:9 › Ticket list URL state (GH-1) › AC5 — browser back and forward › should keep the rendered list in step with the URL through rapid Back and Forward
+
+
+[1A[2K[48/82] [chromium] › e2e\tests\ticket-list-url-state.spec.ts:352:9 › Ticket list URL state (GH-1) › AC5 — browser back and forward › should not render a superseded in-flight response after Back
+
+
+[1A[2K[49/82] [chromium] › e2e\tests\tickets.spec.ts:53:9 › Tickets Page › Navigation › should show 'Tickets' link in navigation for authenticated user
+
+[1A[2K[50/82] [chromium] › e2e\tests\tickets.spec.ts:60:9 › Tickets Page › Navigation › should navigate to /tickets when clicking Tickets link
+
+[1A[2K[51/82] [chromium] › e2e\tests\tickets.spec.ts:69:9 › Tickets Page › Navigation › should redirect to login when accessing /tickets without authentication
+
+[1A[2K[52/82] [chromium] › e2e\tests\tickets.spec.ts:77:9 › Tickets Page › Integration with Webhook › should display ticket created via webhook endpoint
+
+[1A[2K[53/82] [chromium] › e2e\tests\tickets.spec.ts:97:9 › Tickets Page › Integration with Webhook › should show newly created ticket after page reload
+
+
+[1A[2K[54/82] [chromium] › e2e\tests\users.spec.ts:24:9 › User Management › View Users › should display users table with correct columns
+
+[1A[2K[55/82] [chromium] › e2e\tests\users.spec.ts:51:9 › User Management › Create User › should open create user dialog when clicking 'New User'
+
+[1A[2K[56/82] [chromium] › e2e\tests\users.spec.ts:75:9 › User Management › Create User › should create a new agent user successfully
+
+
+[1A[2K[57/82] [chromium] › e2e\tests\users.spec.ts:156:9 › User Management › Edit User › should open edit user dialog when clicking edit button
+
+
+[1A[2K[58/82] [chromium] › e2e\tests\users.spec.ts:219:9 › User Management › Edit User › should edit user name and email together
+
+
+
+[1A[2K[59/82] [chromium] › e2e\tests\users.spec.ts:289:9 › User Management › Delete User › should open delete confirmation dialog when clicking delete button
+
+
+[1A[2K[60/82] [chromium] › e2e\tests\users.spec.ts:346:9 › User Management › Delete User › should delete user successfully when clicking Confirm
+
+
+[1A[2K[61/82] [chromium] › e2e\tests\webhook-inbound-email.spec.ts:41:9 › Webhook: Inbound Email › Authentication › should reject request with missing webhook secret
+[1A[2K[62/82] [chromium] › e2e\tests\webhook-inbound-email.spec.ts:60:9 › Webhook: Inbound Email › Authentication › should reject request with wrong webhook secret in header
+[1A[2K[63/82] [chromium] › e2e\tests\webhook-inbound-email.spec.ts:82:9 › Webhook: Inbound Email › Authentication › should reject request with wrong webhook secret in query param
+[1A[2K[64/82] [chromium] › e2e\tests\webhook-inbound-email.spec.ts:101:9 › Webhook: Inbound Email › Authentication › should accept request with correct webhook secret in header
+[1A[2K[65/82] [chromium] › e2e\tests\webhook-inbound-email.spec.ts:121:9 › Webhook: Inbound Email › Authentication › should accept request with correct webhook secret in query param
+[1A[2K[66/82] [chromium] › e2e\tests\webhook-inbound-email.spec.ts:140:9 › Webhook: Inbound Email › Validation › should reject request with invalid email format
+[1A[2K[67/82] [chromium] › e2e\tests\webhook-inbound-email.spec.ts:162:9 › Webhook: Inbound Email › Validation › should reject request with missing email field
+[1A[2K[68/82] [chromium] › e2e\tests\webhook-inbound-email.spec.ts:183:9 › Webhook: Inbound Email › Validation › should use email as sender name when from field has no name
+[1A[2K[69/82] [chromium] › e2e\tests\webhook-inbound-email.spec.ts:201:9 › Webhook: Inbound Email › Validation › should use email as sender name when from field has whitespace-only name
+[1A[2K[70/82] [chromium] › e2e\tests\webhook-inbound-email.spec.ts:221:9 › Webhook: Inbound Email › Validation › should reject request with empty subject
+
+[1A[2K[71/82] [chromium] › e2e\tests\webhook-inbound-email.spec.ts:241:9 › Webhook: Inbound Email › Validation › should reject request with whitespace-only subject
+[1A[2K[72/82] [chromium] › e2e\tests\webhook-inbound-email.spec.ts:263:9 › Webhook: Inbound Email › Validation › should reject request with empty body
+[1A[2K[73/82] [chromium] › e2e\tests\webhook-inbound-email.spec.ts:283:9 › Webhook: Inbound Email › Validation › should accept request with missing bodyHtml (optional field)
+[1A[2K[74/82] [chromium] › e2e\tests\webhook-inbound-email.spec.ts:307:9 › Webhook: Inbound Email › Ticket Creation › should create a new ticket with valid payload
+[1A[2K[75/82] [chromium] › e2e\tests\webhook-inbound-email.spec.ts:350:9 › Webhook: Inbound Email › Ticket Creation › should create ticket with bodyHtml when provided
+[1A[2K[76/82] [chromium] › e2e\tests\webhook-inbound-email.spec.ts:381:9 › Webhook: Inbound Email › Email Threading › should thread duplicate email to existing open ticket (same sender + subject)
+[1A[2K[77/82] [chromium] › e2e\tests\webhook-inbound-email.spec.ts:438:9 › Webhook: Inbound Email › Email Threading › should thread email with 'Re:' prefix to existing ticket
+[1A[2K[78/82] [chromium] › e2e\tests\webhook-inbound-email.spec.ts:491:9 › Webhook: Inbound Email › Email Threading › should thread email with 'Fwd:' prefix to existing ticket
+[1A[2K[79/82] [chromium] › e2e\tests\webhook-inbound-email.spec.ts:544:9 › Webhook: Inbound Email › Email Threading › should thread email with multiple 'Re:' prefixes
+[1A[2K[80/82] [chromium] › e2e\tests\webhook-inbound-email.spec.ts:593:9 › Webhook: Inbound Email › Email Threading › should thread email with case-insensitive 're:' prefix
+[1A[2K[81/82] [chromium] › e2e\tests\webhook-inbound-email.spec.ts:643:9 › Webhook: Inbound Email › Email Threading › should NOT thread if sender is different (even with same subject)
+[1A[2K[82/82] [chromium] › e2e\tests\webhook-inbound-email.spec.ts:695:9 › Webhook: Inbound Email › Email Threading › should NOT thread if subject is different (even with same sender)
+Test run complete. Test database left intact for debugging.
+
+[1A[2K  3 failed
+    [chromium] › e2e\tests\auth.spec.ts:32:9 › Authentication › Login Page › should login successfully with valid admin credentials 
+    [chromium] › e2e\tests\ticket-list-url-state.spec.ts:123:9 › Ticket list URL state (GH-1) › AC4 — returning to the list › should restore filter, sort and page when returning from a ticket 
+    [chromium] › e2e\tests\ticket-list-url-state.spec.ts:207:9 › Ticket list URL state (GH-1) › AC4 — returning to the list › should land on a clean list when using the nav Tickets link 
+  79 passed (7.5m)

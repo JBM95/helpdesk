@@ -1,0 +1,62 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90mC:/Users/JBMccallaghan/Downloads/Personal Projects/helpdesk/client[39m
+
+ [32m✓[39m src/lib/ticket-list-params.test.ts [2m([22m[2m57 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/components/TicketDetail.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 261[2mms[22m[39m
+ [32m✓[39m src/components/ReplyThread.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[32m 267[2mms[22m[39m
+ [32m✓[39m src/components/TicketSummary.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 879[2mms[22m[39m
+     [33m[2m✓[22m[39m should render Summarize button [33m 319[2mms[22m[39m
+ [32m✓[39m src/pages/UsersPage.test.tsx [2m([22m[2m17 tests[22m[2m)[22m[33m 2987[2mms[22m[39m
+     [33m[2m✓[22m[39m should close confirmation dialog when clicking Cancel [33m 328[2mms[22m[39m
+     [33m[2m✓[22m[39m should call axios.delete when clicking Confirm [33m 312[2mms[22m[39m
+     [33m[2m✓[22m[39m should refresh users list after successful deletion [33m 305[2mms[22m[39m
+ [32m✓[39m src/components/ReplyForm.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[33m 3837[2mms[22m[39m
+     [33m[2m✓[22m[39m should render textarea, Polish button, and Send Reply button [33m 344[2mms[22m[39m
+     [33m[2m✓[22m[39m should allow sending the polished reply [33m 352[2mms[22m[39m
+ [32m✓[39m src/pages/TicketDetailPage.test.tsx [2m([22m[2m18 tests[22m[2m)[22m[33m 4088[2mms[22m[39m
+     [33m[2m✓[22m[39m should carry the list's query string back to the tickets list [33m 343[2mms[22m[39m
+     [33m[2m✓[22m[39m should call PATCH with assignedToId when selecting an agent [33m 501[2mms[22m[39m
+     [33m[2m✓[22m[39m should call PATCH with null when selecting Unassigned [33m 438[2mms[22m[39m
+     [33m[2m✓[22m[39m should display current status and all status options in dropdown [33m 334[2mms[22m[39m
+     [33m[2m✓[22m[39m should call PATCH with status when selecting a status [33m 421[2mms[22m[39m
+     [33m[2m✓[22m[39m should call PATCH with category when selecting a category [33m 386[2mms[22m[39m
+     [33m[2m✓[22m[39m should call PATCH with null category when selecting None [33m 441[2mms[22m[39m
+ [32m✓[39m src/pages/UserForm.test.tsx [2m([22m[2m20 tests[22m[2m)[22m[33m 8083[2mms[22m[39m
+     [33m[2m✓[22m[39m should render all form fields and submit button [33m 425[2mms[22m[39m
+     [33m[2m✓[22m[39m should show validation error for short name [33m 748[2mms[22m[39m
+     [33m[2m✓[22m[39m should show validation error for short password [33m 687[2mms[22m[39m
+     [33m[2m✓[22m[39m should show validation error for missing email [33m 504[2mms[22m[39m
+     [33m[2m✓[22m[39m should call POST /api/users with form data on valid submit [33m 730[2mms[22m[39m
+     [33m[2m✓[22m[39m should call onSuccess after successful creation [33m 759[2mms[22m[39m
+     [33m[2m✓[22m[39m should reset the form after successful creation [33m 727[2mms[22m[39m
+     [33m[2m✓[22m[39m should display server error message on 409 conflict [33m 754[2mms[22m[39m
+     [33m[2m✓[22m[39m should show generic error for non-Axios errors [33m 821[2mms[22m[39m
+     [33m[2m✓[22m[39m should show 'Creating...' and disable button while submitting [33m 772[2mms[22m[39m
+     [33m[2m✓[22m[39m should allow submitting with empty password in edit mode [33m 307[2mms[22m[39m
+     [33m[2m✓[22m[39m should call PUT /api/users/:id with password when provided [33m 342[2mms[22m[39m
+ [32m✓[39m src/pages/TicketsPage.test.tsx [2m([22m[2m77 tests[22m[2m)[22m[33m 18002[2mms[22m[39m
+     [33m[2m✓[22m[39m should show skeleton rows while loading [33m 584[2mms[22m[39m
+     [33m[2m✓[22m[39m should toggle sort order when clicking the same column header twice [33m 443[2mms[22m[39m
+     [33m[2m✓[22m[39m should send search param when typing in the search input [33m 398[2mms[22m[39m
+       [33m[2m✓[22m[39m should push history when a status is selected [33m 371[2mms[22m[39m
+       [33m[2m✓[22m[39m should let a multi-word search term be typed [33m 547[2mms[22m[39m
+       [33m[2m✓[22m[39m should write the category to the URL when one is selected [33m 340[2mms[22m[39m
+       [33m[2m✓[22m[39m should carry all three filters in the URL at once [33m 868[2mms[22m[39m
+       [33m[2m✓[22m[39m should keep both filters when a second is chosen before the first settles [33m 634[2mms[22m[39m
+       [33m[2m✓[22m[39m should write the search term to the URL as it is typed [33m 373[2mms[22m[39m
+       [33m[2m✓[22m[39m should fall back to the default sort when a third click clears it [33m 508[2mms[22m[39m
+       [33m[2m✓[22m[39m should settle on the second column when two headers are clicked in flight [33m 449[2mms[22m[39m
+       [33m[2m✓[22m[39m should track the page through Last, Previous and First [33m 635[2mms[22m[39m
+       [33m[2m✓[22m[39m should re-apply the state on a forward navigation after a POP [33m 495[2mms[22m[39m
+       [33m[2m✓[22m[39m should keep the rendered list in step with the URL through rapid POPs and forwards [33m 744[2mms[22m[39m
+       [33m[2m✓[22m[39m should unwind three states in order on successive POPs [33m 502[2mms[22m[39m
+       [33m[2m✓[22m[39m should reset to page 1 when the status changes [33m 397[2mms[22m[39m
+       [33m[2m✓[22m[39m should reset to page 1 when the category changes [33m 389[2mms[22m[39m
+       [33m[2m✓[22m[39m should reset to page 1 and drop both params when a filter is cleared [33m 354[2mms[22m[39m
+       [33m[2m✓[22m[39m should only ever send keys the ticket list query schema accepts [33m 501[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m9 passed[39m[22m[90m (9)[39m
+[2m      Tests [22m [1m[32m229 passed[39m[22m[90m (229)[39m
+[2m   Start at [22m 07:09:16
+[2m   Duration [22m 49.41s[2m (transform 5.47s, setup 1.83s, import 213.11s, tests 38.41s, environment 11.81s)[22m
+

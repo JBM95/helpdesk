@@ -97,5 +97,92 @@
     },
     "rounds": 4,
     "note": "Four rounds. Rounds 1 and 2 raised four blockers each and round 3 raised one; every one was fixed and mutation-verified by the following round. Round 4 applied 10 mutations, all caught, and independently re-measured the test, lint, typecheck and case-reconciliation figures in this state file against its own runs. Round 4 also disproved a claim in the spec — that AC5 could not be honestly component-tested — by demonstrating a passing router-POP test, so all seven AC5 instances are now component-tested. Its remaining items are decision-needed, not defects, and are carried to the human: the checks.e2e schema value and the unexecuted E2E specs."
+  },
+  "qa": {
+    "verdict": "fail",
+    "snapshotId": "vs-ccdc5fd34272c56524892aa76fb362f2",
+    "performedBy": "claude-code (eu.anthropic.claude-opus-5[1m]) via /qa-verify",
+    "at": "2026-09-06T05:41:12.714Z",
+    "runId": "RUN-22425dc46b2e",
+    "testedCommit": "9db55dd8152718a92b839d5a6dfcf05bd992a4a2",
+    "recordPath": ".solvo/evidence/qa/GH-1-run-9db55dd8152718a92b839d5a6dfcf05bd992a4a2.json",
+    "executionSource": null,
+    "acResults": [
+      {
+        "ac": "AC1",
+        "status": "gap"
+      },
+      {
+        "ac": "AC2",
+        "status": "verified"
+      },
+      {
+        "ac": "AC3",
+        "status": "gap"
+      },
+      {
+        "ac": "AC4",
+        "status": "gap"
+      },
+      {
+        "ac": "AC5",
+        "status": "verified"
+      },
+      {
+        "ac": "AC6",
+        "status": "verified"
+      },
+      {
+        "ac": "AC7",
+        "status": "verified"
+      },
+      {
+        "ac": "AC8",
+        "status": "ambiguous"
+      },
+      {
+        "ac": "AC9",
+        "status": "verified"
+      },
+      {
+        "ac": "AC10",
+        "status": "verified"
+      }
+    ],
+    "handoff": [
+      {
+        "workItem": "GH-1",
+        "testedCommit": "9db55dd8152718a92b839d5a6dfcf05bd992a4a2",
+        "obligationId": "OBL-6a8f9bc42d14",
+        "reason": "missing",
+        "requiredEvidence": "a human performance of OBL-6a8f9bc42d14 (manual/exploratory) in win32 10.0.26200 (Windows 11 Enterprise) | bun 1.3.14 | node v26.7.0 | vitest ^4.0.18 + React Testing Library (jsdom) | playwright ^1.58.2, chromium, workers:1 | PostgreSQL 18.1 local, helpdesk_test database, migrations at 20260302000000 | e2e webServer: express on 3001 via server/.env.test, vite on 5174 | OPENAI_API_KEY unset, so classify-ticket and auto-resolve-ticket jobs throw AI_LoadAPIKeyError and cannot transition a seeded ticket to resolved, recorded through `qa-result perform`, establishing CH-be78fe0e3063; or a current waiver or deferral by named authority through `qa-result waive` or `qa-result defer`",
+        "observed": "no current attempt",
+        "requestedBy": {
+          "command": "qa-verify",
+          "at": "2026-09-06T05:41:12.714Z"
+        }
+      },
+      {
+        "workItem": "GH-1",
+        "testedCommit": "9db55dd8152718a92b839d5a6dfcf05bd992a4a2",
+        "obligationId": "OBL-4cc5af08aed0",
+        "reason": "missing",
+        "requiredEvidence": "a human performance of OBL-4cc5af08aed0 (manual/exploratory) in win32 10.0.26200 (Windows 11 Enterprise) | bun 1.3.14 | node v26.7.0 | vitest ^4.0.18 + React Testing Library (jsdom) | playwright ^1.58.2, chromium, workers:1 | PostgreSQL 18.1 local, helpdesk_test database, migrations at 20260302000000 | e2e webServer: express on 3001 via server/.env.test, vite on 5174 | OPENAI_API_KEY unset, so classify-ticket and auto-resolve-ticket jobs throw AI_LoadAPIKeyError and cannot transition a seeded ticket to resolved, recorded through `qa-result perform`, establishing CH-5e072067c341; or a current waiver or deferral by named authority through `qa-result waive` or `qa-result defer`",
+        "observed": "no current attempt",
+        "requestedBy": {
+          "command": "qa-verify",
+          "at": "2026-09-06T05:41:12.714Z"
+        }
+      }
+    ],
+    "reasons": [
+      "OBL-76fc8365ceb1: attempt ATT-2a4de7cca678 failed",
+      "AC1: All 12 approved instances assert their observable and pass at component level. But a real browser shows the selected status never reaching the URL: in ATT-2a4de7cca678, after chooseStatus(page, 'Open') followed immediately by Next, expect(page).toHaveURL(/status=open/) received 'http://localhost:5174/tickets?page=2' and retried 8 times over 5s. The failure snapshot shows the status combobox back at 'All statuses' on page 2 of an unfiltered list. Suspect path traced: client/src/pages/TicketsPage.tsx write() serialises a render-snapshot params object and calls setSearchParams(value) rather than the functional-updater form, so two writes issued from one committed render clobber each other. Competing reading that cannot be separated by reading alone: the Radix option click was itself lost. Same observable either way - a selection the user made did not reach the URL.",
+      "AC3: All 9 enumerated instances pass, including the re-render and refetch traps. The gap is real-browser only: in ATT-2a4de7cca678, with status and sort already settled in the URL, Next was clicked and toHaveURL(/page=2/) failed on '?status=open&sortBy=subject&sortOrder=desc'. The snapshot shows 'Showing 1-10 of 22 tickets', 'Page 1 of 3' and Next ENABLED, so the button was clickable and the write never happened. The spec's own named excuse for this test - auto-resolve stealing page 2 - is ruled out: OPENAI_API_KEY is unset per environmentProfile and 22 open tickets across 3 pages are in the snapshot. Candidate mechanism: client/src/pages/TicketsTable.tsx renders the whole pagination footer under {!isLoading && !error && ...} and useQuery sets no placeholderData, so every new query key destroys and re-creates the Next button; a click landing on the pre-transition node reaches no React handler.",
+      "AC4: The two instances the spec assigns to E2E as their only proof both failed: CASE-e51a15eb56e6 and CASE-8e3d236b21a9. Neither failure reached its own claim - both died on the setup step - so the retrace restore and the nav-link destination are unproven as well as failing. The producer and consumer halves are genuinely asserted at component level (exact listSearch on the Link state, and an exact href on the detail back link), so the mechanism works in jsdom; what is unproven is the behaviour in a real browser.",
+      "OBL-6a8f9bc42d14: no current attempt",
+      "OBL-4cc5af08aed0: no current attempt",
+      "AC8: All 6 approved instances verified. The ambiguity is the sort pair, and both readings are honest. Reading A, which the spec states as the only reasonable one ('omit every value equal to its default'): when only the direction differs the URL should be '?sortOrder=asc'. Reading B, implemented in client/src/lib/ticket-list-params.ts and locked in by a unit assertion that serialize({sortBy: 'createdAt', sortOrder: 'asc'}) === 'sortBy=createdAt&sortOrder=asc': the sort is a pair, so a URL that mentions sorting names both halves, and sortBy=createdAt therefore appears while equalling its default. No approved case covers 'only the direction differs', so neither the case set nor the plan adjudicates it. The code and the spec text disagree."
+    ]
   }
 }
