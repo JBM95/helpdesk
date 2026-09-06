@@ -6,7 +6,7 @@
   "blastRadius": {
     "files": 3,
     "callers": 8,
-    "note": "Recon predicted 1 file. The delivered diff touches 3 source files: client/src/pages/TicketsPage.tsx, the new client/src/lib/use-latest-ticket-list-params.ts (extracted so the race sequence can be driven by hand in a unit test - approved by JB Mccallaghan at a scope-drift pause), and client/src/pages/TicketsTable.tsx (the sibling defect FIND-5232572f9eda, added to this cycle by JB Mccallaghan at the same pause). Still far under the 15-file / 40-caller escalation threshold, so no tier change."
+    "note": "Recon predicted 1 file. The delivered diff touches 3 source files: client/src/pages/TicketsPage.tsx, the new client/src/lib/use-latest-ticket-list-params.ts (the live-location read, behind one hook so the private-API dependency has a single site - approved by JB Mccallaghan at a scope-drift pause), and client/src/pages/TicketsTable.tsx (the sibling defect FIND-5232572f9eda plus the loading affordance it requires, added to this cycle by JB Mccallaghan at the same pause). Still far under the 15-file / 40-caller escalation threshold, so no tier change."
   },
   "run": {
     "id": "ff7a0a01-b093-4daf-b3a6-da75209436f2",
@@ -21,20 +21,21 @@
     }
   },
   "checks": {
-    "commit": "cda1c035efd6f2cdc5b23d95d323a30a37cd4773",
+    "commit": "8a49aee5923d6fa05ab9e70737a2803e9afd63f4",
     "commitNote": "The last commit carrying source, test or spec content. This state file is the single trailing commit after it, which is what the gate-guard freshness arm accepts.",
     "ambiguityScan": {
       "cleared": true,
       "note": "The fix's expected behaviour admits one reading. The two orderings do not compete: a filter change after a page change resets to page 1 (GH-1 AC6), and a page change after a filter change lands on page 2 of the filtered list (GH-1 AC1). Two rapid writes to different keys both land; two to the same key resolve last-write-wins, which is what the user's second action asked for. #3 carries no Gherkin because ticket-standard has no bug variant - a known gap in that standard - so the acceptance criteria are derived in the spec from GH-1's AC1 and AC6, which are the ACs the defect contradicts."
     },
     "green": true,
-    "at": "2026-09-06T09:20:00.000Z",
+    "at": "2026-09-06T11:05:00.000Z",
     "command": "cd client && bun run test (vitest run)",
     "tests": {
       "files": 10,
-      "passed": 246,
+      "passed": 242,
       "failed": 0,
-      "baselinePassed": 229
+      "baselinePassed": 229,
+      "note": "Down from 246 at the previous round because the mechanism changed: the hook's 10 commit-sequence tests were replaced by 3 that assert the two properties the new design actually rests on, and 3 page-level tests were added (the abandoned-write regression guard, AC-c's same-render ordering, and the past-the-end recovery)."
     },
     "e2e": {
       "command": "bun run test:e2e (playwright, workers: 1)",
@@ -43,24 +44,39 @@
         {
           "passed": 81,
           "failed": 1,
-          "total": 82
+          "total": 82,
+          "atMechanism": "pending-write queue"
         },
         {
           "passed": 82,
           "failed": 0,
-          "total": 82
+          "total": 82,
+          "atMechanism": "pending-write queue"
         },
         {
           "passed": 82,
           "failed": 0,
-          "total": 82
+          "total": 82,
+          "atMechanism": "pending-write queue"
+        },
+        {
+          "passed": 82,
+          "failed": 0,
+          "total": 82,
+          "atMechanism": "live location"
+        },
+        {
+          "passed": 82,
+          "failed": 0,
+          "total": 82,
+          "atMechanism": "live location"
         }
       ],
       "targetScenarios": {
         "CASE-8e3d236b21a9": "green - was failing before this fix; now also carries the intermediate-URL assertion that resolves the spec's open question",
         "CASE-e51a15eb56e6": "green - the sibling defect FIND-5232572f9eda, brought into this cycle at a scope-drift pause"
       },
-      "flake": "The single failure across the three runs was CASE-f8fac94b30ab ('should undo a filter change on Back'). It passes 5/5 under --repeat-each in isolation and 13/13 with its own spec file, so it is the suite's known shared-database ordering flakiness rather than a regression from this change. Not asserted as fixed and not suppressed.",
+      "flake": "The single failure across the five runs was CASE-f8fac94b30ab ('should undo a filter change on Back'), on the first run only. It passes 5/5 under --repeat-each in isolation and 13/13 with its own spec file, so it is the suite's known shared-database ordering flakiness rather than a regression from this change. Not asserted as fixed and not suppressed.",
       "note": "The suite had never run on Windows before this branch: playwright.config.ts used a POSIX 'VAR=value cmd' prefix, which cmd.exe does not accept. Fixed on this branch along with workers: 1, which a shared database without per-test isolation requires."
     },
     "lint": {
@@ -115,7 +131,7 @@
       "decidedBy": "JB Mccallaghan",
       "change": "Extract the latest-params tracking into client/src/lib/use-latest-ticket-list-params.ts rather than inlining it, so the write-write-then-commit sequence can be driven with renderHook.",
       "why": "Stated at the time as: a probe showed React Testing Library's act environment flushes react-router's transition between two fireEvents, so the GH-3 race is NOT reproducible in jsdom at all, and without the extracted hook the fix would be verified by two Playwright scenarios and nothing else.",
-      "premiseCorrected": "2026-09-06T09:25:00.000Z - that premise was FALSE, found by the fresh reviewer. The probe used two SEQUENTIAL fireEvents, which RTL wraps in separate act calls; two inside ONE act reproduce the race exactly, so a page-level guard was available all along and now exists. The extraction is kept because the hook's commit-sequence tests are worth having in their own right, not because it was the only route to a guard. The decision stands; the reason recorded for it did not."
+      "premiseCorrected": "2026-09-06T09:25:00.000Z - that premise was FALSE, found by the fresh reviewer. The probe used two SEQUENTIAL fireEvents, which RTL wraps in separate act calls; two inside ONE act reproduce the race exactly, so a page-level guard was available all along and now exists. The decision to keep a separate module still stands, but for a different reason than the one recorded: at round 2 it became the single site of a private-API dependency, which is worth isolating. The commit-sequence tests that originally justified it are gone with the mechanism they tested."
     },
     {
       "at": "2026-09-06T07:40:00.000Z",
@@ -128,6 +144,12 @@
       "decidedBy": "JB Mccallaghan",
       "change": "CASE-93514dfd0070's expectation moves from ?page=2 to ?page=3: two clicks mean two pages.",
       "why": "The case passed only because the footer defect swallowed the second click - isolated by removing the footer fix alone, which returns it to ?page=2. An approved case whose expectation was satisfied by a defect. Needs a case-set revision and re-approval through /qa-cases; the cases artifact was NOT edited here."
+    },
+    {
+      "at": "2026-09-06T10:40:00.000Z",
+      "decidedBy": "JB Mccallaghan",
+      "change": "Replace the pending-write tracking with a read of the router's live location via UNSAFE_NavigationContext, accepting a dependency on a private react-router export.",
+      "why": "Round 2's blocker B1 is unfixable by tracking - measured: a Back returning to the entry a write was issued from leaves the committed search, location.key and useNavigationType() all unchanged, so an abandoned write cannot be told from one in flight. Reading the live location answers both cases and deletes the ref, queue and effect entirely. Contained by a tested fallback to the committed params and a test asserting the live read, so a react-router upgrade fails a test naming the file instead of resurfacing as a URL bug."
     }
   ],
   "review": {
@@ -140,7 +162,40 @@
       "edge": 3,
       "acceptance": 6
     },
-    "rounds": 1,
+    "rounds": 2,
+    "round2": {
+      "verdict": "REQUEST_CHANGES",
+      "blockersOpen": 1,
+      "by": "fresh-reviewer",
+      "at": "2026-09-06T10:05:00.000Z",
+      "lenses": {
+        "blind": 4,
+        "edge": 1,
+        "acceptance": 5
+      },
+      "confirmed": "All five round-1 blocker closures verified independently, including re-performing the unwire mutation (2 failed / 244 passed, exactly the two race guards). StrictMode soundness re-probed. Baselines re-measured and matching.",
+      "blocker": "B1 - a Back that lands on the pre-write URL left the write pending, and the next write resurrected the abandoned filter. Reproduced in jsdom. A regression against pre-fix behaviour, in the same window class GH-3 exists to fix.",
+      "overstatedClaimFound": "The round-1 record claimed 'deleting the drain, the length check, or the unchanged-URL guard each fails a different test'. Deleting the matched-commit drain (the slice) in fact failed nothing - I had mutation-tested the external-branch clear, not the slice, and wrote the claim as though it covered both. The reviewer was right; the mechanism it described no longer exists.",
+      "resolution": {
+        "at": "2026-09-06T10:40:00.000Z",
+        "decidedBy": "JB Mccallaghan",
+        "change": "Replace the pending-write tracking entirely with a read of the router's live location through UNSAFE_NavigationContext.",
+        "why": "B1 cannot be fixed by tracking. Measured: the POP returns to the identical history entry, so the committed search, location.key and useNavigationType() are all unchanged, making an abandoned write indistinguishable from one in flight by anything React has committed. The live location answers both cases correctly - during the race it reads write 1's URL, after an abandoned write plus Back it reads the popped URL. The whole ref/queue/effect mechanism is deleted with it, so B1, decision-6, decision-7 and nit-1 all cease to exist rather than being patched.",
+        "cost": "UNSAFE_NavigationContext is a private react-router export and a live location on its navigator is not a documented guarantee. Contained by a documented fallback to the committed params (degrades to pre-fix behaviour, never throws) and by a test asserting the live read directly, so an upgrade fails a test naming this file. Chosen by JB Mccallaghan over documenting the residue or owning the history object via unstable_HistoryRouter (7 test files).",
+        "verification": "The B1 guard fails against the pending-write mechanism from cda1c03 with exactly the value review reported (?search=login&page=2 where ?page=2 is required), so it pins the class and not just this implementation. Three mutations on the new design each killed by the right tests. E2E 82/82 twice at the new mechanism.",
+        "otherItems": {
+          "D1": "Decided rather than changed, with the reasoning now in the code. Disabling the controls while placeholder data shows would close the stale-bounds window but would also swallow the second of two quick Next clicks, which CASE-93514dfd0070 forbids. The click is allowed through and the existing out-of-range state catches it; a new test pins that recovery path.",
+          "D2": "Still open and still not a dev cycle's to close - GH-1-cases.md needs a case-set revision through /qa-cases.",
+          "D3": "Fixed. AC-d no longer claims CASE-93514dfd0070 stays green; it states the revised expectation as a deliberate exception and points at the section explaining it.",
+          "D4": "Recorded in the spec as a merge-gate decision rather than resolved unilaterally: AC-b and AC-c have no E2E scenario, and AC-a's E2E credit rides inside another AC's approved case. Two repo rules pull against each other and the gate should pick.",
+          "N2": "Fixed - AC-c's same-render ordering now has its own test.",
+          "N3": "Left as is. isBeyondEnd reads the URL page while the range reads the response's; the two never render together (the out-of-range message replaces the range), so the disagreement is not observable.",
+          "N4": "Fixed - the held-promise scaffold is now one holdRefetches helper.",
+          "S1": "Ceased to exist with the queue.",
+          "S2": "Fixed - the dimming class is asserted alongside aria-busy."
+        }
+      }
+    },
     "round1Resolution": {
       "at": "2026-09-06T09:25:00.000Z",
       "by": "claude-code",
@@ -152,8 +207,8 @@
         "5": "Resolved. The spec, recon and this state file are committed in this round."
       },
       "decisionsNeeded": {
-        "6": "Fixed. The pending value is now a queue drained by the commit that matches it, and the adopt-external branch is guarded by three tests. Deleting the drain, the length check, or the unchanged-URL guard each fails a different test.",
-        "7": "Fixed, and the finding was right: the documented bound was a regression, not a neutral one. An outside navigation now beats a write in flight - the queue is dropped and the ref adopts the committed URL. The false 'no worse than before' comment is gone.",
+        "6": "SUPERSEDED at round 2, and this claim was partly false when written. The pending value became a queue with three guarding tests, but 'deleting the drain ... fails a test' did not hold for the matched-commit slice - I had mutated the external-branch clear and written the claim as if it covered both. The whole mechanism is deleted at round 2, so the item no longer exists.",
+        "7": "Fixed only partly, as round 2 found: an outside navigation beat a write in flight ONLY when it landed on a different URL. The case where it returns to the pre-write URL remained broken (round 2's B1) and is unfixable by tracking. Resolved at round 2 by deleting the mechanism.",
         "8": "Fixed. The footer's row range is derived from the page the rendered rows came from (data.page, which the endpoint echoes) rather than from the URL, and the table body carries aria-busy plus a dimmed state while placeholder data is showing. Both halves mutation-verified. The page indicator deliberately stays on the URL: that is the control state.",
         "9": "Out of a dev cycle's scope and left open. GH-1-cases.md still records CASE-93514dfd0070's old ?page=2 expectation and needs a case-set revision through /qa-cases. The spec now states the revised expectation and why, so the disagreement is visible rather than silent.",
         "10": "Fixed. The spec's Files-to-touch table now lists all five files with the two post-GATE-1 additions marked as such, and no longer claims TicketsTable.tsx is unchanged.",
