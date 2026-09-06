@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
@@ -102,8 +102,11 @@ const mockTickets = [
   },
 ];
 
-function mockResponse(tickets = mockTickets, total = tickets.length) {
-  return { data: { tickets, total, page: 1, pageSize: 10 } };
+// `page` echoes the requested page, as the real endpoint does (`server/src/routes/tickets.ts` returns
+// `page: query.page`). The footer's row range is read off it, so a mock that always claimed page 1
+// would describe a page the response is not.
+function mockResponse(tickets = mockTickets, total = tickets.length, page = 1) {
+  return { data: { tickets, total, page, pageSize: 10 } };
 }
 
 beforeEach(() => {
@@ -854,7 +857,7 @@ describe("TicketsPage — list state in the URL", () => {
   describe("AC3 — pagination", () => {
     // CASE-adc92fc24569
     it("should request the page named in the URL", async () => {
-      mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
+      mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50, 2));
       renderTicketsAt("/tickets?page=2");
 
       // The footer only renders once the response has settled, so wait on that rather than on the
@@ -1723,15 +1726,15 @@ describe("TicketsPage — list state in the URL", () => {
 /**
  * GH-3 and FIND-5232572f9eda.
  *
- * An honest note on what these can and cannot prove. **The GH-3 race itself is not reproducible in
- * jsdom.** React Testing Library's act environment flushes react-router's transition synchronously
- * between two events, so the second write always sees fresh params here — measured with a probe, which
- * showed the URL already committed immediately after the first `fireEvent`. That is exactly why all
- * 229 tests were green while the defect was live in a real browser.
+ * What reproduces the race, and what does not. Two `fireEvent`s issued one after another do NOT
+ * reproduce it: React Testing Library wraps each in its own `act`, which flushes react-router's
+ * transition in between, so the second write sees fresh params. Two issued inside a single `act`
+ * do reproduce it exactly — that is the real browser's window, where both handlers run before
+ * React commits either transition. That distinction is why all 229 tests were green while the
+ * defect was live.
  *
- * So the split is: the race is guarded by `use-latest-ticket-list-params.test.ts` (which drives the
- * sequence by hand) and by the Playwright scenarios. The tests below guard the composed behaviour and
- * the footer defect, both of which jsdom can see.
+ * So the race is guarded here, at the level it actually occurs — the page wiring — and again in
+ * `use-latest-ticket-list-params.test.ts` at the hook level, plus the Playwright scenarios.
  */
 describe("TicketsPage — the pagination footer must survive a refetch", () => {
   // FIND-5232572f9eda, triaged product-defect. The footer was gated on `!isLoading`, and a query-key
@@ -1764,13 +1767,94 @@ describe("TicketsPage — the pagination footer must survive a refetch", () => {
 
     release();
   });
+
+  // The cost of keeping the previous rows mounted: without these two, the list reads as settled while
+  // the next page is still loading, and the range text describes rows that are not on screen.
+  it("should describe the rows it is actually showing, and say it is busy, while the next page loads", async () => {
+    let release: () => void = () => {};
+    const held = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    let calls = 0;
+    mockedAxios.get.mockImplementation(async (_url, config) => {
+      calls += 1;
+      if (calls > 1) await held;
+      const page = (config?.params as { page: number }).page;
+      return mockResponse(mockTickets, 50, page);
+    });
+    renderTicketsAt();
+    await waitFor(() =>
+      expect(screen.getByText("Showing 1–10 of 50 tickets")).toBeInTheDocument()
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Next page" }));
+
+    // Page 2 was requested and the indicator says so, but page 1's rows are still what is rendered —
+    // so the range must still describe page 1, and the body must announce that it is loading.
+    await waitFor(() => expect(screen.getByText("Page 2 of 5")).toBeInTheDocument());
+    expect(screen.getByText("Showing 1–10 of 50 tickets")).toBeInTheDocument();
+    expect(document.querySelector("tbody")).toHaveAttribute("aria-busy", "true");
+
+    release();
+    // Once page 2's own response lands, both halves move together.
+    await waitFor(() =>
+      expect(screen.getByText("Showing 11–20 of 50 tickets")).toBeInTheDocument()
+    );
+    expect(document.querySelector("tbody")).toHaveAttribute("aria-busy", "false");
+  });
+});
+
+describe("TicketsPage — GH-3, two writes issued before either commits", () => {
+  /**
+   * The guard on the fix itself. Both clicks are dispatched inside one `act`, so both handlers run
+   * against the same committed render — the state the defect needs. Unwiring the hook from
+   * TicketsPage (reading `params` instead of `latest.read()`) fails this at `?page=2`, with the sort
+   * discarded.
+   */
+  it("should keep both writes when a sort and a page change are issued in the same render", async () => {
+    mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
+    renderTicketsAt();
+    await waitFor(() =>
+      expect(screen.getByText("Showing 1–10 of 50 tickets")).toBeInTheDocument()
+    );
+
+    // One act, two events. Sequential fireEvents would flush the router's transition in between and
+    // the second write would see fresh params, which is why they prove nothing about this defect.
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /Subject/ }));
+      fireEvent.click(screen.getByRole("button", { name: "Next page" }));
+    });
+
+    expect(currentSearch()).toBe("?sortBy=subject&sortOrder=asc&page=2");
+  });
+
+  /**
+   * The same race through the filter path, which is a different code path in TicketsPage: it also
+   * decides push-versus-replace from the latest params. The search box is used rather than the status
+   * select because Radix renders its options in a portal that aria-hides the footer while it is open,
+   * so Next is not reachable in the same act as an option click.
+   */
+  it("should keep both writes when a search and a page change are issued in the same render", async () => {
+    mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
+    renderTicketsAt();
+    await waitFor(() =>
+      expect(screen.getByText("Showing 1–10 of 50 tickets")).toBeInTheDocument()
+    );
+
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText("Search tickets..."), {
+        target: { value: "login" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: "Next page" }));
+    });
+
+    expect(currentSearch()).toBe("?search=login&page=2");
+  });
 });
 
 describe("TicketsPage — GH-3, both settings survive a filter or sort followed by a page change", () => {
-  // These pass in jsdom whether or not the GH-3 fix is present, because jsdom serialises the two
-  // writes. They are regression guards on the composed behaviour, not proof of the race fix — see the
-  // note above. Kept because "a filter plus a page both reach the URL and the request" is worth
-  // pinning regardless of which mechanism could break it.
+  // These serialise the two writes, so they pass with or without the fix. They are regression guards
+  // on the composed behaviour rather than on the race — the race guards are directly above.
   it("should keep the sort when Next is clicked after it", async () => {
     const user = userEvent.setup();
     mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));

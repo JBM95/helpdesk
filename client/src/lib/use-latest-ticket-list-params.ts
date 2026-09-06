@@ -22,40 +22,57 @@ import {
  * component test mounts `MemoryRouter`, which never touches it. Reading it would make the tests
  * exercise a path production does not use.
  *
- * The split this encodes: **render from the committed params, write from the latest params.**
+ * The split this encodes: **render from the committed params, write from the latest params** — and an
+ * outside navigation always wins over a write still in flight.
  */
 export function useLatestTicketListParams(committed: TicketListParams) {
   const latest = useRef(committed);
-  /** The serialised form of the write we are waiting to see committed, or null when settled. */
-  const pending = useRef<string | null>(null);
+  /**
+   * The serialised form of every write issued but not yet seen committed, oldest first.
+   *
+   * A queue rather than a single value, because the race this hook exists for issues two writes
+   * before either commits: the first commit to arrive is not the newest, and a single slot would make
+   * it unrecognisable as ours.
+   */
+  const pending = useRef<string[]>([]);
+  /**
+   * What the URL said at the previous commit.
+   *
+   * Needed because `parseTicketListParams` builds a fresh object every render, so this effect runs on
+   * every render — including ones caused by something else entirely, such as a query resolving.
+   * Without this, such a render is indistinguishable from an outside navigation and would discard a
+   * write that is still perfectly in flight.
+   */
+  const lastCommitted = useRef(serializeTicketListParams(committed).toString());
 
   // Only ever on a commit, never during render: a render discarded by a transition would otherwise
   // still have moved the ref.
   useEffect(() => {
     const committedSearch = serializeTicketListParams(committed).toString();
+    const previousSearch = lastCommitted.current;
+    lastCommitted.current = committedSearch;
 
-    if (pending.current === null) {
-      // Nothing of ours is in flight, so the committed URL is the truth — this is what makes Back,
-      // Forward, a reload and a hand-edited URL authoritative rather than pinned to an old write.
-      latest.current = committed;
+    const index = pending.current.indexOf(committedSearch);
+    if (index !== -1) {
+      // One of our writes landed. Drop it and everything it superseded. If a later write is still in
+      // flight, `latest` already holds it and must not be pulled back to this older commit.
+      pending.current = pending.current.slice(index + 1);
+      if (pending.current.length === 0) {
+        latest.current = committed;
+      }
       return;
     }
 
-    if (committedSearch === pending.current) {
-      // Our write landed. `latest` already holds it.
-      pending.current = null;
-      latest.current = committed;
+    if (committedSearch === previousSearch) {
+      // The URL has not moved, so this render came from elsewhere. Our pending writes are untouched.
+      return;
     }
 
-    // Otherwise this commit is neither our pending write nor a settled state: the router has not
-    // caught up yet, and adopting it here would discard the write we are still waiting on. That is
-    // the whole defect, so it is left alone.
-    //
-    // Known bound, stated rather than hidden: if the URL changes from outside while one of our
-    // writes is in flight and the outside change wins, `pending` never matches and this ref stays on
-    // the value we wrote. It self-heals on the next write — that write merges onto a slightly stale
-    // base once, which is no worse than the behaviour before this hook existed — and clears once a
-    // write commits as issued.
+    // The URL moved to something we did not write: Back, Forward, a reload or a hand-edited URL, and
+    // it wins. Anything of ours still queued has been overtaken, so it is dropped rather than left to
+    // merge a filter the reader has navigated away from back in on the next write.
+    pending.current = [];
+    latest.current = committed;
   }, [committed]);
 
   return {
@@ -64,7 +81,10 @@ export function useLatestTicketListParams(committed: TicketListParams) {
     /** Record what a write just sent, synchronously, so the next write merges onto it. */
     noteWritten: (written: TicketListParams) => {
       latest.current = written;
-      pending.current = serializeTicketListParams(written).toString();
+      pending.current = [
+        ...pending.current,
+        serializeTicketListParams(written).toString(),
+      ];
     },
   };
 }

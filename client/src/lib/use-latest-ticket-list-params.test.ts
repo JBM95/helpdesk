@@ -19,13 +19,13 @@ const withStatusPage2: TicketListParams = { ...withStatus, page: 2 };
 const withSort: TicketListParams = { ...defaults, sortBy: "subject", sortOrder: "asc" };
 
 /**
- * GH-3. This hook exists because the race it guards cannot be reproduced in the component suite:
- * React Testing Library's act environment flushes react-router's transition synchronously between
- * two events, so the second write always sees fresh params in jsdom. Measured, not assumed — a probe
- * showed the URL already committed immediately after the first `fireEvent`.
+ * GH-3, at the hook level. The race itself is guarded where it happens, on the page: see the two
+ * "issued in the same render" tests in `TicketsPage.test.tsx`, which dispatch both events inside one
+ * `act` and fail if the page stops using this hook.
  *
- * In a real browser the transition is deferred, so the window is real. Driving `committed` by hand
- * here is the only way to exercise the sequence that produces the defect.
+ * These tests cover the commit sequences that page-level events cannot address individually —
+ * which commits are recognised as ours, and what happens when an outside navigation overtakes a
+ * write in flight.
  */
 describe("useLatestTicketListParams", () => {
   it("should start at the committed params", () => {
@@ -79,6 +79,71 @@ describe("useLatestTicketListParams", () => {
     rerender({ committed: withSort });
 
     expect(result.current.read()).toEqual(withSort);
+  });
+
+  it("should adopt a later external change after one of its own writes settled", () => {
+    const { result, rerender } = renderHook(
+      ({ committed }) => useLatestTicketListParams(committed),
+      { initialProps: { committed: defaults } }
+    );
+
+    result.current.noteWritten(withStatus);
+    rerender({ committed: withStatus });
+    // The write has settled, so nothing of ours is in flight any more and this Back must win. If the
+    // queue were never drained the hook would ignore every navigation for the rest of its life.
+    rerender({ committed: withSort });
+
+    expect(result.current.read()).toEqual(withSort);
+  });
+
+  it("should let an external navigation overtake a write still in flight", () => {
+    const { result, rerender } = renderHook(
+      ({ committed }) => useLatestTicketListParams(committed),
+      { initialProps: { committed: defaults } }
+    );
+
+    // A Back landing while our write is still in flight. The written value lost, so holding onto it
+    // would make the next write resurrect a filter the reader has already navigated away from.
+    result.current.noteWritten(withStatus);
+    rerender({ committed: withSort });
+
+    expect(result.current.read()).toEqual(withSort);
+  });
+
+  it("should not mistake a later navigation for an overtaken write of its own", () => {
+    const { result, rerender } = renderHook(
+      ({ committed }) => useLatestTicketListParams(committed),
+      { initialProps: { committed: defaults } }
+    );
+
+    // Write, get overtaken, write again, then navigate back to the URL of that first overtaken write.
+    // The overtaken write has to be forgotten at the moment it loses: left in the queue, this last
+    // navigation is read as "our write landed" while a newer one is pending, and the reader's Back is
+    // ignored.
+    result.current.noteWritten(withStatus);
+    rerender({ committed: withSort });
+    result.current.noteWritten(withStatusPage2);
+    rerender({ committed: withStatus });
+
+    expect(result.current.read()).toEqual(withStatus);
+  });
+
+  it("should keep the newer write when the older of two in-flight writes commits first", () => {
+    const { result, rerender } = renderHook(
+      ({ committed }) => useLatestTicketListParams(committed),
+      { initialProps: { committed: defaults } }
+    );
+
+    result.current.noteWritten(withStatus);
+    result.current.noteWritten(withStatusPage2);
+    // The router works through the queue in order, so the first commit is the older write. Adopting
+    // it here would drop the page the reader asked for a moment later.
+    rerender({ committed: withStatus });
+
+    expect(result.current.read()).toEqual(withStatusPage2);
+
+    rerender({ committed: withStatusPage2 });
+    expect(result.current.read()).toEqual(withStatusPage2);
   });
 
   it("should treat an equal-but-new-identity committed object as unchanged", () => {

@@ -210,11 +210,28 @@ test.describe("Ticket list URL state (GH-1)", () => {
       await loginAsAdmin(page);
       await seedOpenTickets(page, 11);
 
+      // GH-3's open question: when this scenario failed with `?page=2` and no status, the evidence
+      // could not say whether the status write was issued and then clobbered, or never issued at all.
+      // Collecting the URLs the page passes through separates them — a `status=open` entry proves the
+      // write happened. It is collected rather than awaited between the two clicks on purpose:
+      // awaiting there would let the first write commit and remove the very window being tested.
+      const visited: string[] = [];
+      page.on("framenavigated", (frame) => {
+        if (frame === page.mainFrame()) visited.push(new URL(frame.url()).search);
+      });
+
       await page.goto("/tickets");
       await chooseStatus(page, "Open");
       await page.getByRole("button", { name: "Next page" }).click();
       await expect(page).toHaveURL(/status=open/);
       await expect(page).toHaveURL(/page=2/);
+
+      expect(
+        visited.some(
+          (search) => search.includes("status=open") && !search.includes("page=2")
+        ),
+        `the status filter must reach the URL in its own right, before the page change; visited ${JSON.stringify(visited)}`
+      ).toBe(true);
 
       // The nav link to "/" is labelled Dashboard, not Home
       await page.getByRole("link", { name: /^dashboard$/i }).click();

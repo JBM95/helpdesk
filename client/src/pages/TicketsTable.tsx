@@ -150,6 +150,7 @@ export default function TicketsTable({
   const {
     data,
     isLoading,
+    isPlaceholderData,
     error,
   } = useQuery({
     queryKey: ["tickets", sortBy, sortOrder, filters, pagination.pageIndex],
@@ -176,7 +177,12 @@ export default function TicketsTable({
 
   const total = data?.total ?? 0;
   const pageCount = Math.ceil(total / pagination.pageSize);
-  const firstRowOnPage = pagination.pageIndex * pagination.pageSize + 1;
+  // Derived from the page the rendered rows actually came from, not from the URL. While the next page
+  // is in flight `keepPreviousData` leaves the previous page's rows on screen, and a range read off
+  // the URL would sit above rows it does not describe. The page indicator below stays on the URL
+  // deliberately — that is the control state, and it is what the reader just asked for.
+  const displayedPage = data?.page ?? page;
+  const firstRowOnPage = (displayedPage - 1) * pagination.pageSize + 1;
   // The page is URL-controllable now, so it can name a page past the end of the result set. Written
   // against pageCount rather than `total > 0` so a filter that matches nothing is covered too:
   // there, pageCount is 0 and every page above the first is out of range.
@@ -248,7 +254,15 @@ export default function TicketsTable({
             </TableRow>
           ))}
         </TableHeader>
-        <TableBody>
+        {/*
+          `keepPreviousData` keeps the old rows on screen through a refetch, which is what stops the
+          footer unmounting (FIND-5232572f9eda) — but with no affordance the list looks settled while
+          it is not. `aria-busy` says so to assistive tech and the dimming says so on screen.
+        */}
+        <TableBody
+          aria-busy={isPlaceholderData}
+          className={isPlaceholderData ? "opacity-60 transition-opacity" : undefined}
+        >
           {isLoading
             ? Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
