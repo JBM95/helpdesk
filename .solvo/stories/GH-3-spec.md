@@ -47,6 +47,9 @@ below prove.
 - **AC-b** — The same holds for a sort change followed immediately by Next: neither the sort field nor
   the direction is lost. The bug report names this explicitly; it is the same code path, not a
   speculative extension.
+- **AC-e** — Added at round 4, because round 3 found this case still broken and recon had predicted it:
+  two *filter* controls changing before either settles keep both values, in either order. Choosing a
+  status and typing a search yields `?status=open&search=login` whichever came first.
 - **AC-c** — AC6 still holds: changing a filter or sort resets to page 1, including when a page change
   preceded it in the same render.
 - **AC-d** — No behaviour that GH-1's approved case set already fixes changes, with one deliberate
@@ -124,32 +127,84 @@ two rejected mechanisms above both failed by trying to model the URL rather than
 a live `location` on its navigator is not a documented guarantee, so a future upgrade could remove it.
 Two things contain that, and both are asserted by tests: the read falls back to the committed params when
 no live location is present, so an upgrade degrades to the pre-fix snapshot behaviour instead of
-crashing; and the live read is asserted directly, so such an upgrade fails a test naming this file rather
-than resurfacing as a URL bug months later. Approved by JB Mccallaghan against the two alternatives —
-documenting the residue, or owning the history object via `unstable_HistoryRouter` (7 test files).
+crashing; and the live read is asserted directly. Approved by JB Mccallaghan against the two
+alternatives — documenting the residue, or owning the history object via `unstable_HistoryRouter`
+(7 test files).
+
+**The containment has a hole, found at round 3 and not closed.** An earlier revision of this section
+claimed such an upgrade "fails a test naming this file". That holds only for a version bump that removes
+the getter, and even then the tests it fails are the two page-level race tests, which name `TicketsPage`.
+It does not hold for a change of **router type**, measured in `react-router@7.13.0`:
+
+| Router | Navigator | Live `location`? |
+|---|---|---|
+| `BrowserRouter` | `createBrowserHistory()` | yes — getter reads `window.location` per access |
+| `MemoryRouter` | `createMemoryHistory()` | yes — getter returns the current entry |
+| `RouterProvider` (`createBrowserRouter`) | `{createHref, encodeLocation, go, push, replace}` | **no** |
+
+So migrating this app to a data router would activate the fallback in production — silently restoring the
+GH-3 defect — while every component test kept mounting `MemoryRouter` and stayed green. The hook's own
+live-read tests would not catch it either: they inject a hand-built navigator and never mount a real
+router. Carried to the merge gate as a decision rather than fixed here, because closing it means either a
+runtime assertion in a hot path or a test that mounts a data router this app does not use.
+
+Also worth stating: the fallback is **unreachable** under both routers installed today, since
+`history.location.search` is always a string. It is tested future-proofing, not dead code, but production
+never exercises it.
 
 `handleFiltersChange`'s `refiningExistingSearch` comparison must read from the same live location, not
 from the render snapshot — otherwise the push-versus-replace decision stays one write behind and the
-history rule GH-1 established silently regresses.
+history rule GH-1 established silently regresses. Added at round 4: the comparison was already correct,
+but nothing tested it, so reverting it to the snapshot left all 242 tests green. Now guarded by
+"should replace rather than push when a second keystroke lands in the same render".
+
+### The hook is necessary but not sufficient: the controls also have to send deltas
+
+Reading the live URL fixes every pair where the second write is a *different kind* of write — a filter
+then a page, a sort then a page. It does not fix **two filter writes in one render**, and round 3 found
+that still broken: status then search gave `?search=login` with the status gone; the reverse gave
+`?status=open` with the search gone.
+
+The cause is a level above the hook. `TicketsFilters` renders from the committed filter set and each
+control emitted `{ ...filters, <its own key> }`, so the payload carried the other two keys **as they
+were committed**. The page then merged that whole set over the live params, and the stale keys
+overwrote the write that had just landed. Reading the live URL cannot help: the clobber arrives inside
+the payload.
+
+So each control now emits only the key it owns, and the page merges that delta against the live params.
+Approved by JB Mccallaghan at the round-4 gate, over the alternative of diffing the incoming set against
+the committed one inside `TicketsPage` — which keeps the change inside the original blast radius but
+leaves the stale-set trap in place for whatever calls it next.
+
+The compiler cannot hold this: every field of `TicketFilters` is optional, so a delta and a full set are
+the same type. Two tests hold it instead, one per ordering, and reverting either control fails exactly
+the ordering in which that control writes second.
 
 ## Files to touch
 
 | File | Change |
 |---|---|
-`client/src/pages/TicketsPage.tsx` | `write()` merging against the latest params, and the three handlers plus the refining comparison reading from them |
+`client/src/pages/TicketsPage.tsx` | `write()` merging against the latest params, and the three handlers plus the refining comparison reading from them; from round 4, merging the filter delta against them too |
 `client/src/lib/use-latest-ticket-list-params.ts` | **added after GATE 1** — the live-location read, behind one hook so the private-API dependency has exactly one site. Approved at a scope-drift pause |
-`client/src/lib/use-latest-ticket-list-params.test.ts` | the two properties a react-router upgrade could break: that the read is live, and that it degrades to the committed params rather than throwing |
+`client/src/lib/use-latest-ticket-list-params.test.ts` | the three properties a react-router upgrade could break: that the read is live, that an empty live search means the bare list rather than a missing location, and that it degrades to the committed params rather than throwing |
 `client/src/pages/TicketsPage.test.tsx` | new tests per the AC map below |
 `client/src/pages/TicketsTable.tsx` | **added after GATE 1** — the sibling defect `FIND-5232572f9eda` (the footer unmounting on refetch), plus the loading affordance that fix requires. Approved at the same pause |
+`client/src/pages/TicketsFilters.tsx` | **added at round 4** — each control emits only the key it owns, instead of spreading the committed filter set. Approved by JB Mccallaghan; see the section above for why the hook alone does not cover this |
+`client/src/lib/ticket-list-params.ts` | **added at round 4** — the `TicketFiltersDelta` type and the reason the compiler cannot enforce it |
 `e2e/tests/ticket-list-url-state.spec.ts` | the intermediate-URL assertion that separates the two competing readings (see Open question) |
 
 Recon put the blast radius at 1 source file and 8 call paths into `write()`. Nothing under `server/`,
-`core/` or `prisma/` is implicated. `TicketsFilters.tsx` is **not** changed: it already passes deltas
-outward and the merge is the page's job.
+`core/` or `prisma/` is implicated.
 
-Both post-GATE-1 additions are recorded with their reasons in `.solvo/state/GH-3.json` →
-`scopeChanges`. The delivered blast radius is 3 source files, still far under the escalation threshold,
-so the tier is unchanged.
+An earlier revision of this section claimed `TicketsFilters.tsx` was **not** changed because "it already
+passes deltas outward". That was false — it passed the whole committed set — and the defect it caused is
+the section above. Round 3 found it; recon had named the same pair at
+[[GH-3-recon]] ("filter A + filter B", "Every pair of writes is affected"), so the claim contradicted
+this cycle's own recon rather than merely being unverified.
+
+Every post-GATE-1 addition is recorded with its reason in `.solvo/state/GH-3.json` → `scopeChanges`. The
+delivered blast radius is 5 source files, still far under the escalation threshold, so the tier is
+unchanged.
 
 ## AC → test map
 
@@ -159,16 +214,33 @@ so the tier is unchanged.
 | AC-b | component: "should keep both writes when a sort and a page change are issued in the same render", asserting `?sortBy=subject&sortOrder=asc&page=2` |
 | AC-c | component: the existing AC6 cases stay green, plus "should still reset to page 1 when a filter change follows a page change" (serialised) and "should drop the page when a page change and a filter are issued in the same render" (the same-render half, asserting `?search=login` with the page gone) |
 | AC-d | component: `CASE-93514dfd0070` **with a revised expectation** — `?page=3`, not `?page=2`. See the note below |
+| AC-e | component: "should keep both writes when two different filters change in the same render" and "...the other way round", both asserting `?status=open&search=login`. The select is opened before the `act` so its portal render does not sit between the two writes |
 
 Both AC-a and AC-b tests are mutation-verified: unwiring the hook from `TicketsPage` (reading `params`
 instead of `latest.read()`) fails both and nothing else in the suite. Making the hook return the
 committed params instead of the live ones fails those two plus the two hook tests; removing the fallback
 fails the third hook test.
 
-Beyond the ACs, one regression guard: "should not resurrect a filter the reader abandoned by navigating
-back". It fails against the pending-write mechanism this spec previously described, with exactly the value
-review observed (`?search=login&page=2` where `?page=2` is required), so it pins the class rather than
-just the current implementation.
+AC-e's two tests are mutation-verified one control at a time, and each ordering is pinned separately
+rather than redundantly: reverting the search control to `{ ...filters, search }` fails only the ordering
+where the search writes second (`?search=login`, status lost), and reverting the status control fails
+only the other one (`?status=open`, search lost). A stale set clobbers whatever landed before it, so the
+control that writes first cannot expose its own bug.
+
+Beyond the ACs, three regression guards:
+
+- "should not resurrect a filter the reader abandoned by navigating back" — fails against the
+  pending-write mechanism this spec previously described, with exactly the value review observed
+  (`?search=login&page=2` where `?page=2` is required), so it pins the class rather than just the current
+  implementation.
+- "should not resurrect a filter the reader left by a Back onto the unfiltered list" — added at round 4.
+  The guard above cannot see the case where the popped URL is bare and the committed params are not,
+  because there the committed params and the params parsed from an empty search agree. Weakening the
+  hook's `live?.search === undefined` to a falsy check fails this test and the matching hook test, and
+  nothing else — before round 4 that mutation left all 242 tests green.
+- "should replace rather than push when a second keystroke lands in the same render" — added at round 4,
+  covering GH-1's one-entry-per-search-session rule under the same race. `CASE-222fa42cb560` cannot:
+  `user.type` serialises the keystrokes, so each sees a freshly committed render.
 
 A component test can only catch this class if the two actions land in the **same** `act`. Sequential
 `fireEvent`s do not: React Testing Library wraps each in its own `act`, which flushes react-router's
@@ -204,17 +276,43 @@ edited from a dev cycle.
 ## Anti-regression plan
 
 - `cd client && bun run test` in full, not a targeted file run. All 229 must stay green, and
-  `TicketsPage.test.tsx:251`'s exact-params assertion stays an exact match — it is GH-1's AC9 control
-  and must not be loosened to `objectContaining`.
+  `TicketsPage.test.tsx`'s exact-params assertion stays an exact match — it is GH-1's AC9 control and
+  must not be loosened to `objectContaining`. (Round 3 noted the old line reference here had drifted by
+  about 15 lines; it is quoted by name now rather than by line, since the tests around it keep moving.)
 - `bun run test:e2e` in full. Two scenarios currently fail; `CASE-8e3d236b21a9` must go green here.
   `CASE-e51a15eb56e6` is the sibling defect `FIND-5232572f9eda` (the footer unmount), which was brought
   into this cycle at a scope-drift pause and must therefore also go green rather than being reported red.
 - The suite runs at `workers: 1`; do not raise it to make anything pass.
 
-**Result.** Client suite 242/242, up from the 229 baseline. E2E across three full runs: 81/82, 82/82,
-82/82. The single failure was `CASE-f8fac94b30ab` ("should undo a filter change on Back"), which passes
-5/5 in isolation and 13/13 with its own spec file — the suite's known shared-database ordering
-flakiness, not a regression from this change. `checks.e2e` in the state file records this.
+**Result.** Client suite 247/247, up from the 229 baseline.
+
+E2E across seven full runs. The mechanism changed twice during this cycle, so the runs are grouped by
+what they actually measured — an earlier revision of this section reported "three full runs: 81/82,
+82/82, 82/82" without saying that all three predate the delivered code, which is what round 3 raised as
+B-R3-4:
+
+| Mechanism | Runs | Result |
+|---|---|---|
+| pending-write queue — **deleted, measures nothing shipped** | 3 | 81/82, 82/82, 82/82 |
+| live location, before the round-4 filter-delta fix | 2 | 82/82, 82/82 |
+| live location + filter deltas — **the delivered code** | 2 | 82/82 (4.8m), 82/82 (2.7m) |
+
+The single failure across all seven was `CASE-f8fac94b30ab` ("should undo a filter change on Back"), on
+the first run only, under a mechanism no longer in the tree. It passes 5/5 in isolation and 13/13 with
+its own spec file — the suite's known shared-database ordering flakiness, not a regression from this
+change.
+
+The first of the two delivered-code runs had a doc comment in
+`client/src/lib/use-latest-ticket-list-params.ts` edited while it was in flight, so Vite reloaded that
+module mid-suite. Comment-only, no behaviour, and it passed — but the second run exists because a number
+measured against a tree that changed underneath it is the exact defect B-R3-4 named, and recording it
+without re-running would have repeated it.
+
+`OPENAI_API_KEY` is unset on this machine in every run, so `auto-resolve-ticket` throws
+`AI_LoadAPIKeyError` and no seeded ticket transitions to `resolved`. That is unchanged from GH-1's runs
+and is recorded rather than treated as passing.
+
+`checks.e2e` in the state file records all of this.
 
 ## Rollback
 

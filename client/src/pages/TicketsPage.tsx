@@ -4,6 +4,7 @@ import {
   parseTicketListParams,
   serializeTicketListParams,
   type TicketFilters,
+  type TicketFiltersDelta,
   type TicketListParams,
 } from "@/lib/ticket-list-params";
 import { useLatestTicketListParams } from "@/lib/use-latest-ticket-list-params";
@@ -34,7 +35,19 @@ export default function TicketsPage() {
     setSearchParams(serializeTicketListParams(next), { replace });
   }
 
-  function handleFiltersChange(nextFilters: TicketFilters) {
+  function handleFiltersChange(delta: TicketFiltersDelta) {
+    // The delta carries only the control that changed, so the other two filters come from the live URL
+    // rather than from this render. A control that sent the whole set would send them committed, and a
+    // second control changing in the same render would overwrite the first one's write with stale
+    // values — GH-3 again, one level above where the hook fixes it.
+    const current = latest.read();
+    const nextFilters: TicketFilters = {
+      status: current.status,
+      category: current.category,
+      search: current.search,
+      ...delta,
+    };
+
     // Starting a search pushes, refining one replaces. Every keystroke is a new URL, so pushing
     // each would put one history entry per character and Back would walk the reader through
     // "logi", "log", "lo". Replacing every edit instead would mean Back never undid the search at
@@ -44,9 +57,10 @@ export default function TicketsPage() {
     // Clearing the box is excluded: it is the end of the search, not a refinement of it. Replacing
     // there would overwrite the search entry with the same URL as the entry before it, and the
     // reader's first Back would appear to do nothing.
-    // Read from the latest params, not the render snapshot: otherwise the push-versus-replace
-    // decision is made against a URL that is already one write out of date.
-    const current = latest.read();
+    // Compared against `current` — the live URL — and not against the render snapshot: otherwise the
+    // push-versus-replace decision is made one write out of date, and two keystrokes landing in one
+    // render both push, which is exactly the per-character history the rule above forbids. Guarded by
+    // "should replace rather than push when a second keystroke lands in the same render".
     const refiningExistingSearch =
       current.search !== undefined &&
       nextFilters.search !== undefined &&

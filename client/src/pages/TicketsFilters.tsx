@@ -8,13 +8,21 @@ import {
 } from "@/components/ui/select";
 import { Search } from "lucide-react";
 import { agentTicketStatuses, statusLabel } from "core/constants/ticket-status.ts";
-import type { TicketFilters } from "@/lib/ticket-list-params";
+import type {
+  TicketFilters,
+  TicketFiltersDelta,
+} from "@/lib/ticket-list-params";
 
 const ALL = "__all__";
 
 interface TicketsFiltersProps {
   filters: TicketFilters;
-  onChange: (filters: TicketFilters) => void;
+  /**
+   * Each control reports only the key it owns. `filters` below is the committed set, so spreading it
+   * into the payload would send two keys stale and clobber a write another control issued in the same
+   * render (GH-3). The page merges the delta against the live URL.
+   */
+  onChange: (delta: TicketFiltersDelta) => void;
 }
 
 export default function TicketsFilters({
@@ -28,7 +36,7 @@ export default function TicketsFilters({
         <Input
           placeholder="Search tickets..."
           value={filters.search ?? ""}
-          onChange={(e) => onChange({ ...filters, search: e.target.value || undefined })}
+          onChange={(e) => onChange({ search: e.target.value || undefined })}
           className="pl-8"
         />
       </div>
@@ -36,7 +44,7 @@ export default function TicketsFilters({
       <Select
         value={filters.status ?? ALL}
         onValueChange={(value) =>
-          onChange({ ...filters, status: value === ALL ? undefined : (value as TicketFilters["status"]) })
+          onChange({ status: value === ALL ? undefined : (value as TicketFilters["status"]) })
         }
       >
         <SelectTrigger className="w-[160px]">
@@ -55,7 +63,7 @@ export default function TicketsFilters({
       <Select
         value={filters.category ?? ALL}
         onValueChange={(value) =>
-          onChange({ ...filters, category: value === ALL ? undefined : (value as TicketFilters["category"]) })
+          onChange({ category: value === ALL ? undefined : (value as TicketFilters["category"]) })
         }
       >
         <SelectTrigger className="w-[200px]">

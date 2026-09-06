@@ -80,6 +80,19 @@ describe("useLatestTicketListParams", () => {
     expect(result.current.read()).toMatchObject({ status: "open", page: 2 });
   });
 
+  it("should read an empty live search as the bare list, not as a missing location", () => {
+    // The distinguishing case for the fallback condition, and the reason it tests `=== undefined`
+    // rather than falsiness: an empty search is a real URL — the unfiltered list — while the committed
+    // params still carry the filter the reader has just left by a Back. A falsy check returns
+    // `committed` here, and the next write merges onto that filter and resurrects it.
+    const { result } = renderHook(
+      () => useLatestTicketListParams({ ...defaults, status: "open", page: 2 }),
+      { wrapper: ({ children }) => withLiveLocation("", children) }
+    );
+
+    expect(result.current.read()).toEqual(defaults);
+  });
+
   it("should fall back to the committed params when the navigator exposes no location", () => {
     // `UNSAFE_NavigationContext` is a private export and a live `location` on its navigator is not a
     // documented guarantee. If an upgrade removes it, this hook must degrade to the committed snapshot

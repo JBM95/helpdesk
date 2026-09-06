@@ -72,6 +72,19 @@ const lastRequestParams = () =>
 /** The filter controls are Radix Selects: buttons with role combobox, in render order. */
 const statusFilterTrigger = () => screen.getAllByRole("combobox")[0];
 
+/**
+ * Picks an already-visible Select option synchronously, so it can share an `act` with another event.
+ *
+ * `userEvent.click` cannot: it awaits, which flushes the router transition in between and removes the
+ * window a same-render race test needs. Radix decides selection from the pointer type it last recorded
+ * — `onPointerUp` selects for a mouse, `onClick` for anything else — so the `pointerDown` is what makes
+ * the `pointerUp` count, not padding.
+ */
+function selectOption(option: HTMLElement) {
+  fireEvent.pointerDown(option);
+  fireEvent.pointerUp(option);
+}
+
 const mockTickets = [
   {
     id: 1,
@@ -1839,29 +1852,36 @@ describe("TicketsPage — paging past the end of a filter still settling", () =>
   });
 });
 
-describe("TicketsPage — GH-3, a write abandoned by a history navigation", () => {
-  function renderWithBack(entries: string[]) {
-    function BackButton() {
-      const navigate = useNavigate();
-      return <button onClick={() => navigate(-1)}>go back</button>;
-    }
-    return render(
-      <MemoryRouter initialEntries={entries} initialIndex={entries.length - 1}>
-        <QueryClientProvider
-          client={
-            new QueryClient({ defaultOptions: { queries: { retry: false } } })
-          }
-        >
-          <BackButton />
-          <Routes>
-            <Route path="/tickets" element={<TicketsPage />} />
-          </Routes>
-          <LocationProbe />
-        </QueryClientProvider>
-      </MemoryRouter>
-    );
+/**
+ * The tickets list with a Back button outside it, mounted at the last of `entries`.
+ *
+ * Shared by the GH-3 describes below, which all need to drive a history navigation into the same `act`
+ * as a control change. `renderWithBackButton` in the AC5 describe is a separate helper on purpose: it
+ * also renders a Forward button and a `/` route, and nothing here needs either.
+ */
+function renderWithBack(entries: string[]) {
+  function BackButton() {
+    const navigate = useNavigate();
+    return <button onClick={() => navigate(-1)}>go back</button>;
   }
+  return render(
+    <MemoryRouter initialEntries={entries} initialIndex={entries.length - 1}>
+      <QueryClientProvider
+        client={
+          new QueryClient({ defaultOptions: { queries: { retry: false } } })
+        }
+      >
+        <BackButton />
+        <Routes>
+          <Route path="/tickets" element={<TicketsPage />} />
+        </Routes>
+        <LocationProbe />
+      </QueryClientProvider>
+    </MemoryRouter>
+  );
+}
 
+describe("TicketsPage — GH-3, a write abandoned by a history navigation", () => {
   /**
    * The hardest case, and the one that ruled out tracking the pending write. The reader types a search
    * and hits Back before React commits it. The Back returns to the exact entry the write was issued
@@ -1893,6 +1913,30 @@ describe("TicketsPage — GH-3, a write abandoned by a history navigation", () =
     // And the next control the reader touches must not bring it back.
     expect(currentSearch()).toBe("?page=2");
   });
+
+  /**
+   * The same class as above, but with the popped URL bare and the committed params not — the case that
+   * separates the fallback's `live?.search === undefined` from a falsy check. A falsy check reads the
+   * empty search as "no live location", falls back to the committed `?status=open`, and the Next merges
+   * onto the filter the reader has just navigated away from: `?status=open&page=2`.
+   *
+   * The test above cannot see it. Its POP lands on the default URL, where the committed params and the
+   * params parsed from an empty search are the same object by value, so both branches agree.
+   */
+  it("should not resurrect a filter the reader left by a Back onto the unfiltered list", async () => {
+    mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
+    renderWithBack(["/tickets", "/tickets?status=open"]);
+    await waitFor(() =>
+      expect(screen.getByText("Showing 1–10 of 50 tickets")).toBeInTheDocument()
+    );
+
+    await act(async () => {
+      fireEvent.click(screen.getByText("go back"));
+      fireEvent.click(screen.getByRole("button", { name: "Next page" }));
+    });
+
+    expect(currentSearch()).toBe("?page=2");
+  });
 });
 
 describe("TicketsPage — GH-3, two writes issued before either commits", () => {
@@ -1920,12 +1964,6 @@ describe("TicketsPage — GH-3, two writes issued before either commits", () => 
   });
 
   /**
-   * The same race through the filter path, which is a different code path in TicketsPage: it also
-   * decides push-versus-replace from the latest params. The search box is used rather than the status
-   * select because Radix renders its options in a portal that aria-hides the footer while it is open,
-   * so Next is not reachable in the same act as an option click.
-   */
-  /**
    * The other ordering, in the same render — AC-c's same-render half. Merging against the live URL must
    * not resurrect the page a filter change is supposed to clear, so this is the guard that the fix did
    * not simply trade GH-3 for a violation of GH-1's AC6.
@@ -1947,6 +1985,12 @@ describe("TicketsPage — GH-3, two writes issued before either commits", () => 
     expect(currentSearch()).toBe("?search=login");
   });
 
+  /**
+   * The same race through the filter path, which is a different code path in TicketsPage: it also
+   * decides push-versus-replace from the latest params. The search box is used rather than the status
+   * select because Radix renders its options in a portal that aria-hides the footer while it is open,
+   * so Next is not reachable in the same act as an option click.
+   */
   it("should keep both writes when a search and a page change are issued in the same render", async () => {
     mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
     renderTicketsAt();
@@ -1962,6 +2006,103 @@ describe("TicketsPage — GH-3, two writes issued before either commits", () => 
     });
 
     expect(currentSearch()).toBe("?search=login&page=2");
+  });
+
+  /**
+   * Two *filter* controls in one render, which the hook alone does not fix. Each control renders from
+   * the committed filter set, so one that sent the whole set would send the other two keys stale and
+   * overwrite whatever the first control had just written — the fix is that each sends only its own key
+   * and the page merges it against the live URL.
+   *
+   * Reverting either control in `TicketsFilters.tsx` to `{ ...filters, <key> }` fails this.
+   *
+   * The select is opened before the `act` on purpose: its options exist only once the portal has
+   * rendered, and that render must not sit between the two writes under test.
+   */
+  it("should keep both writes when two different filters change in the same render", async () => {
+    const user = userEvent.setup();
+    mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
+    renderTicketsAt();
+    await waitFor(() =>
+      expect(screen.getByText("Showing 1–10 of 50 tickets")).toBeInTheDocument()
+    );
+
+    await user.click(statusFilterTrigger());
+    const openOption = await screen.findByRole("option", { name: "Open" });
+
+    await act(async () => {
+      selectOption(openOption);
+      fireEvent.change(screen.getByPlaceholderText("Search tickets..."), {
+        target: { value: "login" },
+      });
+    });
+
+    await waitFor(() =>
+      expect(currentSearch()).toBe("?status=open&search=login")
+    );
+  });
+
+  /** The reverse order, because the loser of the clobber swaps with it. */
+  it("should keep both writes when the same two filters change the other way round", async () => {
+    const user = userEvent.setup();
+    mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
+    renderTicketsAt();
+    await waitFor(() =>
+      expect(screen.getByText("Showing 1–10 of 50 tickets")).toBeInTheDocument()
+    );
+
+    await user.click(statusFilterTrigger());
+    const openOption = await screen.findByRole("option", { name: "Open" });
+
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText("Search tickets..."), {
+        target: { value: "login" },
+      });
+      selectOption(openOption);
+    });
+
+    await waitFor(() =>
+      expect(currentSearch()).toBe("?status=open&search=login")
+    );
+  });
+});
+
+describe("TicketsPage — GH-3, the push-versus-replace rule under the same race", () => {
+  /**
+   * GH-1's rule is that a search session gets exactly one history entry: the first keystroke pushes and
+   * every refinement replaces, so one Back leaves the search rather than walking the reader through
+   * "logi", "log", "lo". That decision is made by comparing against the live URL, and this is what
+   * holds it there.
+   *
+   * `CASE-222fa42cb560` cannot: it types with `user.type`, which serialises the keystrokes, so each one
+   * sees a freshly committed render and the comparison is correct either way. Two keystrokes inside one
+   * `act` both see an empty committed search, so a comparison against the render snapshot calls both of
+   * them a new search and pushes twice.
+   */
+  it("should replace rather than push when a second keystroke lands in the same render", async () => {
+    mockedAxios.get.mockResolvedValue(mockResponse(mockTickets, 50));
+    renderWithBack(["/tickets"]);
+    await waitFor(() =>
+      expect(screen.getByText("Showing 1–10 of 50 tickets")).toBeInTheDocument()
+    );
+
+    const searchBox = screen.getByPlaceholderText("Search tickets...");
+    await act(async () => {
+      fireEvent.change(searchBox, { target: { value: "l" } });
+      fireEvent.change(searchBox, { target: { value: "lo" } });
+    });
+
+    expect(currentSearch()).toBe("?search=lo");
+    // The second write refined the first, so it replaced it.
+    expect(lastNavigation()).toBe("REPLACE");
+
+    await act(async () => {
+      fireEvent.click(screen.getByText("go back"));
+    });
+
+    // One Back leaves the search entirely. Against the render snapshot both keystrokes push, and this
+    // Back lands on "?search=l" instead.
+    expect(currentSearch()).toBe("");
   });
 });
 

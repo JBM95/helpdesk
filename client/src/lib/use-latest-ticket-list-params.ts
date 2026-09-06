@@ -29,11 +29,17 @@ import {
  * test mounts `MemoryRouter`, which never touches it. The navigator below is authoritative under both.
  *
  * **The cost, stated plainly.** `UNSAFE_NavigationContext` is a private react-router export, and its
- * navigator exposing a live `location` is not a documented guarantee. Two things contain that: the read
- * falls back to the committed params when no live location is present, so an upgrade that removes it
- * degrades to the old snapshot behaviour rather than crashing; and
- * `use-latest-ticket-list-params.test.ts` asserts the live read directly, so an upgrade that breaks it
- * fails a test that names this file instead of surfacing as a URL bug months later.
+ * navigator exposing a live `location` is not a documented guarantee. The read falls back to the
+ * committed params when no live location is present, so an upgrade that removes it degrades to the old
+ * snapshot behaviour rather than crashing, and `use-latest-ticket-list-params.test.ts` asserts the live
+ * read directly.
+ *
+ * **What that does not cover.** Under `react-router@7.13.0`, `BrowserRouter` and `MemoryRouter` both hand
+ * over a history whose `location` is a live getter, but `RouterProvider` — `createBrowserRouter` — hands
+ * over a navigator with no `location` at all. Moving this app to a data router would therefore take the
+ * fallback in production and silently restore the GH-3 defect, while every component test kept mounting
+ * `MemoryRouter` and stayed green. The tests below cannot see it: they inject a navigator rather than
+ * mounting a router. If you are here to migrate the router, this hook is the thing to re-verify first.
  */
 export function useLatestTicketListParams(committed: TicketListParams) {
   const { navigator } = useContext(UNSAFE_NavigationContext);
@@ -45,6 +51,10 @@ export function useLatestTicketListParams(committed: TicketListParams) {
      */
     read: (): TicketListParams => {
       const live = (navigator as { location?: { search?: string } }).location;
+      // `=== undefined`, not a falsy check. An empty search is a real URL — the bare `/tickets` list —
+      // and a reader reaches it by clearing a filter or by a Back onto the unfiltered entry. Treating
+      // it as "no live location" would fall back to the committed params and merge the next write onto
+      // the filter they just left, which is the round-2 regression this hook was built to end.
       if (live?.search === undefined) return committed;
       return parseTicketListParams(new URLSearchParams(live.search));
     },

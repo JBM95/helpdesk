@@ -135,3 +135,19 @@ export type TicketFilters = Pick<
   TicketListParams,
   "status" | "category" | "search"
 >;
+
+/**
+ * What one filter control emits: the single key it owns, and nothing else.
+ *
+ * A control must not send the whole filter set. The set it renders from is the *committed* one, so a
+ * second control changing in the same render would send two of the three keys stale and overwrite the
+ * first control's write — the GH-3 defect, one level up from where it was fixed. Sending only the key
+ * that changed lets the page merge it against the live URL.
+ *
+ * The compiler cannot enforce this: every field of `TicketFilters` is already optional, so a delta and
+ * a full set are the same type. `TicketsPage.test.tsx` → "GH-3, two writes issued before either
+ * commits" is what holds it, by failing if a control goes back to spreading the set.
+ *
+ * A key present with `undefined` clears that filter; a key absent leaves it alone.
+ */
+export type TicketFiltersDelta = Partial<TicketFilters>;
