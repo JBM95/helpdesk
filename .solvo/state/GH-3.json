@@ -21,21 +21,21 @@
     }
   },
   "checks": {
-    "commit": "fdd91b72bae7ff68bc58744252687091069dfd99",
+    "commit": "0d5f85bef8a04ca3b685648cfc02a069dccf60a1",
     "commitNote": "The last commit carrying source, test or spec content. This state file is the single trailing commit after it, which is what the gate-guard freshness arm accepts.",
     "ambiguityScan": {
       "cleared": true,
       "note": "The fix's expected behaviour admits one reading. The two orderings do not compete: a filter change after a page change resets to page 1 (GH-1 AC6), and a page change after a filter change lands on page 2 of the filtered list (GH-1 AC1). Two rapid writes to different keys both land; two to the same key resolve last-write-wins, which is what the user's second action asked for. #3 carries no Gherkin because ticket-standard has no bug variant - a known gap in that standard - so the acceptance criteria are derived in the spec from GH-1's AC1 and AC6, which are the ACs the defect contradicts."
     },
     "green": true,
-    "at": "2026-09-06T18:05:00.000Z",
+    "at": "2026-09-06T19:05:00.000Z",
     "command": "cd client && bun run test (vitest run)",
     "tests": {
-      "files": 10,
-      "passed": 247,
+      "files": 11,
+      "passed": 254,
       "failed": 0,
       "baselinePassed": 229,
-      "note": "Up from 242 at round 3: 4 tests added for the round-4 blockers (two filter+filter orderings for B-R3-3, one same-render push-versus-replace guard for B-R3-1, one bare-live-search page guard for B-R3-2) plus 1 hook test for B-R3-2's fallback condition. Re-run on the final tree after the last doc-comment edit."
+      "note": "Up from 247 at round 4: the new TicketsFilters.test.tsx adds 6 payload-contract tests, and one page-level ordering was added for the category control."
     },
     "e2e": {
       "command": "bun run test:e2e (playwright, workers: 1)",
@@ -88,14 +88,22 @@
           "atMechanism": "live location + filter deltas",
           "durationMin": 2.7,
           "note": "The confirming run, on a source tree that did not change while it ran. This is the run that measures the delivered code."
+        },
+        {
+          "passed": 82,
+          "failed": 0,
+          "total": 82,
+          "atMechanism": "live location + filter deltas",
+          "durationMin": 4.3,
+          "note": "After round 5 added the TicketsFilters payload tests and the third page-level ordering. Re-run because the tree moved, not because anything about the app behaviour changed - the only production delta since the previous run is a doc comment in the hook."
         }
       ],
       "targetScenarios": {
         "CASE-8e3d236b21a9": "green - was failing before this fix; now also carries the intermediate-URL assertion that resolves the spec's open question",
         "CASE-e51a15eb56e6": "green - the sibling defect FIND-5232572f9eda, brought into this cycle at a scope-drift pause"
       },
-      "flake": "The single failure across the five runs was CASE-f8fac94b30ab ('should undo a filter change on Back'), on the first run only. It passes 5/5 under --repeat-each in isolation and 13/13 with its own spec file, so it is the suite's known shared-database ordering flakiness rather than a regression from this change. Not asserted as fixed and not suppressed.",
-      "mechanismNote": "Seven full runs across three mechanisms. The three tagged 'pending-write queue' measure code that no longer exists and must not be quoted as evidence for this fix - round 3 raised exactly that misattribution as B-R3-4. The two 'live location' runs measure the pre-round-4 code. Only the two 'live location + filter deltas' runs measure what ships.",
+      "flake": "The single failure across all runs was CASE-f8fac94b30ab ('should undo a filter change on Back'), on the first run only, under the pending-write mechanism that is no longer in the tree. It passes 5/5 under --repeat-each in isolation and 13/13 with its own spec file, so it is the suite's known shared-database ordering flakiness rather than a regression. Corrected at round 5: this field previously said 'across the five runs' while the same object recorded seven.",
+      "mechanismNote": "Eight full runs across three mechanisms. The three tagged pending-write queue measure code that no longer exists and must not be quoted as evidence for this fix - round 3 raised exactly that misattribution as B-R3-4. The two live location runs measure the pre-round-4 code. Only the three live location + filter deltas runs measure what ships.",
       "note": "The suite had never run on Windows before this branch: playwright.config.ts used a POSIX 'VAR=value cmd' prefix, which cmd.exe does not accept. Fixed on this branch along with workers: 1, which a shared database without per-test isolation requires.",
       "environment": "OPENAI_API_KEY unset in every run, so auto-resolve-ticket throws AI_LoadAPIKeyError and no seeded ticket reaches `resolved`. Unchanged from GH-1's runs; recorded rather than treated as passing."
     },
@@ -113,31 +121,43 @@
     },
     "coverage": "n/a: no coverage script exists in this repo and quality.coverageArtifact is an n/a marker",
     "mutations": {
-      "note": "Every round-4 guard was mutation-verified by running the mutation, not by reasoning about it. Round 3 found two overstated mutation claims in this cycle's earlier records, so each result below is a real run.",
+      "note": "Re-run at the 254-test suite. Round 4's review reproduced all four of round 4's recorded mutations verbatim and found two SPEC claims false; the two extra rows those produced are measured here rather than characterised.",
       "results": [
         {
-          "blocker": "B-R3-3",
-          "mutation": "TicketsFilters search control reverted to onChange({ ...filters, search })",
-          "result": "1 failed / 90 passed in TicketsPage.test.tsx - expected '?search=login' to be '?status=open&search=login'",
-          "kills": "only the ordering where the search writes second"
-        },
-        {
-          "blocker": "B-R3-3",
-          "mutation": "TicketsFilters status control reverted to onChange({ ...filters, status })",
-          "result": "1 failed / 90 passed - expected '?status=open' to be '?status=open&search=login'",
-          "kills": "only the other ordering. A stale set clobbers what landed before it, so the control that writes first cannot expose its own bug - which is why both orderings are tested and neither is redundant."
+          "blocker": "B-R3-3 / round-4 B1",
+          "mutation": "any one of the three TicketsFilters controls reverted to onChange({ ...filters, <key> })",
+          "result": "3 failed / 251 passed, for each of the three controls independently",
+          "kills": "that control's two payload tests in TicketsFilters.test.tsx, plus the page-level ordering in which it writes second. Symmetric across search, status and category - at round 4 the category mutation killed nothing."
         },
         {
           "blocker": "B-R3-1",
           "mutation": "refiningExistingSearch's five operands reverted from the live `current` to the render snapshot `params`",
-          "result": "1 failed / 246 passed - expected 'PUSH' to be 'REPLACE'",
-          "kills": "'should replace rather than push when a second keystroke lands in the same render', and nothing else. Before round 4 this mutation left all 242 tests green."
+          "result": "1 failed / 253 passed - expected 'PUSH' to be 'REPLACE'",
+          "kills": "the same-render push-versus-replace guard only. Left 242/242 green before round 4."
         },
         {
           "blocker": "B-R3-2",
           "mutation": "the hook's `live?.search === undefined` weakened to `!live?.search`",
-          "result": "2 failed / 245 passed - the new hook test, and the page guard with expected '?status=open&page=2' to be '?page=2'",
-          "kills": "exactly the two new guards, reproducing round-2 B1's symptom. Before round 4 this mutation left all 242 tests green."
+          "result": "2 failed / 252 passed",
+          "kills": "the empty-live-search hook test and the Back-onto-unfiltered page guard, reproducing round-2 B1's symptom. Left 242/242 green before round 4."
+        },
+        {
+          "blocker": "spec claim, previously unmeasured",
+          "mutation": "unwire the hook - all three latest.read() call sites read `params`",
+          "result": "7 failed / 247 passed",
+          "kills": "the spec had claimed 'both and nothing else', i.e. 2. Round 4's review measured 6 at a 247-test suite; 7 here."
+        },
+        {
+          "blocker": "spec claim, previously unmeasured",
+          "mutation": "the hook returns the committed params instead of the live ones",
+          "result": "10 failed / 244 passed",
+          "kills": "the spec had claimed 4. Round 4's review measured 9 at a 247-test suite."
+        },
+        {
+          "blocker": "containment",
+          "mutation": "the fallback line removed entirely",
+          "result": "1 failed / 253 passed - the fallback test, on a TypeError",
+          "kills": "confirms the fallback is load-bearing for the no-live-location case rather than dead code."
         }
       ]
     }
@@ -357,7 +377,7 @@
       "treeRestored": "Working tree returned to 288d14f clean, 242/242 green after every mutation was reverted."
     },
     "round4": {
-      "status": "fixes-delivered-pending-review",
+      "status": "reviewed",
       "at": "2026-09-06T18:05:00.000Z",
       "by": "claude-code",
       "authorisedBy": "JB Mccallaghan",
@@ -382,7 +402,52 @@
         "S-R3-1": "lastPage derived from a possibly-stale data.total.",
         "S-R3-2": "Unreachable destructure of a null navigation context."
       },
-      "nextStep": "Re-dispatch fresh-reviewer as the round-4 review. No verdict exists yet; this block records delivered fixes, not an outcome."
+      "nextStep": "Re-dispatch fresh-reviewer as the round-4 review. No verdict exists yet; this block records delivered fixes, not an outcome.",
+      "verdict": "REQUEST_CHANGES",
+      "blockersOpen": 1,
+      "reviewedBy": "fresh-reviewer",
+      "reviewedAt": "2026-09-06T18:40:00.000Z",
+      "lenses": {
+        "blind": 1,
+        "edge": 3,
+        "acceptance": 12
+      },
+      "duplicationCount": 2,
+      "perBlockerVerdicts": {
+        "B-R3-1": "CLOSED. Verified in both directions: reverting the operands to `params` fails only the named test at 'PUSH' vs 'REPLACE', and forcing refiningExistingSearch=true fails the same test at its Back assertion, so it pins GH-1's one-entry-per-search-session rule rather than the current line. Same mutation at 288d14f left 242/242 green, confirming round 3's premise. The diff confirms no production code changed.",
+        "B-R3-2": "CLOSED. The falsy mutation fails exactly the two new guards, reproducing round-2 B1's symptom; at 288d14f it left 242/242 green. Condition unchanged in the round-4 diff.",
+        "B-R3-3": "DEFECT CLOSED, GUARD INCOMPLETE. HEAD's tests against 288d14f's production code fail both orderings, so the round-3 defect was real and the new tests catch it. The reviewer then built 15 probes - every filter pair in both orderings, all four clearing paths, three deltas in one render, filter-by-sort and filter-by-page both ways - and all 15 pass, while `const current = params` fails 12 of 15. The fix is at the right level and no pair is lost. The category control's guard was missing: see round4Blocker below.",
+        "B-R3-4": "CLOSED. The regrouped Result table reconciles row-for-row with checks.e2e.runs including both durations, and checks.e2e.scenarios reconciles with 82 test( declarations across 6 spec files."
+      },
+      "blocker": "B1 - TicketsFilters.tsx's CATEGORY control had no guard on its delta contract. Reverting it to { ...filters, category } left all 247 tests green: the same mutation class as round 3's B-R3-3, on the third of three controls in the file round 4 changed. The lost write was real, not theoretical - a real-component probe with search writing first and category second gave '?category=refund_request' with the search gone. Three shipped artifacts asserted a guard that did not exist for that control: ticket-list-params.ts's TicketFiltersDelta doc, TicketsPage.test.tsx's 'reverting either control' comment, and the spec's 'reverting either control fails exactly the ordering in which that control writes second'. Production code was correct on every pair the reviewer could construct; this was a guard gap, not a behavioural defect.",
+      "falseClaimsFound": "Two mutation scoping clauses in the spec were never measured and were both false: 'unwiring the hook fails both and nothing else in the suite' was 6 failures, and 'fails those two plus the two hook tests' was 9, against a 247-test suite. Both erred toward MORE coverage than claimed, so no defect hid behind them - but it is the same species of unverified clause that let B-R3-3 through three rounds, so both are now replaced by a measured table."
+    },
+    "round5": {
+      "status": "fixes-delivered-pending-review",
+      "at": "2026-09-06T19:05:00.000Z",
+      "by": "claude-code",
+      "scope": "Round 4's single blocker, plus the two false spec claims and four stale references its review surfaced. No new scope.",
+      "blockerAddressed": {
+        "B1": "Closed at the class rather than the instance. A third page-level ordering was added for the category control, and - the substantive part - the delta payload contract is now asserted for ALL THREE controls, set and cleared, in the new client/src/pages/TicketsFilters.test.tsx (6 tests). Adding a third special case would have left the next control added to the file in the same position the category one was in. Each control's mutation now fails exactly 3 tests: its two payload tests plus the page-level ordering in which it writes second. Symmetric across all three, measured one control at a time."
+      },
+      "alsoCorrected": {
+        "N2/N3": "The two false mutation claims are replaced by a table of six mutations with their observed failure counts, all re-run at the 254-test suite: unwire the hook 7, hook returns committed 10, remove the fallback 1, weaken the fallback 2, revert the refining operands 1, revert any one filter control 3 each. The spec now states plainly that the old clauses were unmeasured and why that matters.",
+        "N5": "The TicketsPage.test.tsx:773 reference is replaced by the test's name. Round 3 and round 4 each measured that same reference as drifted, so a line number was the wrong thing to cite.",
+        "N6": "The hook test file is described as four tests rather than 'the three properties' / 'the third hook test'.",
+        "N4": "checks.e2e.flake said 'across the five runs' while the same object recorded seven. Corrected.",
+        "S1": "The hook's doc comment now records that the abandoned-write guard is order-dependent: a navigation AFTER a write in the same render wins, one BEFORE it loses. Consistent with the recorded last-write-wins decision and not reachable by mouse, since a nav-link click blurs the input before the navigation dispatches. Documented rather than changed."
+      },
+      "notAddressed": {
+        "D1/D-R3-1": "The router-type gap. Still a merge-gate decision, correctly documented in both the spec and the hook.",
+        "D2/D-R3-2": "E2E map thin - AC-b, AC-c and AC-e have no scenario, and AC-a's rides inside another AC's approved case. Merge-gate decision, pre-declared in the spec.",
+        "D3/D-R3-3": "GH-1-cases.md still records CASE-93514dfd0070's old ?page=2 expectation. Owed a /qa-cases revision; not a dev cycle's to edit.",
+        "N1": "recon's filter+sort pair has no same-render test. Both orderings probed green by the reviewer, and the hook-unwire mutation already kills sort+page.",
+        "N7": "AC-a's stated observables (the Status control reading 'Open', the filtered list on page 2) are asserted nowhere - the cited test uses the search box and asserts the URL only. Same-render status+Next has no component test because Radix portals aria-hide the footer; the serialised version is covered.",
+        "N8/N9": "Three router-mount helpers and a fourth held-promise scaffold copy. Test-structure debt.",
+        "N10": "aria-busy false during the first load, and no trap entry in docs/repo-wiki/_memories for this class.",
+        "S2": "lastPage from a possibly-stale data.total, and the unguarded destructure of a null navigation context (unreachable while the page is inside a Router)."
+      },
+      "nextStep": "A named human decides: a fifth review round, or the merge gate with the carried items above. Round 4's blocker is closed and no production code changed to close it, which is the cheapest kind of round to re-verify."
     }
   }
 }
