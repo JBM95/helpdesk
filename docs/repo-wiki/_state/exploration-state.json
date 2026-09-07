@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 3,
+  "reconRun": {
+    "completedAt": "2026-09-07T11:20:00.000Z",
+    "totalLoc": 10079,
+    "totalProjects": 4,
+    "subSystems": [
+      "core",
+      "client",
+      "server",
+      "e2e"
+    ]
+  },
+  "subSystems": {
+    "core": {
+      "path": "core",
+      "loc": 139,
+      "locAtLastExploration": 0,
+      "files": 9,
+      "filesAtLastExploration": 0,
+      "status": "pending",
+      "staleness": "new",
+      "churn": {
+        "tier": "warm",
+        "source": "unavailable",
+        "measuredAt": null,
+        "windowDays": 90,
+        "commits": null,
+        "linesChanged": null,
+        "filesTouched": null
+      },
+      "agentsRun": {
+        "explore-05-domain-mapper": null,
+        "explore-06-api-surface-mapper": null,
+        "explore-07-frontend-explorer": null,
+        "explore-08-data-model-mapper": null,
+        "explore-13-legacy-detective": null,
+        "explore-10-integration-mapper": null,
+        "explore-12-test-coverage-mapper": null,
+        "explore-11-cross-cutting-mapper": null,
+        "explore-09-feature-cataloger": null
+      },
+      "notes": "Shared schemas and constants package. Foundation layer consumed by client and server."
+    },
+    "client": {
+      "path": "client",
+      "loc": 5363,
+      "locAtLastExploration": 5363,
+      "files": 52,
+      "filesAtLastExploration": 52,
+      "status": "partial",
+      "staleness": "fresh",
+      "churn": {
+        "tier": "warm",
+        "source": "unavailable",
+        "measuredAt": null,
+        "windowDays": 90,
+        "commits": null,
+        "linesChanged": null,
+        "filesTouched": null
+      },
+      "agentsRun": {
+        "explore-05-domain-mapper": "2026-09-07T12:20:00.000Z",
+        "explore-06-api-surface-mapper": null,
+        "explore-07-frontend-explorer": "2026-09-07T12:20:00.000Z",
+        "explore-08-data-model-mapper": null,
+        "explore-13-legacy-detective": "2026-09-07T12:20:00.000Z",
+        "explore-10-integration-mapper": null,
+        "explore-12-test-coverage-mapper": "2026-09-07T12:20:00.000Z",
+        "explore-11-cross-cutting-mapper": "2026-09-07T12:20:00.000Z",
+        "explore-09-feature-cataloger": "2026-09-07T12:20:00.000Z"
+      },
+      "notes": "React + Vite frontend. 13 pages, ~30 components (13 vendored shadcn/ui), 8 component test files. Explored 2026-09-07 (client scope). status=partial: 6 of 9 sub-system agents ran. explore-06-api-surface-mapper, explore-08-data-model-mapper and explore-10-integration-mapper were deliberately NOT run - all three map server-side surface, and the operator scoped this pass to client only. Not a failure; do not retry without widening scope."
+    },
+    "server": {
+      "path": "server",
+      "loc": 2526,
+      "locAtLastExploration": 0,
+      "files": 23,
+      "filesAtLastExploration": 0,
+      "status": "pending",
+      "staleness": "new",
+      "churn": {
+        "tier": "warm",
+        "source": "unavailable",
+        "measuredAt": null,
+        "windowDays": 90,
+        "commits": null,
+        "linesChanged": null,
+        "filesTouched": null
+      },
+      "agentsRun": {
+        "explore-05-domain-mapper": null,
+        "explore-06-api-surface-mapper": null,
+        "explore-07-frontend-explorer": null,
+        "explore-08-data-model-mapper": null,
+        "explore-13-legacy-detective": null,
+        "explore-10-integration-mapper": null,
+        "explore-12-test-coverage-mapper": null,
+        "explore-11-cross-cutting-mapper": null,
+        "explore-09-feature-cataloger": null
+      },
+      "notes": "Express + Bun backend. 5 route modules, Prisma ORM, Better Auth, 3 pg-boss queues (classify-ticket, auto-resolve-ticket, send-email). LOC excludes gitignored src/generated/prisma (~11,930 LOC); of the 2,526 counted, 1,435 is seed fixtures, leaving ~1,091 LOC of logic."
+    },
+    "e2e": {
+      "path": "e2e",
+      "loc": 2051,
+      "locAtLastExploration": 0,
+      "files": 8,
+      "filesAtLastExploration": 0,
+      "status": "pending",
+      "staleness": "new",
+      "churn": {
+        "tier": "warm",
+        "source": "unavailable",
+        "measuredAt": null,
+        "windowDays": 90,
+        "commits": null,
+        "linesChanged": null,
+        "filesTouched": null
+      },
+      "agentsRun": {
+        "explore-05-domain-mapper": null,
+        "explore-06-api-surface-mapper": null,
+        "explore-07-frontend-explorer": null,
+        "explore-08-data-model-mapper": null,
+        "explore-13-legacy-detective": null,
+        "explore-10-integration-mapper": null,
+        "explore-12-test-coverage-mapper": null,
+        "explore-11-cross-cutting-mapper": null,
+        "explore-09-feature-cataloger": null
+      },
+      "notes": "Playwright E2E test suite. 8 test files covering auth, navigation, ticket flows."
+    }
+  },
+  "globalAgents": {
+    "explore-02-standards-extractor": "2026-09-07T11:52:00.000Z",
+    "explore-03-dependency-auditor": "2026-09-07T11:52:00.000Z",
+    "explore-04-build-deploy-mapper": "2026-09-07T11:52:00.000Z"
+  },
+  "changelog": [
+    {
+      "at": "2026-09-07T11:20:00.000Z",
+      "command": "/setup-02-recon",
+      "summary": "Initial reconnaissance scan identified 4 sub-systems totaling 22,186 LOC"
+    },
+    {
+      "at": "2026-09-07T11:35:00.000Z",
+      "command": "/setup-02-recon",
+      "summary": "Corrected counts: excluded gitignored server/src/generated/prisma (~11,930 LOC, 14 files). Total 22,186 -> 10,079 LOC; server 14,456 -> 2,526; client 5,540 -> 5,363. Baselines fixed so drift detection does not report phantom churn."
+    },
+    {
+      "at": "2026-09-07T11:52:00.000Z",
+      "command": "/setup-05-explore global",
+      "summary": "Global (Phase A) agents complete: standards extractor, dependency auditor, build/deploy mapper. Wrote 08-standards/{declared,observed,conflicts}.md, dependencies.md, 12-build-deploy.md. Corrected 3 build-deploy claims against code (.dockerignore exists; express.static confirmed at index.ts:73; WEBHOOK_SECRET warns rather than throws). No sub-system agents run; core/client/server/e2e remain pending. Calibration deferred to the client pass, which produces the domain index and 11-testing.md that the T3 and coverage proposals require."
+    },
+    {
+      "at": "2026-09-07T12:20:00.000Z",
+      "command": "/setup-05-explore client",
+      "summary": "Client pass complete at client scope. Ran explore-05, 07, 09, 11, 12, 13. Wrote 03-domains/ (_index + 4), 04-features/ (_index + 15), 06-frontend-map.md, 13-cross-cutting.md, 11-testing.md, 09-legacy/{legacy-map,tech-debt}.md. Skipped explore-06/08/10 (server-side surface, out of scope) so client status is partial, not complete. Calibration ran with operator approval: tiers.t3Domains = [auth, user-management]; coverage kept at shipped 80/75 with quality.coverageWaiver added (no coverage tooling exists). solvo churn NOT recorded - global solvo shim broken (MODULE_NOT_FOUND on @solvd1/solvo/dist/solvo.js); churn fields remain as the recon scout left them."
+    }
+  ],
+  "docTrust": {}
+}
