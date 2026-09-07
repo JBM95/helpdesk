@@ -1,0 +1,77 @@
+{
+  "id": "GH-4",
+  "phase": "merge-gate",
+  "tier": "T2",
+  "tierConfirmedBy": "JB Mccallaghan",
+  "blastRadius": {
+    "files": 2,
+    "callers": 0
+  },
+  "run": {
+    "id": "b141288b-0c80-435f-a94b-7e7369a8c5b4",
+    "agent": "claude-code",
+    "model": "sonnet"
+  },
+  "gates": {
+    "gate1": {
+      "approved": true,
+      "by": "JB Mccallaghan",
+      "at": "2026-09-07T14:40:00.000Z"
+    }
+  },
+  "readyBarGaps": [
+    "Grounding",
+    "Open questions"
+  ],
+  "grounding": [
+    {
+      "path": "docs/repo-wiki/04-features/view-tickets-list.md",
+      "band": "unrated"
+    },
+    {
+      "path": "docs/repo-wiki/11-testing.md",
+      "band": "unrated"
+    },
+    {
+      "path": "docs/repo-wiki/08-standards/observed.md",
+      "band": "unrated"
+    }
+  ],
+  "review": {
+    "verdict": "APPROVE",
+    "blockersOpen": 0,
+    "by": "fresh-reviewer",
+    "at": "2026-09-07T13:30:00.000Z",
+    "lenses": {
+      "blind": 3,
+      "edge": 3,
+      "acceptance": 7
+    }
+  },
+  "checks": {
+    "green": true,
+    "at": "2026-09-07T13:36:43.000Z",
+    "command": "cd client && bun run test",
+    "commit": "69e69a72b6c6de56c07f3e426c3a58db8ecf3e3e",
+    "ambiguityScan": {
+      "cleared": true
+    },
+    "coverage": "n/a: no coverage reporter is configured anywhere in the repo, per solvo.json quality.coverageWaiver; quality.coverageArtifact is an n/a marker, so no measured line or branch figure exists to record",
+    "e2e": "n/a: no new E2E scenario. The review-checklists three-part obligation does hold, but CLAUDE.md's testing policy names this component-test territory and the human-approved QA plan rules out a new E2E test on the same grounds; the tension is recorded in the evidence pack for the merge gate. The existing regression spec e2e/tests/tickets.spec.ts was run on a verified-clean tree at commit 4e7fd7d, 5/5 passed, captured at .solvo/evidence/GH-4-e2e-tickets.log"
+  },
+  "attempts": {
+    "recon": 1,
+    "build": 1
+  },
+  "artifacts": {
+    "recon": ".solvo/reconnaissance/GH-4-recon.md",
+    "spec": ".solvo/stories/GH-4-spec.md",
+    "testplan": ".solvo/testplans/GH-4-plan.md",
+    "testcases": ".solvo/testplans/GH-4-cases.md",
+    "evidence": ".solvo/evidence/GH-4.md",
+    "memory": "docs/repo-wiki/_memories/GH-4.md",
+    "e2eLog": ".solvo/evidence/GH-4-e2e-tickets.log",
+    "pr": "https://github.com/JBM95/helpdesk/pull/7"
+  },
+  "autoExplored": []
+}

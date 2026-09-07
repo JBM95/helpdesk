@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -6,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { agentTicketStatuses, statusLabel } from "core/constants/ticket-status.ts";
 import type { TicketFilters } from "./TicketsPage";
 
@@ -21,6 +22,13 @@ export default function TicketsFilters({
   filters,
   onChange,
 }: TicketsFiltersProps) {
+  // Checked per field rather than by counting keys: clearing the search input
+  // writes `search: undefined`, so the key survives at its default value.
+  const hasActiveFilters =
+    filters.search !== undefined ||
+    filters.status !== undefined ||
+    filters.category !== undefined;
+
   return (
     <div className="flex items-center gap-4 mb-4">
       <div className="relative flex-1 max-w-sm">
@@ -68,6 +76,13 @@ export default function TicketsFilters({
           <SelectItem value="refund_request">Refund request</SelectItem>
         </SelectContent>
       </Select>
+
+      {hasActiveFilters && (
+        <Button variant="ghost" size="sm" onClick={() => onChange({})}>
+          <X className="h-4 w-4" />
+          Clear filters
+        </Button>
+      )}
     </div>
   );
 }

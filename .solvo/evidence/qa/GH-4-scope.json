@@ -1,0 +1,380 @@
+{
+  "schemaVersion": "1.1.0",
+  "producerVersion": "6.36.0",
+  "workItem": {
+    "id": "GH-4",
+    "tracker": {
+      "provider": "github",
+      "project": "JBM95/helpdesk"
+    }
+  },
+  "tier": "T2",
+  "plan": {
+    "path": ".solvo/testplans/GH-4-plan.md",
+    "sha256": "27e59f9886eb91fdd1868e5165b0ac4be30d0ad4aa2108a09f2820bade104bf8"
+  },
+  "planRevisions": [
+    {
+      "version": 1,
+      "definitionHash": "27e59f9886eb91fdd1868e5165b0ac4be30d0ad4aa2108a09f2820bade104bf8",
+      "supersedesVersion": null,
+      "createdAt": "2026-09-07T10:57:34.550Z"
+    }
+  ],
+  "scopeApproval": {
+    "status": "approved",
+    "by": "JB Mccallaghan",
+    "approvedAt": "2026-09-07T11:00:51.549Z",
+    "approvedVersion": 1,
+    "approvedHash": "27e59f9886eb91fdd1868e5165b0ac4be30d0ad4aa2108a09f2820bade104bf8"
+  },
+  "casesArtifact": {
+    "path": ".solvo/testplans/GH-4-cases.md",
+    "sha256": "8db5731fc967375f1e6b5e1c1cb7d573106047e0b448cfdb33cbd5337c931825"
+  },
+  "caseSetRevisions": [
+    {
+      "version": 1,
+      "definitionHash": "32929635d7c905a5a82b2cc912307c2a6d0f981a3cfbb369f4dda55b1e731635",
+      "supersedesVersion": null,
+      "createdAt": "2026-09-07T11:45:02.863Z"
+    },
+    {
+      "version": 2,
+      "definitionHash": "ffa5f3cb1fac83ad6670df1cba54054cbd85c930d59c176a5c1508a340523a73",
+      "supersedesVersion": 1,
+      "createdAt": "2026-09-07T11:56:55.545Z"
+    }
+  ],
+  "caseSetApproval": {
+    "status": "approved",
+    "by": "JB Mccallaghan",
+    "approvedAt": "2026-09-07T11:59:55.482Z",
+    "approvedVersion": 2,
+    "approvedHash": "ffa5f3cb1fac83ad6670df1cba54054cbd85c930d59c176a5c1508a340523a73"
+  },
+  "cases": [
+    {
+      "caseId": "CASE-97bd394b8d4b",
+      "definitionHash": "0d82bfa71325970a9ff3e07e8dcb5781696ecc4c0e5de3ea6165608593bf14f9",
+      "ac": "AC1",
+      "instance": "search filter active alone",
+      "title": "Clear filters is visible when only a search term is active",
+      "steps": [
+        "Mock axios.get with mockResponse().",
+        "Render <TicketsPage /> via renderWithQuery and wait for the rows.",
+        "Type \"login\" into the \"Search tickets...\" input."
+      ],
+      "expected": "The Clear filters control is present in the document.",
+      "caseClass": "boundary",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-f1048c79850a",
+      "definitionHash": "a9b00c6285901d7b750635da014d6ce119c614bbf9d62fb4d65e503d74d23326",
+      "ac": "AC1",
+      "instance": "status filter active alone",
+      "title": "Clear filters is visible when only a status filter is active",
+      "steps": [
+        "Mock axios.get with mockResponse().",
+        "Install the jsdom PointerEvent polyfill from TicketDetailPage.test.tsx:13-28.",
+        "Render <TicketsPage /> and wait for the rows.",
+        "Open the status Select and choose \"Open\"."
+      ],
+      "expected": "The Clear filters control is present in the document.",
+      "caseClass": "boundary",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-3b0e40c8bf4e",
+      "definitionHash": "1aab648dac09f051c3d2056a35807e84f37457209a776fa9464872f6c93be340",
+      "ac": "AC1",
+      "instance": "category filter active alone",
+      "title": "Clear filters is visible when only a category filter is active",
+      "steps": [
+        "Mock axios.get with mockResponse().",
+        "Install the jsdom PointerEvent polyfill.",
+        "Render <TicketsPage /> and wait for the rows.",
+        "Open the category Select and choose \"Refund request\"."
+      ],
+      "expected": "The Clear filters control is present in the document.",
+      "caseClass": "boundary",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-20df8cc073c5",
+      "definitionHash": "1e71d49bf0e9bf8acaf89b45e307ab8f3130653adb907dd03343713c9a844171",
+      "ac": "AC1",
+      "instance": "all three filters active",
+      "title": "Clear filters is visible with search, status and category all active",
+      "steps": [
+        "Mock axios.get with mockResponse().",
+        "Install the jsdom PointerEvent polyfill.",
+        "Render <TicketsPage /> and wait for the rows.",
+        "Type \"login\", select status \"Open\", then select category \"Technical question\"."
+      ],
+      "expected": "The Clear filters control is present in the document.",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-538c67330f0d",
+      "definitionHash": "e5ef5d7702e43ef617fd8366f947f1671294807271fef9a109eafcee5a34b1a1",
+      "ac": "AC1",
+      "instance": "search containing only whitespace",
+      "title": "Clear filters is visible when the search term is whitespace only",
+      "steps": [
+        "Mock axios.get with mockResponse().",
+        "Render <TicketsPage /> and wait for the rows.",
+        "Type a single space into the search input.",
+        "Note TicketsFilters.tsx:31 uses `e.target.value || undefined`, so \" \" is truthy and lands in filters.search as a non-default value."
+      ],
+      "expected": "The Clear filters control is present in the document — a whitespace-only search is an active filter, not a default.",
+      "caseClass": "negative",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-c26b837c3ed5",
+      "definitionHash": "40a03982b04e95837efc43de521aab0111efbfaa4138678981ce3f245d218356",
+      "ac": "AC2",
+      "instance": "initial mount with no filters applied",
+      "title": "Clear filters is absent on initial mount",
+      "steps": [
+        "Mock axios.get with mockResponse().",
+        "Render <TicketsPage /> via renderWithQuery and wait for the rows to render."
+      ],
+      "expected": "The Clear filters control is not in the document.",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-b1ca237fc00c",
+      "definitionHash": "90a3ac00534d778630930a405c78fc74d140a7598731d6043d617085cdafd2ac",
+      "ac": "AC2",
+      "instance": "search typed then fully deleted",
+      "title": "Clear filters is absent again after the search box is emptied",
+      "steps": [
+        "Mock axios.get with mockResponse().",
+        "Render <TicketsPage /> and wait for the rows.",
+        "Type \"login\" into the search input and assert the control appears.",
+        "Clear the input with user.clear (or backspaces)."
+      ],
+      "expected": "The Clear filters control is not in the document. This is the \"\" versus undefined asymmetry — visibility computed by truthiness over a \"\" written by a Clear handler would leave it visible here.",
+      "caseClass": "negative",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-d13a64090439",
+      "definitionHash": "f56ef84ae229450d7a88d66d5820e732edb7e55d8728295e35d603a691a55097",
+      "ac": "AC2",
+      "instance": "status selected then re-selected to All statuses",
+      "title": "Clear filters is absent again after status returns to All statuses",
+      "steps": [
+        "Mock axios.get with mockResponse().",
+        "Install the jsdom PointerEvent polyfill.",
+        "Render <TicketsPage /> and wait for the rows.",
+        "Select status \"Open\" and assert the control appears.",
+        "Re-open the status Select and choose \"All statuses\"."
+      ],
+      "expected": "The Clear filters control is not in the document.",
+      "caseClass": "boundary",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-dc3567d08fee",
+      "definitionHash": "c4508a1af40835fda0b0ea29872ed8cbd5ec8ba20877935dfaf548aa2479ee76",
+      "ac": "AC2",
+      "instance": "the last active filter removed by the Clear action itself",
+      "title": "Clear filters hides itself once activated",
+      "steps": [
+        "Mock axios.get with mockResponse().",
+        "Render <TicketsPage /> and wait for the rows.",
+        "Type \"login\" into the search input and wait for the Clear filters control.",
+        "Activate Clear filters."
+      ],
+      "expected": "The Clear filters control is no longer in the document — filters are back at their defaults, so AC2 applies.",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-151947322ff2",
+      "definitionHash": "3b069c3f98b1e0ebdb8103742d27fbaa8cff00869ec89052606499abde904f6f",
+      "ac": "AC3",
+      "instance": "all three filters active cleared together",
+      "title": "Activating Clear filters resets all three controls to their defaults",
+      "steps": [
+        "Mock axios.get with mockResponse().",
+        "Install the jsdom PointerEvent polyfill.",
+        "Render <TicketsPage /> and wait for the rows.",
+        "Type \"login\", select status \"Open\", select category \"Technical question\".",
+        "Activate Clear filters."
+      ],
+      "expected": "The search input's value is \"\", the status trigger reads \"All statuses\", and the category trigger reads \"All categories\" — all three asserted in the same block.",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-54299e624f39",
+      "definitionHash": "49185563c2022aa458851274cc04b960859020995192f1c9dc3c306fac529d31",
+      "ac": "AC3",
+      "instance": "only search active",
+      "title": "Clearing with only search active empties the search box and leaves both selects at defaults",
+      "steps": [
+        "Mock axios.get with mockResponse().",
+        "Render <TicketsPage /> and wait for the rows.",
+        "Type \"login\" into the search input.",
+        "Activate Clear filters."
+      ],
+      "expected": "The search input's value is \"\"; the status trigger still reads \"All statuses\" and the category trigger still reads \"All categories\".",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-39d9087d45f6",
+      "definitionHash": "7fffee49d42b6c24c8b2f6439729639321202edcff95427a2c1b30f84bf4a860",
+      "ac": "AC4",
+      "instance": "request params after clearing all three filters",
+      "title": "The post-clear request carries exactly the sort and pagination params",
+      "steps": [
+        "Mock axios.get with mockResponse().",
+        "Install the jsdom PointerEvent polyfill.",
+        "Render <TicketsPage /> and apply all three filters.",
+        "mockedAxios.get.mockClear(); mockedAxios.get.mockResolvedValue(mockResponse()).",
+        "Activate Clear filters."
+      ],
+      "expected": "toHaveBeenLastCalledWith(\"/api/tickets\", { params: { sortBy: \"createdAt\", sortOrder: \"desc\", page: 1, pageSize: 10 } }) — full-object equality, per Trap 1. An expect.objectContaining assertion here is dilution and must be rejected at review.",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-379746876d93",
+      "definitionHash": "7f0924e09594fc8a8e85c7c2a1f1f052a61b2a1d8689777c5210eec41f47086a",
+      "ac": "AC4",
+      "instance": "unfiltered result set renders after clearing",
+      "title": "The unfiltered ticket rows are displayed after clearing",
+      "steps": [
+        "Mock axios.get with mockResponse([mockTickets[0]]) for the filtered state.",
+        "Render <TicketsPage />, type \"login\", wait for the single row.",
+        "Re-mock with mockResponse() (all three tickets).",
+        "Activate Clear filters."
+      ],
+      "expected": "All three subjects render — \"Cannot login to my account\", \"Refund for order #123\" and \"How do I reset my password?\".",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-3af1d27a0741",
+      "definitionHash": "38f73ada70abb61aba448b44bc080d0bb6bd1df4e11c8f6324955c5fd70b7e0b",
+      "ac": "AC4",
+      "instance": "cleared search omitted rather than sent as an empty string",
+      "title": "The post-clear request omits the search param instead of sending an empty one",
+      "steps": [
+        "Mock axios.get with mockResponse().",
+        "Render <TicketsPage />, type \"login\", wait for the filtered request.",
+        "mockedAxios.get.mockClear().",
+        "Activate Clear filters."
+      ],
+      "expected": "The params object of the last call has no \"search\" key at all (assert `expect(params).not.toHaveProperty(\"search\")` alongside the full-equality assertion). A handler that writes search: \"\" spreads it into TicketsTable.tsx:122-128 and puts ?search= on the wire, which AC4 forbids.",
+      "caseClass": "negative",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-f1ab5d0941fc",
+      "definitionHash": "4637b2b27cd02db37a3b8fca4669b72636eb076ac22434629cedf7b83ec97101",
+      "ac": "AC4",
+      "instance": "post-clear refetch rejects",
+      "title": "A failed post-clear refetch shows the error alert and leaves the filters cleared",
+      "steps": [
+        "Mock axios.get with mockResponse().",
+        "Render <TicketsPage />, type \"login\", wait for the rows.",
+        "Re-mock mockedAxios.get.mockRejectedValue(new Error(\"Network Error\")).",
+        "Activate Clear filters. renderWithQuery disables retries, so this settles once."
+      ],
+      "expected": "\"Failed to fetch tickets\" renders (TicketsTable.tsx:153-155) AND the filter controls remain at their defaults — search input \"\", both selects at their default labels. Filter state does not roll back to the pre-clear values.",
+      "caseClass": "failure",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-739c6fe5dd97",
+      "definitionHash": "0d64e442e10c86c7f35754622f41ca335c6837667dacb65cda43041b19465e46",
+      "ac": "AC4",
+      "instance": "Clear activated while a filtered request is in flight",
+      "title": "Clearing during an in-flight filtered request settles on the unfiltered result set",
+      "steps": [
+        "Render <TicketsPage /> with axios.get returning a deferred promise for the filtered call.",
+        "Type \"login\" to trigger the filtered request but do not resolve it.",
+        "Activate Clear filters and resolve the unfiltered request.",
+        "Resolve the stale filtered promise afterwards."
+      ],
+      "expected": "The rendered rows are the unfiltered set and the last request carries no filter params — the stale filtered response does not render last.",
+      "caseClass": "concurrency",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-4c12ec6a7a66",
+      "definitionHash": "703d0e58bf1da7019e13d1b56c779334d4332caaae553f48cd2081c56025bd94",
+      "ac": "AC5",
+      "instance": "subject ascending sort preserved across a clear",
+      "title": "Clearing filters preserves a Subject ascending sort in the request",
+      "steps": [
+        "Mock axios.get with mockResponse().",
+        "Render <TicketsPage /> and wait for the rows.",
+        "Click the Subject header once (sortBy subject, sortOrder asc).",
+        "Type \"login\" into the search input, then mockedAxios.get.mockClear().",
+        "Activate Clear filters."
+      ],
+      "expected": "toHaveBeenLastCalledWith(\"/api/tickets\", { params: { sortBy: \"subject\", sortOrder: \"asc\", page: 1, pageSize: 10 } }) — full equality, so it also proves AC4's omission and AC6's page reset in the same call.",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-a0b14a332363",
+      "definitionHash": "4b912157cb0aa1a26556d5a617497f398b2acc009f58a235ba60804bcee3db9b",
+      "ac": "AC5",
+      "instance": "sort indicator still rendered after a clear",
+      "title": "The Subject header still shows the ascending arrow after clearing filters",
+      "steps": [
+        "Sort Subject ascending, apply a search filter, then activate Clear filters.",
+        "Inspect the Subject header button's rendered icon (TicketsTable.tsx:175-181 renders ArrowUp for asc)."
+      ],
+      "expected": "The Subject header renders the ascending arrow, not the neutral ArrowUpDown. This is the rendered half of AC5 — the request assertion alone would miss a remount that resets sorting and re-issues the default sort.",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-0f03d7775fad",
+      "definitionHash": "a105baf4f45c48c8407852db70d70c60477427f309030ea70403e30d1bc27889",
+      "ac": "AC6",
+      "instance": "clearing from page 3 with a filter active",
+      "title": "Clearing filters from page 3 settles the query on page 1",
+      "steps": [
+        "Mock axios.get with mockResponse(mockTickets, 50) so total is 50 at pageSize 10.",
+        "Render <TicketsPage /> and type \"login\".",
+        "Click \"Next page\" twice to reach page 3.",
+        "mockedAxios.get.mockClear() and re-mock mockResponse(mockTickets, 50).",
+        "Activate Clear filters."
+      ],
+      "expected": "toHaveBeenLastCalledWith params page: 1. Assert the LAST call, per Trap 2 — the pageIndex reset happens in the TicketsTable.tsx:107-109 effect, so a page-3 unfiltered request may legitimately fire first. Do NOT assert not.toHaveBeenCalledWith({ page: 3 }).",
+      "caseClass": "happy",
+      "origin": "approved"
+    },
+    {
+      "caseId": "CASE-b809d54aaa12",
+      "definitionHash": "cfe7bb18b5f156122e38390e5e5ecaeea977d3c45389cf9627bbae3c72ea8521",
+      "ac": "AC6",
+      "instance": "page indicator after clearing from page 3",
+      "title": "The page indicator reads Page 1 after clearing filters from page 3",
+      "steps": [
+        "Reach page 3 with a filter active against a 50-ticket total.",
+        "Activate Clear filters and wait for state to settle."
+      ],
+      "expected": "The indicator span (TicketsTable.tsx:252-254) reads \"Page 1 of 5\" and the range text reads \"Showing 1–10 of 50 tickets\".",
+      "caseClass": "happy",
+      "origin": "approved"
+    }
+  ],
+  "classDispositions": [],
+  "exploratoryCharters": [],
+  "createdAt": "2026-09-07T10:57:34.550Z",
+  "updatedAt": "2026-09-07T11:59:55.482Z"
+}
