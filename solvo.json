@@ -27,7 +27,10 @@
     "installCommand": "npx bmad-method install --yes --directory {dir} --modules bmm --tools claude-code"
   },
   "tiers": {
-    "t3Domains": [],
+    "t3Domains": [
+      "auth",
+      "user-management"
+    ],
     "blastRadiusEscalation": {
       "files": 15,
       "callers": 40
@@ -45,6 +48,10 @@
     "mutation": 60,
     "p95Ms": 500,
     "coverageArtifact": "n/a: not measured at install — no coverage script detected",
+    "coverageWaiver": {
+      "reason": "No coverage tooling is configured anywhere in the repo — verified 2026-09-07: no coverage key in client/vite.config.ts or playwright.config.ts, no .nycrc, no standalone vitest config, no coverage flags in any package.json. No measured line or branch percentage exists, so coverageLine/coverageBranch are the shipped 80/75 fallback rather than a reused repo threshold.",
+      "reArmWhen": "A coverage reporter is configured for the Vitest client suite and quality.coverageArtifact points at a real report instead of an n/a marker."
+    },
     "lint": [],
     "tests": {
       "backend": "n/a: no server test suite exists in this repo",
