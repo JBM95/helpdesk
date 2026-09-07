@@ -1,0 +1,15 @@
+# SOLVO:BEGIN
+# Solvo hashes these files byte for byte. Without eol=lf a Windows checkout converts them
+# to CRLF and every one of them reads as drifted. Do not remove.
+/.agents/** eol=lf
+/.claude/commands/** eol=lf
+/.claude/skills/** eol=lf
+/.claude/agents/** eol=lf
+/.claude/settings.json eol=lf
+/.solvo/**/*.json eol=lf
+/.gitattributes eol=lf
+/.mcp.json eol=lf
+/solvo.json eol=lf
+/solvo.lock.json eol=lf
+/solvo.manifest.json eol=lf
+# SOLVO:END
