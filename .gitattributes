@@ -1,0 +1,22 @@
+# SOLVO:BEGIN
+# Solvo hashes these files byte for byte. Without eol=lf a Windows checkout converts them
+# to CRLF and every one of them reads as drifted. Do not remove.
+/.agents/** eol=lf
+/.claude/commands/** eol=lf
+/.claude/skills/** eol=lf
+/.claude/agents/** eol=lf
+/.claude/settings.json eol=lf
+/.solvo/**/*.json eol=lf
+/.gitattributes eol=lf
+/.mcp.json eol=lf
+/solvo.json eol=lf
+/solvo.lock.json eol=lf
+/solvo.manifest.json eol=lf
+# SOLVO:END
+
+# Repo-local, outside the managed block so `solvo update` does not drop them.
+# The managed pin above covers .solvo/**/*.json only. Specs, test plans, case sets and
+# evidence packs are markdown, and the captured QA logs are .log — all of them are hashed
+# the same way, so a CRLF checkout reads them as drifted too.
+/.solvo/**/*.md eol=lf
+/.solvo/evidence/qa/**/*.log eol=lf

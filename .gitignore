@@ -7,3 +7,16 @@ node_modules
 
 e2e/test-results/
 e2e/playwright-report/
+
+# solvo (managed) — cycle artifacts are committed; telemetry is not
+.solvo/*
+!.solvo/state/
+!.solvo/evidence/
+!.solvo/analysis/
+!.solvo/stories/
+!.solvo/testplans/
+!.solvo/reconnaissance/
+!.solvo/install-snapshot.json
+.claude/settings.local.json
+.claude/workspace-cloned-remotes.json
+# solvo (managed) — end
