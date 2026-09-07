@@ -45,9 +45,15 @@ const mutableNavigator = (search: string): Required<FakeNavigator> => ({
  * events inside one `act` and fail if the page stops using this hook.
  *
  * What is left to test here is the contract this hook rests on — that it reads the router's live
- * location rather than the committed snapshot, and what it does when that location is not there. Those
- * are the two things a react-router upgrade could break, and they are asserted directly so such an
- * upgrade fails a test naming this file rather than resurfacing as a URL bug.
+ * location rather than the committed snapshot, that an empty live search means the bare list rather than
+ * a missing location, and that it degrades to the committed params rather than throwing.
+ *
+ * **What these tests cannot catch, stated because an earlier version of this comment claimed otherwise.**
+ * They inject a navigator directly, so they never exercise a real router. A react-router change that
+ * removed the live `location` getter would fail the two page-level race tests in `TicketsPage.test.tsx`,
+ * not anything here; a change of router *type* — `createBrowserRouter`, whose navigator carries no
+ * `location` at all — would fail nothing in the suite and silently restore the GH-3 defect in
+ * production. See the hook's own doc comment for the measured three-router table.
  */
 describe("useLatestTicketListParams", () => {
   it("should read the live location, not the committed params", () => {

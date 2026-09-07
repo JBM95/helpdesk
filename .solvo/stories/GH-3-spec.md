@@ -177,8 +177,13 @@ the committed one inside `TicketsPage` — which keeps the change inside the ori
 leaves the stale-set trap in place for whatever calls it next.
 
 The compiler cannot hold this: every field of `TicketFilters` is optional, so a delta and a full set are
-the same type. Two tests hold it instead, one per ordering, and reverting either control fails exactly
-the ordering in which that control writes second.
+the same type. **Nine tests** hold it instead — six payload-contract tests in
+`client/src/pages/TicketsFilters.test.tsx` (each control, set and cleared) plus three page-level
+orderings, one per control writing second. Reverting any one control fails exactly three of them.
+
+An earlier revision of this paragraph said "two tests, one per ordering", which was written when only two
+of the three controls had any guard. That is the claim round 4's blocker was made of, and it is corrected
+here rather than left to agree with itself.
 
 ## Files to touch
 
@@ -273,8 +278,8 @@ but it was not the only route to a guard.
 ### E2E coverage is deliberately thin, and one placement needs a decision
 
 Only AC-a has an E2E scenario, and it rides as an added assertion inside `CASE-8e3d236b21a9` — an
-approved GH-1 AC4 case about the nav link returning a clean list. AC-b and AC-c have no E2E scenario at
-all. Two repo rules pull against each other here: `CLAUDE.md` directs component-first and forbids
+approved GH-1 AC4 case about the nav link returning a clean list. AC-b, AC-c and AC-e have no E2E
+scenario at all. Two repo rules pull against each other here: `CLAUDE.md` directs component-first and forbids
 duplicating component coverage in E2E, while mixing a GH-3 race assertion into another AC's approved case
 muddies what that case attests. Left as it is because the assertion is what resolves this spec's open
 question and the racing sequence is already in that scenario; flagged for the merge gate to accept or

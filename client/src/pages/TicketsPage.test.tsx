@@ -2015,7 +2015,10 @@ describe("TicketsPage — GH-3, two writes issued before either commits", () => 
    * overwrite whatever the first control had just written — the fix is that each sends only its own key
    * and the page merges it against the live URL.
    *
-   * Reverting either control in `TicketsFilters.tsx` to `{ ...filters, <key> }` fails this.
+   * Reverting the **search** control in `TicketsFilters.tsx` to `{ ...filters, search }` fails this one.
+   * Not "either control": a stale set only clobbers whatever landed before it, so each control is
+   * exposed solely by the ordering in which it writes second. Status is pinned by the test below,
+   * category by the one after it, and all three payloads by `TicketsFilters.test.tsx`.
    *
    * The select is opened before the `act` on purpose: its options exist only once the portal has
    * rendered, and that render must not sit between the two writes under test.

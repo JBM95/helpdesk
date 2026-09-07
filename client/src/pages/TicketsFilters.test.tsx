@@ -35,6 +35,24 @@ describe("TicketsFilters — each control reports only the key it owns", () => {
     return onChange;
   }
 
+  /**
+   * Asserts the payload is exactly one key, by name as well as by value.
+   *
+   * The key-name half is not redundant. `toEqual` semantics ignore keys whose value is `undefined`, so
+   * a control emitting `{ category: "x", status: undefined }` satisfies a value-only assertion while
+   * still carrying a second key — and `status: undefined` is not inert here, because the page spreads
+   * the delta and a present-but-undefined key clears that filter. Value-only assertions caught the
+   * whole-set spread but not that narrower case.
+   */
+  function expectSoleKey(
+    onChange: ReturnType<typeof vi.fn>,
+    key: keyof TicketFilters,
+    value: TicketFilters[keyof TicketFilters]
+  ) {
+    expect(onChange).toHaveBeenCalledExactlyOnceWith({ [key]: value });
+    expect(Object.keys(onChange.mock.calls[0][0])).toEqual([key]);
+  }
+
   /** The two filter Selects are comboboxes in render order: status, then category. */
   const trigger = (index: number) => screen.getAllByRole("combobox")[index];
 
@@ -44,7 +62,7 @@ describe("TicketsFilters — each control reports only the key it owns", () => {
 
     await user.type(screen.getByPlaceholderText("Search tickets..."), "!");
 
-    expect(onChange).toHaveBeenCalledExactlyOnceWith({ search: "vpn!" });
+    expectSoleKey(onChange, "search", "vpn!");
   });
 
   it("should report a cleared search as the search key alone", async () => {
@@ -55,8 +73,7 @@ describe("TicketsFilters — each control reports only the key it owns", () => {
 
     // `undefined` on a key that is present is how a filter is cleared: the page spreads the delta, so a
     // present-but-undefined key overwrites, while an absent key would leave the old value in place.
-    expect(onChange).toHaveBeenCalledExactlyOnceWith({ search: undefined });
-    expect(Object.keys(onChange.mock.calls[0][0])).toEqual(["search"]);
+    expectSoleKey(onChange, "search", undefined);
   });
 
   it("should report a status choice as the status key alone", async () => {
@@ -66,7 +83,7 @@ describe("TicketsFilters — each control reports only the key it owns", () => {
     await user.click(trigger(0));
     await user.click(await screen.findByRole("option", { name: "Closed" }));
 
-    expect(onChange).toHaveBeenCalledExactlyOnceWith({ status: "closed" });
+    expectSoleKey(onChange, "status", "closed");
   });
 
   it("should report a cleared status as the status key alone", async () => {
@@ -76,8 +93,7 @@ describe("TicketsFilters — each control reports only the key it owns", () => {
     await user.click(trigger(0));
     await user.click(await screen.findByRole("option", { name: "All statuses" }));
 
-    expect(onChange).toHaveBeenCalledExactlyOnceWith({ status: undefined });
-    expect(Object.keys(onChange.mock.calls[0][0])).toEqual(["status"]);
+    expectSoleKey(onChange, "status", undefined);
   });
 
   it("should report a category choice as the category key alone", async () => {
@@ -89,9 +105,7 @@ describe("TicketsFilters — each control reports only the key it owns", () => {
       await screen.findByRole("option", { name: "General question" })
     );
 
-    expect(onChange).toHaveBeenCalledExactlyOnceWith({
-      category: "general_question",
-    });
+    expectSoleKey(onChange, "category", "general_question");
   });
 
   it("should report a cleared category as the category key alone", async () => {
@@ -103,7 +117,6 @@ describe("TicketsFilters — each control reports only the key it owns", () => {
       await screen.findByRole("option", { name: "All categories" })
     );
 
-    expect(onChange).toHaveBeenCalledExactlyOnceWith({ category: undefined });
-    expect(Object.keys(onChange.mock.calls[0][0])).toEqual(["category"]);
+    expectSoleKey(onChange, "category", undefined);
   });
 });

@@ -145,8 +145,11 @@ export type TicketFilters = Pick<
  * that changed lets the page merge it against the live URL.
  *
  * The compiler cannot enforce this: every field of `TicketFilters` is already optional, so a delta and
- * a full set are the same type. `TicketsPage.test.tsx` → "GH-3, two writes issued before either
- * commits" is what holds it, by failing if a control goes back to spreading the set.
+ * a full set are the same type. Two test files hold it instead. `TicketsFilters.test.tsx` asserts every
+ * control's payload is its own key alone, set and cleared — that is the one place all three controls are
+ * covered, and it exists because a version of this comment named only the file below while the category
+ * control had no guard at all. `TicketsPage.test.tsx` → "GH-3, two writes issued before either commits"
+ * holds the user-visible half, one ordering per control.
  *
  * A key present with `undefined` clears that filter; a key absent leaves it alone.
  */
