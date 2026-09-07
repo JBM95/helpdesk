@@ -1,4 +1,4 @@
-import { screen, waitFor } from "@testing-library/react";
+import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import axios from "axios";
@@ -492,8 +492,8 @@ describe("TicketsPage", () => {
         expect(screen.getByRole("button", CLEAR)).toBeInTheDocument();
       });
 
-      // TicketsFilters.tsx:31 uses `e.target.value || undefined`, so a single
-      // space is truthy and lands in filters.search — an active filter, not a default.
+      // The search input writes `e.target.value || undefined`, so a single space
+      // is truthy and lands in filters.search — an active filter, not a default.
       it("CASE-538c67330f0d: is visible when the search term is whitespace only", async () => {
         const user = userEvent.setup();
         await renderLoaded();
@@ -715,13 +715,12 @@ describe("TicketsPage", () => {
           resolveFiltered = resolve;
         });
 
-        mockedAxios.get.mockImplementation(((
-          _url: string,
-          config?: { params?: Record<string, unknown> }
-        ) =>
-          config?.params?.search
-            ? filtered
-            : Promise.resolve(mockResponse())) as never);
+        // Routes by param rather than by call order, so the number of requests
+        // the page happens to make cannot desynchronise the fixture.
+        mockedAxios.get.mockImplementation(async (_url, config) => {
+          const params = config?.params as { search?: string } | undefined;
+          return params?.search ? filtered : mockResponse();
+        });
 
         renderWithQuery(<TicketsPage />);
         await waitFor(() => {
@@ -740,14 +739,19 @@ describe("TicketsPage", () => {
           ).toBeInTheDocument();
         });
 
-        // The stale filtered response lands after the clear and must not render.
+        // The stale filtered response lands only now. It carries a single row, so
+        // the table would visibly lose two rows if it rendered. Flush explicitly
+        // before asserting: a waitFor here would resolve on a condition that is
+        // already true and would prove nothing about the stale response.
         resolveFiltered(mockResponse([mockTickets[0]]));
-
-        await waitFor(() => {
-          expect(
-            screen.getByText("How do I reset my password?")
-          ).toBeInTheDocument();
+        await act(async () => {
+          await new Promise((resolve) => setTimeout(resolve, 0));
         });
+
+        expect(screen.getByText("Refund for order #123")).toBeInTheDocument();
+        expect(
+          screen.getByText("How do I reset my password?")
+        ).toBeInTheDocument();
         const lastParams = mockedAxios.get.mock.calls.at(-1)?.[1]?.params;
         expect(lastParams).not.toHaveProperty("search");
       });
