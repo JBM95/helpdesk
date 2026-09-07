@@ -230,15 +230,15 @@
   ],
   "review": {
     "verdict": "REQUEST_CHANGES",
-    "blockersOpen": 4,
+    "blockersOpen": 1,
     "by": "fresh-reviewer",
-    "at": "2026-09-06T16:31:47.000Z",
+    "at": "2026-09-06T18:40:00.000Z",
     "lenses": {
-      "blind": 6,
-      "edge": 2,
-      "acceptance": 6
+      "blind": 1,
+      "edge": 3,
+      "acceptance": 12
     },
-    "rounds": 3,
+    "rounds": 4,
     "capExhausted": {
       "at": "2026-09-06T16:31:47.000Z",
       "rule": "gated-cycle Caps: 3 attempts per phase, then stop and report why.",
@@ -448,6 +448,7 @@
         "S2": "lastPage from a possibly-stale data.total, and the unguarded destructure of a null navigation context (unreachable while the page is inside a Router)."
       },
       "nextStep": "A named human decides: a fifth review round, or the merge gate with the carried items above. Round 4's blocker is closed and no production code changed to close it, which is the cheapest kind of round to re-verify."
-    }
+    },
+    "topLevelNote": "Speaks for round 4, the latest round that produced a VERDICT. Round 5 delivered fixes for round 4s single blocker and has not been reviewed, so it carries no verdict to promote here. Rounds 1-5 keep their own sub-objects as the trail."
   }
 }
