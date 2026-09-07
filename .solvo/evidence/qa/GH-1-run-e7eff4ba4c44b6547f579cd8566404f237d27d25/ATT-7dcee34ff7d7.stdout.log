@@ -1,0 +1,48 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90mC:/Users/JBMccallaghan/Downloads/Personal Projects/helpdesk/client[39m
+
+ [32m✓[39m src/lib/ticket-list-params.test.ts [2m([22m[2m57 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/lib/use-latest-ticket-list-params.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+ [32m✓[39m src/components/TicketDetail.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 213[2mms[22m[39m
+ [32m✓[39m src/components/ReplyThread.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[32m 256[2mms[22m[39m
+ [32m✓[39m src/components/TicketSummary.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 754[2mms[22m[39m
+ [32m✓[39m src/pages/TicketsFilters.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 1433[2mms[22m[39m
+     [33m[2m✓[22m[39m should report a search edit as the search key alone [33m 347[2mms[22m[39m
+     [33m[2m✓[22m[39m should report a status choice as the status key alone [33m 357[2mms[22m[39m
+ [32m✓[39m src/pages/UsersPage.test.tsx [2m([22m[2m17 tests[22m[2m)[22m[33m 2122[2mms[22m[39m
+ [32m✓[39m src/pages/TicketDetailPage.test.tsx [2m([22m[2m18 tests[22m[2m)[22m[33m 2696[2mms[22m[39m
+     [33m[2m✓[22m[39m should call PATCH with category when selecting a category [33m 310[2mms[22m[39m
+     [33m[2m✓[22m[39m should call PATCH with null category when selecting None [33m 311[2mms[22m[39m
+ [32m✓[39m src/components/ReplyForm.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[33m 3562[2mms[22m[39m
+     [33m[2m✓[22m[39m should allow sending the polished reply [33m 357[2mms[22m[39m
+ [32m✓[39m src/pages/UserForm.test.tsx [2m([22m[2m20 tests[22m[2m)[22m[33m 8112[2mms[22m[39m
+     [33m[2m✓[22m[39m should show validation error for short name [33m 721[2mms[22m[39m
+     [33m[2m✓[22m[39m should show validation error for short password [33m 687[2mms[22m[39m
+     [33m[2m✓[22m[39m should show validation error for missing email [33m 488[2mms[22m[39m
+     [33m[2m✓[22m[39m should call POST /api/users with form data on valid submit [33m 836[2mms[22m[39m
+     [33m[2m✓[22m[39m should call onSuccess after successful creation [33m 762[2mms[22m[39m
+     [33m[2m✓[22m[39m should reset the form after successful creation [33m 813[2mms[22m[39m
+     [33m[2m✓[22m[39m should display server error message on 409 conflict [33m 796[2mms[22m[39m
+     [33m[2m✓[22m[39m should show generic error for non-Axios errors [33m 780[2mms[22m[39m
+     [33m[2m✓[22m[39m should show 'Creating...' and disable button while submitting [33m 855[2mms[22m[39m
+     [33m[2m✓[22m[39m should allow submitting with empty password in edit mode [33m 340[2mms[22m[39m
+ [32m✓[39m src/pages/TicketsPage.test.tsx [2m([22m[2m92 tests[22m[2m)[22m[33m 15737[2mms[22m[39m
+     [33m[2m✓[22m[39m should show skeleton rows while loading [33m 427[2mms[22m[39m
+       [33m[2m✓[22m[39m should let a multi-word search term be typed [33m 420[2mms[22m[39m
+       [33m[2m✓[22m[39m should carry all three filters in the URL at once [33m 674[2mms[22m[39m
+       [33m[2m✓[22m[39m should keep both filters when a second is chosen before the first settles [33m 503[2mms[22m[39m
+       [33m[2m✓[22m[39m should fall back to the default sort when a third click clears it [33m 461[2mms[22m[39m
+       [33m[2m✓[22m[39m should track the page through Last, Previous and First [33m 423[2mms[22m[39m
+       [33m[2m✓[22m[39m should re-apply the state on a forward navigation after a POP [33m 373[2mms[22m[39m
+       [33m[2m✓[22m[39m should keep the rendered list in step with the URL through rapid POPs and forwards [33m 614[2mms[22m[39m
+       [33m[2m✓[22m[39m should unwind three states in order on successive POPs [33m 369[2mms[22m[39m
+       [33m[2m✓[22m[39m should reset to page 1 when the category changes [33m 315[2mms[22m[39m
+     [33m[2m✓[22m[39m should keep the sort when Next is clicked after it [32m 300[2mms[22m[39m
+     [33m[2m✓[22m[39m should keep the status filter when Next is clicked after it [33m 388[2mms[22m[39m
+     [33m[2m✓[22m[39m should still reset to page 1 when a filter change follows a page change [33m 422[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m11 passed[39m[22m[90m (11)[39m
+[2m      Tests [22m [1m[32m254 passed[39m[22m[90m (254)[39m
+[2m   Start at [22m 07:39:19
+[2m   Duration [22m 18.47s[2m (transform 1.58s, setup 1.64s, import 10.00s, tests 34.93s, environment 11.41s)[22m
+
