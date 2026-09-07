@@ -2,7 +2,7 @@
   "id": "GH-3",
   "tier": "T2",
   "tierConfirmedBy": "JB Mccallaghan",
-  "phase": "fresh-review",
+  "phase": "pr",
   "blastRadius": {
     "files": 5,
     "callers": 8,
@@ -21,21 +21,21 @@
     }
   },
   "checks": {
-    "commit": "0d5f85bef8a04ca3b685648cfc02a069dccf60a1",
+    "commit": "2c7ff56e76b0decf6b3a5c92b73a7064297c5f26",
     "commitNote": "The last commit carrying source, test or spec content. This state file is the single trailing commit after it, which is what the gate-guard freshness arm accepts.",
     "ambiguityScan": {
       "cleared": true,
       "note": "The fix's expected behaviour admits one reading. The two orderings do not compete: a filter change after a page change resets to page 1 (GH-1 AC6), and a page change after a filter change lands on page 2 of the filtered list (GH-1 AC1). Two rapid writes to different keys both land; two to the same key resolve last-write-wins, which is what the user's second action asked for. #3 carries no Gherkin because ticket-standard has no bug variant - a known gap in that standard - so the acceptance criteria are derived in the spec from GH-1's AC1 and AC6, which are the ACs the defect contradicts."
     },
     "green": true,
-    "at": "2026-09-06T19:05:00.000Z",
+    "at": "2026-09-07T05:50:00.000Z",
     "command": "cd client && bun run test (vitest run)",
     "tests": {
       "files": 11,
       "passed": 254,
       "failed": 0,
       "baselinePassed": 229,
-      "note": "Up from 247 at round 4: the new TicketsFilters.test.tsx adds 6 payload-contract tests, and one page-level ordering was added for the category control."
+      "note": "254/254 in 11 files, unchanged in count by round 5b: the six payload assertions were routed through an expectSoleKey helper that also asserts the key names, which strengthens each test rather than adding one."
     },
     "e2e": {
       "command": "bun run test:e2e (playwright, workers: 1)",
@@ -111,7 +111,7 @@
       "command": "cd client && bun run lint",
       "problems": 7,
       "newProblems": 0,
-      "note": "5 errors + 2 warnings, identical to the branch baseline. The one in a file this cycle touched is TicketsTable.tsx:200 (useReactTable / react-hooks/incompatible-library) and is pre-existing."
+      "note": "5 errors + 2 warnings, identical to the branch baseline. The reviewer enumerated all seven: ErrorAlert.tsx:15, badge.tsx:48, button.tsx:64, theme.tsx:42, vite.config.ts:20, ReplyForm.tsx:32, TicketsTable.tsx:200. Only the last is in a file this cycle touched, and it is the pre-existing useReactTable / react-hooks warning."
     },
     "typecheck": {
       "command": "./node_modules/.bin/tsc -b client",
@@ -126,7 +126,7 @@
         {
           "blocker": "B-R3-3 / round-4 B1",
           "mutation": "any one of the three TicketsFilters controls reverted to onChange({ ...filters, <key> })",
-          "result": "3 failed / 251 passed, for each of the three controls independently",
+          "result": "3 failed / 251 passed, for each of the three controls independently, re-measured after round 5b's assertion tightening",
           "kills": "that control's two payload tests in TicketsFilters.test.tsx, plus the page-level ordering in which it writes second. Symmetric across search, status and category - at round 4 the category mutation killed nothing."
         },
         {
@@ -158,6 +158,12 @@
           "mutation": "the fallback line removed entirely",
           "result": "1 failed / 253 passed - the fallback test, on a TypeError",
           "kills": "confirms the fallback is load-bearing for the no-live-location case rather than dead code."
+        },
+        {
+          "blocker": "round-5 N-R5-3",
+          "mutation": "category control emits its own key plus a second key with an undefined value - onChange({ category: ..., status: undefined })",
+          "result": "before the tightening 1 failed / 5 passed in TicketsFilters.test.tsx; after it 2 failed / 4 passed",
+          "kills": "both category payload tests rather than only the clearing one. This is the narrower case a value-only assertion cannot see, because toEqual ignores undefined-valued keys while the page's spread does not."
         }
       ]
     }
@@ -229,16 +235,16 @@
     }
   ],
   "review": {
-    "verdict": "REQUEST_CHANGES",
-    "blockersOpen": 1,
+    "verdict": "APPROVE",
+    "blockersOpen": 0,
     "by": "fresh-reviewer",
-    "at": "2026-09-06T18:40:00.000Z",
+    "at": "2026-09-07T05:35:00.000Z",
     "lenses": {
-      "blind": 1,
-      "edge": 3,
-      "acceptance": 12
+      "blind": 3,
+      "edge": 1,
+      "acceptance": 4
     },
-    "rounds": 4,
+    "rounds": 5,
     "capExhausted": {
       "at": "2026-09-06T16:31:47.000Z",
       "rule": "gated-cycle Caps: 3 attempts per phase, then stop and report why.",
@@ -423,7 +429,7 @@
       "falseClaimsFound": "Two mutation scoping clauses in the spec were never measured and were both false: 'unwiring the hook fails both and nothing else in the suite' was 6 failures, and 'fails those two plus the two hook tests' was 9, against a 247-test suite. Both erred toward MORE coverage than claimed, so no defect hid behind them - but it is the same species of unverified clause that let B-R3-3 through three rounds, so both are now replaced by a measured table."
     },
     "round5": {
-      "status": "fixes-delivered-pending-review",
+      "status": "approved",
       "at": "2026-09-06T19:05:00.000Z",
       "by": "claude-code",
       "scope": "Round 4's single blocker, plus the two false spec claims and four stale references its review surfaced. No new scope.",
@@ -447,8 +453,35 @@
         "N10": "aria-busy false during the first load, and no trap entry in docs/repo-wiki/_memories for this class.",
         "S2": "lastPage from a possibly-stale data.total, and the unguarded destructure of a null navigation context (unreachable while the page is inside a Router)."
       },
-      "nextStep": "A named human decides: a fifth review round, or the merge gate with the carried items above. Round 4's blocker is closed and no production code changed to close it, which is the cheapest kind of round to re-verify."
+      "nextStep": "A named human decides: a fifth review round, or the merge gate with the carried items above. Round 4's blocker is closed and no production code changed to close it, which is the cheapest kind of round to re-verify.",
+      "verdict": "APPROVE",
+      "blockersOpen": 0,
+      "reviewedBy": "fresh-reviewer",
+      "reviewedAt": "2026-09-07T05:35:00.000Z",
+      "lenses": {
+        "blind": 3,
+        "edge": 1,
+        "acceptance": 4
+      },
+      "duplicationCount": 2,
+      "round4BlockerVerdict": "CLOSED, at the class level, established in both directions rather than from the diff. The reviewer reconstructed the round-4 tree (TicketsPage.test.tsx from ccc1bc2, TicketsFilters.test.tsx moved aside) and reproduced round 4's premise verbatim: the category mutation left 247/247 green. At HEAD the same mutation fails 3/251. All three controls measured one at a time: 3 failures each, and the composition of those failures is exactly what checks.mutations claims - each control's two payload tests plus the page-level ordering in which it writes second. All six payload tests are individually mutation-killed; none is vacuous.",
+      "scopeLimitsFound": {
+        "fourthControl": "The payload test file enumerates the three controls that exist. A control added later gets no test unless someone writes one, so 'closes the class' is true for the class of EXISTING controls, not for future ones. The reviewer looked for a generic mechanism and found none - each control owns a distinct key and a distinct interaction.",
+        "extraUndefinedKey": "Found by the reviewer and CLOSED at round 5b: toEqual semantics ignore keys whose value is undefined, so a control emitting { category: 'x', status: undefined } satisfied a value-only assertion while carrying a second key - and that key is not inert, because the page spreads the delta and a present-but-undefined key clears that filter. Measured before: 1 failed / 5 passed. All six assertions now go through an expectSoleKey helper that asserts the key NAMES as well as the value. Measured after: 2 failed / 4 passed. Each test is now independently sufficient rather than sufficient only in pairs.",
+        "positionalTriggers": "Raised and CLOSED on evidence by the reviewer rather than left as a worry. Inserting a fourth Select between the status and category controls fails 8 tests with a diagnosable TestingLibraryElementError naming the missing option, so a positional retarget is loud rather than silent. Naming the triggers would shorten the diagnosis; it is not a correctness gap."
+      },
+      "postReviewCorrections": {
+        "at": "2026-09-07T05:50:00.000Z",
+        "why": "Round 5 returned APPROVE with two decision-needed items, both of which were comments in the tree that the reviewer had MEASURED as false. A measured-false statement is not a judgement call, and this cycle had already spent two rounds on exactly that failure mode, so they were corrected rather than carried into the evidence pack. No production code was touched.",
+        "D-R5-1": "TicketsPage.test.tsx's 'Reverting either control in TicketsFilters.tsx fails this' was false for two of three controls, and the spec explains at length why it cannot be true. Now names the search control specifically and points at where status, category and the payload contract are pinned. This was the first of the three artifacts round 4's blocker was made of.",
+        "D-R5-2": "use-latest-ticket-list-params.test.ts still claimed an upgrade 'fails a test naming this file' - the claim the spec itself labels false and the hook's own doc comment contradicts. Now states what these tests cannot catch: they inject a navigator, so a removed getter fails the page-level race tests, and a change of router type fails nothing at all.",
+        "N-R5-1": "The spec's 'two tests hold it, one per ordering' is corrected to nine, with a note that the old wording was written when only two of three controls had a guard - the claim round 4's blocker was made of.",
+        "N-R5-2": "TicketFiltersDelta's doc comment named only TicketsPage.test.tsx. It now names TicketsFilters.test.tsx as the one place all three controls are covered, and records that a version of that comment naming only the page file is why the category control shipped unguarded. Third of the three artifacts.",
+        "N-R5-3": "Closed - see scopeLimitsFound.extraUndefinedKey.",
+        "N-R5-4": "The spec's E2E enumeration said 'AC-b and AC-c', omitting AC-e. Corrected."
+      }
     },
-    "topLevelNote": "Speaks for round 4, the latest round that produced a VERDICT. Round 5 delivered fixes for round 4s single blocker and has not been reviewed, so it carries no verdict to promote here. Rounds 1-5 keep their own sub-objects as the trail."
-  }
+    "topLevelNote": "Speaks for round 5, which returned APPROVE with 0 blockers. Rounds 1-5 keep their own sub-objects as the trail. Five rounds is two past the gated-cycle cap; review.capExhausted.override records the named human's authorisation for rounds 4 and 5."
+  },
+  "phaseNote": "Fresh review closed APPROVE at round 5. GH-3 has no PR of its own - it rides PR #2 by a named human's decision - so the PR phase here means the evidence pack and vault memory, not opening one. The next action that changes anything is QA's: /qa-execute and /qa-verify on the final candidate, which is what produces the cleared observations FIND-86cc706fc23c and FIND-5232572f9eda both require."
 }
