@@ -13,3 +13,10 @@
 /solvo.lock.json eol=lf
 /solvo.manifest.json eol=lf
 # SOLVO:END
+
+# Repo-local, outside the managed block so `solvo update` does not drop them.
+# The managed pin above covers .solvo/**/*.json only. Specs, test plans, case sets and
+# evidence packs are markdown, and the captured QA logs are .log — all of them are hashed
+# the same way, so a CRLF checkout reads them as drifted too.
+/.solvo/**/*.md eol=lf
+/.solvo/evidence/qa/**/*.log eol=lf
