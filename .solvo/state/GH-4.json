@@ -1,6 +1,6 @@
 {
   "id": "GH-4",
-  "phase": "pr",
+  "phase": "merge-gate",
   "tier": "T2",
   "tierConfirmedBy": "JB Mccallaghan",
   "blastRadius": {
@@ -70,7 +70,8 @@
     "testcases": ".solvo/testplans/GH-4-cases.md",
     "evidence": ".solvo/evidence/GH-4.md",
     "memory": "docs/repo-wiki/_memories/GH-4.md",
-    "e2eLog": ".solvo/evidence/GH-4-e2e-tickets.log"
+    "e2eLog": ".solvo/evidence/GH-4-e2e-tickets.log",
+    "pr": "https://github.com/JBM95/helpdesk/pull/7"
   },
   "autoExplored": []
 }
