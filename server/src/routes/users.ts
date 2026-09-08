@@ -74,7 +74,21 @@ router.put("/:id", requireAuth, requireAdmin, async (req, res) => {
   const data = validate(updateUserSchema, req.body, res);
   if (!data) return;
 
-  const { name, email, password } = data;
+  const { name, email, password, role } = data;
+
+  const target = await prisma.user.findUnique({ where: { id } });
+  if (!target) {
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
+
+  // An admin changing their own role would revoke their own access on the next
+  // request. This also enforces the last-admin floor: reaching zero admins needs
+  // someone to demote the final admin, and only that admin could make the call.
+  if (req.user.id === id && role !== target.role) {
+    res.status(403).json({ error: "You cannot change your own role" });
+    return;
+  }
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing && existing.id !== id) {
@@ -84,7 +98,7 @@ router.put("/:id", requireAuth, requireAdmin, async (req, res) => {
 
   await prisma.user.update({
     where: { id: id },
-    data: { name, email, updatedAt: new Date() },
+    data: { name, email, role, updatedAt: new Date() },
   });
 
   if (password) {
@@ -93,6 +107,13 @@ router.put("/:id", requireAuth, requireAdmin, async (req, res) => {
       where: { userId: id, providerId: "credential" },
       data: { password: hashedPassword, updatedAt: new Date() },
     });
+  }
+
+  // requireAdmin reads the role Better Auth joins fresh from the User row on
+  // every request, so a demotion already binds the next one. Dropping the
+  // sessions makes that hold even if session.cookieCache is ever enabled.
+  if (target.role === Role.admin && role === Role.agent) {
+    await prisma.session.deleteMany({ where: { userId: id } });
   }
 
   const user = await prisma.user.findUnique({

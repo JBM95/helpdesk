@@ -8,16 +8,30 @@ import {
 } from "core/schemas/users";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { Role } from "core/constants/role.ts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import ErrorAlert from "@/components/ErrorAlert";
 import ErrorMessage from "@/components/ErrorMessage";
+
+const roleLabel: Record<Role, string> = {
+  [Role.agent]: "Agent",
+  [Role.admin]: "Admin",
+};
 
 interface UserData {
   id: string;
   name: string;
   email: string;
+  role: Role;
 }
 
 interface UserFormProps {
@@ -35,16 +49,19 @@ export default function UserForm({ user, onSuccess }: UserFormProps) {
       name: user?.name ?? "",
       email: user?.email ?? "",
       password: "",
+      role: user?.role ?? Role.agent,
     },
   });
 
   const mutation = useMutation({
-    mutationFn: async (payload: CreateUserInput | UpdateUserInput) => {
+    mutationFn: async (values: CreateUserInput | UpdateUserInput) => {
       if (isEdit) {
-        const { data } = await axios.put(`/api/users/${user.id}`, payload);
+        const { data } = await axios.put(`/api/users/${user.id}`, values);
         return data.user;
       }
-      const { data } = await axios.post("/api/users", payload);
+      // Creation is agent-only, so role never travels on the create path.
+      const { name, email, password } = values;
+      const { data } = await axios.post("/api/users", { name, email, password });
       return data.user;
     },
     onSuccess: () => {
@@ -101,6 +118,23 @@ export default function UserForm({ user, onSuccess }: UserFormProps) {
           <ErrorMessage message={form.formState.errors.password.message} />
         )}
       </div>
+      {isEdit && (
+        <div className="space-y-2">
+          <Label htmlFor="role">Role</Label>
+          <Select
+            value={form.watch("role")}
+            onValueChange={(value) => form.setValue("role", value as Role)}
+          >
+            <SelectTrigger id="role" aria-label="Role" className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={Role.agent}>{roleLabel[Role.agent]}</SelectItem>
+              <SelectItem value={Role.admin}>{roleLabel[Role.admin]}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      )}
       {mutation.error && (
         <ErrorAlert
           error={mutation.error}

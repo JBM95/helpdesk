@@ -2,11 +2,21 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import axios from "axios";
+import { Role } from "core/constants/role.ts";
 import { renderWithQuery } from "@/test/render";
 import UserForm from "./UserForm";
 
 vi.mock("axios");
 const mockedAxios = vi.mocked(axios, { deep: true });
+
+// Radix Select relies on pointer capture APIs not available in jsdom. Only the
+// capture methods are stubbed here: TicketDetailPage.test.tsx also replaces
+// window.PointerEvent with an Event subclass, which breaks native click-to-submit
+// (Radix opens on pointerdown, but a form submit needs a real MouseEvent click).
+window.HTMLElement.prototype.scrollIntoView = vi.fn();
+window.HTMLElement.prototype.hasPointerCapture = vi.fn();
+window.HTMLElement.prototype.releasePointerCapture = vi.fn();
+window.HTMLElement.prototype.setPointerCapture = vi.fn();
 
 const onSuccess = vi.fn();
 
@@ -14,10 +24,23 @@ beforeEach(() => {
   vi.resetAllMocks();
 });
 
-function renderForm(user?: { id: string; name: string; email: string }) {
+function renderForm(user?: {
+  id: string;
+  name: string;
+  email: string;
+  role: Role;
+}) {
   const actor = userEvent.setup();
   renderWithQuery(<UserForm user={user} onSuccess={onSuccess} />);
   return { user: actor };
+}
+
+async function selectRole(
+  user: ReturnType<typeof userEvent.setup>,
+  optionName: "Agent" | "Admin"
+) {
+  await user.click(screen.getByRole("combobox", { name: "Role" }));
+  await user.click(await screen.findByRole("option", { name: optionName }));
 }
 
 async function fillForm(
@@ -173,10 +196,39 @@ describe("UserForm — create mode", () => {
       expect(button).toBeDisabled();
     });
   });
+
+  // AC6 — role selection is deliberately absent from user creation
+  it("should not render a role control in create mode", () => {
+    renderForm();
+
+    expect(screen.queryByRole("combobox", { name: "Role" })).not.toBeInTheDocument();
+  });
+
+  it("should not send a role in the POST payload", async () => {
+    mockedAxios.post.mockResolvedValue({ data: { user: { id: "1" } } });
+    const { user } = renderForm();
+
+    await fillForm(user);
+    await user.click(screen.getByRole("button", { name: "Create User" }));
+
+    await waitFor(() => {
+      expect(mockedAxios.post).toHaveBeenCalledWith("/api/users", {
+        name: "John Doe",
+        email: "john@example.com",
+        password: "password123",
+      });
+    });
+    expect(mockedAxios.post.mock.calls[0][1]).not.toHaveProperty("role");
+  });
 });
 
 describe("UserForm — edit mode", () => {
-  const existingUser = { id: "u1", name: "Alice", email: "alice@example.com" };
+  const existingUser = {
+    id: "u1",
+    name: "Alice",
+    email: "alice@example.com",
+    role: Role.agent,
+  };
 
   it("should pre-populate name and email fields", () => {
     renderForm(existingUser);
@@ -214,6 +266,7 @@ describe("UserForm — edit mode", () => {
         name: "Alice Updated",
         email: "alice@example.com",
         password: "",
+        role: "agent",
       });
     });
   });
@@ -230,6 +283,7 @@ describe("UserForm — edit mode", () => {
         name: "Alice",
         email: "alice@example.com",
         password: "newpassword123",
+        role: "agent",
       });
     });
   });
@@ -283,5 +337,85 @@ describe("UserForm — edit mode", () => {
     await waitFor(() => {
       expect(screen.getByText("Email already exists")).toBeInTheDocument();
     });
+  });
+});
+
+// AC1 — the edit flow exposes the current role and can change it
+describe("UserForm — role control", () => {
+  const agentUser = {
+    id: "u1",
+    name: "Alice",
+    email: "alice@example.com",
+    role: Role.agent,
+  };
+  const adminUser = {
+    id: "u2",
+    name: "Bob",
+    email: "bob@example.com",
+    role: Role.admin,
+  };
+
+  it("should render a role control pre-selected with an agent's current role", () => {
+    renderForm(agentUser);
+
+    expect(screen.getByRole("combobox", { name: "Role" })).toHaveTextContent("Agent");
+  });
+
+  it("should render a role control pre-selected with an admin's current role", () => {
+    renderForm(adminUser);
+
+    expect(screen.getByRole("combobox", { name: "Role" })).toHaveTextContent("Admin");
+  });
+
+  it("should offer exactly the agent and admin options", async () => {
+    const { user } = renderForm(agentUser);
+
+    await user.click(screen.getByRole("combobox", { name: "Role" }));
+
+    expect(await screen.findByRole("option", { name: "Agent" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Admin" })).toBeInTheDocument();
+    expect(screen.getAllByRole("option")).toHaveLength(2);
+  });
+
+  it("should submit a promotion to admin in the PUT payload", async () => {
+    mockedAxios.put.mockResolvedValue({ data: { user: { id: "u1" } } });
+    const { user } = renderForm(agentUser);
+
+    await selectRole(user, "Admin");
+    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+
+    await waitFor(() => {
+      expect(mockedAxios.put).toHaveBeenCalledWith("/api/users/u1", {
+        name: "Alice",
+        email: "alice@example.com",
+        password: "",
+        role: "admin",
+      });
+    });
+  });
+
+  it("should submit a demotion to agent in the PUT payload", async () => {
+    mockedAxios.put.mockResolvedValue({ data: { user: { id: "u2" } } });
+    const { user } = renderForm(adminUser);
+
+    await selectRole(user, "Agent");
+    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+
+    await waitFor(() => {
+      expect(mockedAxios.put).toHaveBeenCalledWith("/api/users/u2", {
+        name: "Bob",
+        email: "bob@example.com",
+        password: "",
+        role: "agent",
+      });
+    });
+  });
+
+  it("should reflect the newly chosen role in the control before submitting", async () => {
+    const { user } = renderForm(agentUser);
+
+    await selectRole(user, "Admin");
+
+    expect(screen.getByRole("combobox", { name: "Role" })).toHaveTextContent("Admin");
   });
 });
