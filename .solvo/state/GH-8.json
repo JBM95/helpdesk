@@ -1,0 +1,50 @@
+{
+  "id": "GH-8",
+  "tier": "T3",
+  "tierConfirmedBy": "JB",
+  "phase": "build",
+  "run": {
+    "id": "3f0c9a41-7d52-4e88-9b31-6a2f5c1d8e40",
+    "agent": "claude-code",
+    "model": "opus"
+  },
+  "blastRadius": {
+    "files": 6,
+    "callers": 10
+  },
+  "readyBarGaps": [
+    "Grounding",
+    "Open questions"
+  ],
+  "grounding": [
+    { "path": "docs/repo-wiki/03-domains/user-management.md", "band": "unrated" },
+    { "path": "docs/repo-wiki/03-domains/auth.md", "band": "unrated" },
+    { "path": "docs/repo-wiki/04-features/edit-user.md", "band": "unrated" },
+    { "path": "docs/repo-wiki/11-testing.md", "band": "unrated" }
+  ],
+  "gates": {
+    "gate1": {
+      "approved": true,
+      "by": "JB",
+      "at": "2026-09-08T18:11:31Z"
+    }
+  },
+  "checks": {
+    "ambiguityScan": {
+      "cleared": true
+    }
+  },
+  "attempts": {
+    "recon": 2,
+    "build": 1
+  },
+  "artifacts": {
+    "recon": ".solvo/reconnaissance/GH-8-recon.md",
+    "spec": ".solvo/stories/GH-8-spec.md"
+  },
+  "autoExplored": [
+    "core",
+    "server",
+    "e2e"
+  ]
+}
