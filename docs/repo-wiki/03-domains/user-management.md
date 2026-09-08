@@ -91,7 +91,7 @@ await prisma.user.update({
 
 **Two rules guard the transition** (`users.ts`):
 
-1. **No self role change** — 403 when the caller's own id is the target and the requested role differs from their stored one. This doubles as the last-admin floor: reaching zero admins requires demoting the final admin, and only that admin could be making the call.
+1. **No self role change** — 403 when the caller's own id is the target and the requested role differs from their stored one. This closes every sequential path to zero admins, though it is not a floor under concurrency — see Open questions below.
 2. **Demotion drops sessions** — `admin → agent` also runs `prisma.session.deleteMany({ where: { userId: id } })`, so the demoted user's next request is a 401 rather than a 403. Promotion deliberately leaves sessions intact, so a promoted user gains access on their existing session with no re-login.
 
 The handler now loads the target user before writing, which it previously never did. A `PUT` against an unknown id is therefore a clean 404; before GH-8 it reached Prisma as a `P2025` and surfaced through Express 5's default handler as a **500**, despite this wiki and [[edit-user]] both claiming 404.
@@ -168,7 +168,8 @@ Recorded as questions because they are product decisions the code cannot settle:
 
 - ~~**Demote-then-delete.**~~ **Permitted, deliberately.** AC7 protects the currently stored role; the two-step path is not a bypass of it. See Delete protection above.
 - ~~**Self-demotion.**~~ **Blocked server-side** with a 403. Chosen over disabling the control for the current user, because a client-side condition is a display rule and this is an authorization rule.
-- ~~**Last-admin demotion.**~~ **No separate floor needed.** The self-role-change guard is the floor: only an admin can call the endpoint, so if one admin remains, that caller is that admin and the guard refuses. Zero admins is unreachable through the API.
+- **Last-admin demotion.** **Partly answered.** The self-role-change guard closes every *sequential* path: demoting the final admin can only be done by that admin, and the guard refuses it. With two admins it still holds sequentially, because once A demotes B, B's next request reads its fresh role and fails `requireAdmin`.
+  **It is not a true floor under concurrency.** Two admins demoting each other inside the same window both pass `requireAdmin` before either write commits, landing on zero admins with no in-product recovery (sign-up is disabled). Accepted rather than solved by GH-8: no AC asked for a floor, and enforcing one properly needs a serializable transaction or row lock around a post-write admin count, not another `if`. Recorded here so the next person does not mistake the guard for a guarantee.
 - **Attribution.** Still open, and still a gap. No `modifiedBy` column exists anywhere ([[07-data-model]]), so a role change — now a real privilege transition — leaves no record of who made it. GH-8 put an audit-log subsystem out of scope explicitly, so this was accepted rather than solved.
 - The table lists admins as well as agents. Confirmed deliberate: the server returns every user except the AI agent.
 - The relationship between `/api/users` here and `/api/agents` in [[tickets]] is resolved: same table, different projections and filters.

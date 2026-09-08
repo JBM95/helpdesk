@@ -83,8 +83,11 @@ router.put("/:id", requireAuth, requireAdmin, async (req, res) => {
   }
 
   // An admin changing their own role would revoke their own access on the next
-  // request. This also enforces the last-admin floor: reaching zero admins needs
-  // someone to demote the final admin, and only that admin could make the call.
+  // request. It also blocks every *sequential* path to zero admins: demoting the
+  // final admin can only be done by that admin, and this refuses it. It is not a
+  // true floor under concurrency — two admins demoting each other in the same
+  // window both pass requireAdmin before either write commits. Accepted: no AC
+  // asks for a floor, and enforcing one needs a serializable transaction.
   if (req.user.id === id && role !== target.role) {
     res.status(403).json({ error: "You cannot change your own role" });
     return;

@@ -39,11 +39,16 @@ Decision 1 is a **breaking change to the `PUT` contract**: today all three of `n
 without `role` returns 400. The only caller in the repo is `UserForm.tsx:44`, which this story
 updates, so the blast radius of the break is contained to this diff.
 
-Decision 2 has a property worth stating, because it removes a whole risk class for free: **it is
-also the last-admin floor.** To reach zero admins someone must demote the final admin; only an
-admin may call the endpoint; if one admin remains, that caller *is* the final admin, so the
-self-change guard refuses it. No separate "minimum one admin" count is needed. This closes the
-**last-admin demotion** open question in [[user-management]] §Open questions.
+Decision 2 also closes every **sequential** path to zero admins: demoting the final admin can only
+be done by that admin, and the guard refuses it. With two admins it still holds, because once A
+demotes B, B's next request reads its fresh role and fails `requireAdmin`.
+
+**Corrected at self-review — it is not a floor under concurrency.** Two admins demoting each other
+inside the same window both pass `requireAdmin` before either write commits, reaching zero admins
+with no in-product recovery. Accepted rather than fixed: no AC asks for a floor, and enforcing one
+properly needs a serializable transaction or row lock around a post-write admin count, which is a
+larger change than this story agreed. Recorded in [[user-management]] §Open questions so the guard
+is not mistaken for a guarantee. An earlier draft of this spec overstated it as absolute.
 
 `ambiguityScan: cleared` — after these answers each AC has exactly one honest reading. Recorded as
 `cleared`, not as a `resolved-with-stakeholder` self-resolution, because the author was reachable
