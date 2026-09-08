@@ -1,5 +1,6 @@
-import { expect, test } from '@playwright/test';
-import { loginAsAdmin } from '../fixtures/auth';
+import { expect, test, type Browser, type Page } from '@playwright/test';
+import { Role } from 'core/constants/role.ts';
+import { login, loginAsAdmin } from '../fixtures/auth';
 
 /**
  * E2E tests for User Management CRUD operations
@@ -388,6 +389,475 @@ test.describe('User Management', () => {
 
       // Also verify the user name is gone
       await expect(page.getByText(userName)).not.toBeVisible();
+    });
+  });
+});
+
+/**
+ * E2E tests for role promotion and demotion (GH-8).
+ *
+ * These live at the E2E layer on purpose. The server has no test suite, so a
+ * Playwright spec is the only place a server-side authorization claim can be
+ * proven in this repo — see docs/repo-wiki/11-testing.md. API-level assertions
+ * drive `request` directly, the pattern webhook-inbound-email.spec.ts sets.
+ *
+ * The seed creates exactly one user (an admin), so every negative case needs a
+ * second principal. Each test creates its own through POST /api/users, which
+ * needs no seed change and exercises AC6 on the way past.
+ */
+const PASSWORD = 'password123';
+
+/** The suite is fullyParallel, so every principal needs a unique email. */
+function unique() {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+type TestUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+};
+
+async function createAgent(adminPage: Page, label: string): Promise<TestUser> {
+  const suffix = unique();
+  const name = `${label} ${suffix}`;
+  const email = `${label.toLowerCase().replace(/\s+/g, '-')}-${suffix}@example.com`;
+
+  const response = await adminPage.request.post('/api/users', {
+    data: { name, email, password: PASSWORD },
+  });
+  expect(response.status()).toBe(201);
+
+  const { user } = await response.json();
+  return { id: user.id, name, email, role: user.role };
+}
+
+/** Full PUT payload — role is a required field, so every update carries one. */
+async function setRole(adminPage: Page, user: TestUser, role: string) {
+  return adminPage.request.put(`/api/users/${user.id}`, {
+    data: { name: user.name, email: user.email, password: '', role },
+  });
+}
+
+async function storedRole(adminPage: Page, id: string) {
+  const response = await adminPage.request.get('/api/users');
+  expect(response.status()).toBe(200);
+  const { users } = await response.json();
+  return users.find((u: { id: string }) => u.id === id)?.role;
+}
+
+/** A second, independently-authenticated session in its own browser context. */
+async function signIn(browser: Browser, email: string) {
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  await login(page, { email, password: PASSWORD });
+  await expect(page).toHaveURL('/');
+  return { context, page };
+}
+
+test.describe('Role management', () => {
+  test.describe('AC1, AC8 — editing a role from the Users page', () => {
+    test('should change an agent to an admin and show the new role in the table', async ({
+      page,
+    }) => {
+      await loginAsAdmin(page);
+      const target = await createAgent(page, 'Promote UI');
+      await page.goto('/users');
+
+      const row = page.getByRole('row').filter({ hasText: target.email });
+      await expect(row).toContainText(Role.agent);
+
+      await row
+        .getByRole('button', { name: new RegExp(`edit ${target.name}`, 'i') })
+        .click();
+
+      // The dialog exposes the current role before it is changed
+      const roleSelect = page.getByRole('combobox', { name: 'Role' });
+      await expect(roleSelect).toContainText('Agent');
+
+      await roleSelect.click();
+      await page.getByRole('option', { name: 'Admin' }).click();
+      await page.getByRole('button', { name: /save changes/i }).click();
+
+      // AC8 — the table reflects the persisted role with no manual refresh
+      await expect(row).toContainText(Role.admin);
+      expect(await storedRole(page, target.id)).toBe(Role.admin);
+    });
+
+    test('should not offer a role control when creating a user', async ({
+      page,
+    }) => {
+      await loginAsAdmin(page);
+      await page.goto('/users');
+
+      await page.getByRole('button', { name: /new user/i }).click();
+      await expect(
+        page.getByRole('heading', { name: /^create user$/i }),
+      ).toBeVisible();
+
+      await expect(
+        page.getByRole('combobox', { name: 'Role' }),
+      ).toBeHidden();
+    });
+  });
+
+  test.describe('AC2 — only the admin-protected API may mutate a role', () => {
+    test('should reject a role change from an authenticated non-admin', async ({
+      page,
+      browser,
+    }) => {
+      await loginAsAdmin(page);
+      const victim = await createAgent(page, 'Victim');
+      const attacker = await createAgent(page, 'Attacker');
+
+      const { context, page: attackerPage } = await signIn(
+        browser,
+        attacker.email,
+      );
+
+      // Calling the API directly, not through the UI it never sees
+      const response = await attackerPage.request.put(
+        `/api/users/${victim.id}`,
+        {
+          data: {
+            name: victim.name,
+            email: victim.email,
+            password: '',
+            role: Role.admin,
+          },
+        },
+      );
+
+      expect(response.status()).toBe(403);
+      // "Forbidden" is requireAdmin's message — proves the admin guard refused
+      // it, not some later rule that happens to also return 403.
+      expect((await response.json()).error).toBe('Forbidden');
+      expect(await storedRole(page, victim.id)).toBe(Role.agent);
+
+      await context.close();
+    });
+
+    test('should reject a role change from an unauthenticated caller', async ({
+      page,
+      request,
+    }) => {
+      await loginAsAdmin(page);
+      const target = await createAgent(page, 'Unauth Target');
+
+      const response = await request.put(`/api/users/${target.id}`, {
+        data: {
+          name: target.name,
+          email: target.email,
+          password: '',
+          role: Role.admin,
+        },
+      });
+
+      expect(response.status()).toBe(401);
+      expect(await storedRole(page, target.id)).toBe(Role.agent);
+    });
+
+    test('should reject an agent promoting themselves', async ({
+      page,
+      browser,
+    }) => {
+      await loginAsAdmin(page);
+      const agent = await createAgent(page, 'Self Promoter');
+
+      const { context, page: agentPage } = await signIn(browser, agent.email);
+
+      const response = await agentPage.request.put(`/api/users/${agent.id}`, {
+        data: {
+          name: agent.name,
+          email: agent.email,
+          password: '',
+          role: Role.admin,
+        },
+      });
+
+      expect(response.status()).toBe(403);
+      // requireAdmin refuses before the self-role-change guard is ever reached
+      expect((await response.json()).error).toBe('Forbidden');
+      expect(await storedRole(page, agent.id)).toBe(Role.agent);
+
+      await context.close();
+    });
+  });
+
+  test.describe('AC3 — strict role validation', () => {
+    test('should reject an unsupported role and leave the stored role alone', async ({
+      page,
+    }) => {
+      await loginAsAdmin(page);
+      const target = await createAgent(page, 'Bad Role');
+
+      const response = await page.request.put(`/api/users/${target.id}`, {
+        data: {
+          name: target.name,
+          email: target.email,
+          password: '',
+          role: 'superuser',
+        },
+      });
+
+      expect(response.status()).toBe(400);
+      expect((await response.json()).error).toBe(
+        'Role must be either agent or admin',
+      );
+      expect(await storedRole(page, target.id)).toBe(Role.agent);
+    });
+
+    test('should reject a missing role and leave the stored role alone', async ({
+      page,
+    }) => {
+      await loginAsAdmin(page);
+      const target = await createAgent(page, 'No Role');
+
+      const response = await page.request.put(`/api/users/${target.id}`, {
+        data: { name: target.name, email: target.email, password: '' },
+      });
+
+      expect(response.status()).toBe(400);
+      expect((await response.json()).error).toBe(
+        'Role must be either agent or admin',
+      );
+      expect(await storedRole(page, target.id)).toBe(Role.agent);
+    });
+
+    test('should reject a null role and leave the stored role alone', async ({
+      page,
+    }) => {
+      await loginAsAdmin(page);
+      const target = await createAgent(page, 'Null Role');
+
+      const response = await page.request.put(`/api/users/${target.id}`, {
+        data: {
+          name: target.name,
+          email: target.email,
+          password: '',
+          role: null,
+        },
+      });
+
+      expect(response.status()).toBe(400);
+      expect(await storedRole(page, target.id)).toBe(Role.agent);
+    });
+
+    test('should not change a role that was already rejected for another field', async ({
+      page,
+    }) => {
+      await loginAsAdmin(page);
+      const target = await createAgent(page, 'Short Name');
+
+      // Name fails validation, so nothing is written even though role is valid
+      const response = await page.request.put(`/api/users/${target.id}`, {
+        data: {
+          name: 'ab',
+          email: target.email,
+          password: '',
+          role: Role.admin,
+        },
+      });
+
+      expect(response.status()).toBe(400);
+      // The name error, not the role error — validation rejected the whole
+      // payload before the handler could apply the otherwise-valid role.
+      expect((await response.json()).error).toBe(
+        'Name must be at least 3 characters',
+      );
+      expect(await storedRole(page, target.id)).toBe(Role.agent);
+    });
+  });
+
+  test.describe('AC4, AC5 — a role change binds an existing session', () => {
+    test('should stop authorizing admin APIs on a demoted admin existing session', async ({
+      page,
+      browser,
+    }) => {
+      await loginAsAdmin(page);
+      const target = await createAgent(page, 'Demote Me');
+      expect((await setRole(page, target, Role.admin)).status()).toBe(200);
+
+      // The target signs in while still an admin, so the session predates the demotion
+      const { context, page: targetPage } = await signIn(browser, target.email);
+      expect((await targetPage.request.get('/api/users')).status()).toBe(200);
+
+      expect((await setRole(page, target, Role.agent)).status()).toBe(200);
+
+      // Same session, no reload, no re-login — the privilege is gone
+      const afterDemotion = await targetPage.request.get('/api/users');
+      expect(afterDemotion.status()).toBe(401);
+      expect(await storedRole(page, target.id)).toBe(Role.agent);
+
+      await context.close();
+    });
+
+    test('should authorize admin APIs on a promoted agent existing session', async ({
+      page,
+      browser,
+    }) => {
+      await loginAsAdmin(page);
+      const target = await createAgent(page, 'Promote Me');
+
+      // Signs in as an agent, so this session predates the promotion
+      const { context, page: targetPage } = await signIn(browser, target.email);
+      expect((await targetPage.request.get('/api/users')).status()).toBe(403);
+
+      expect((await setRole(page, target, Role.admin)).status()).toBe(200);
+
+      // Same session and no re-login: this is what proves the role is
+      // re-read from the User row on every request rather than cached.
+      const afterPromotion = await targetPage.request.get('/api/users');
+      expect(afterPromotion.status()).toBe(200);
+
+      const me = await targetPage.request.get('/api/me');
+      expect((await me.json()).user.role).toBe(Role.admin);
+
+      await context.close();
+    });
+  });
+
+  test.describe('AC6 — creation policy is unchanged', () => {
+    test('should still create an agent through POST /api/users', async ({
+      page,
+    }) => {
+      await loginAsAdmin(page);
+      const created = await createAgent(page, 'Still Agent');
+
+      expect(created.role).toBe(Role.agent);
+      expect(await storedRole(page, created.id)).toBe(Role.agent);
+    });
+
+    test('should ignore a role supplied to POST /api/users', async ({
+      page,
+    }) => {
+      await loginAsAdmin(page);
+      const suffix = unique();
+      const email = `sneaky-${suffix}@example.com`;
+
+      const response = await page.request.post('/api/users', {
+        data: {
+          name: `Sneaky ${suffix}`,
+          email,
+          password: PASSWORD,
+          role: Role.admin,
+        },
+      });
+
+      expect(response.status()).toBe(201);
+      const { user } = await response.json();
+      expect(user.role).toBe(Role.agent);
+    });
+  });
+
+  test.describe('AC7 — admin deletion protection survives', () => {
+    test('should refuse to delete a user whose stored role is admin', async ({
+      page,
+    }) => {
+      await loginAsAdmin(page);
+      const target = await createAgent(page, 'Undeletable');
+      expect((await setRole(page, target, Role.admin)).status()).toBe(200);
+
+      const response = await page.request.delete(`/api/users/${target.id}`);
+
+      expect(response.status()).toBe(403);
+      expect((await response.json()).error).toBe(
+        'Admin users cannot be deleted',
+      );
+      expect(await storedRole(page, target.id)).toBe(Role.admin);
+    });
+
+    test('should allow deletion once an admin has been demoted', async ({
+      page,
+    }) => {
+      await loginAsAdmin(page);
+      const target = await createAgent(page, 'Demote Then Delete');
+      expect((await setRole(page, target, Role.admin)).status()).toBe(200);
+      expect((await page.request.delete(`/api/users/${target.id}`)).status()).toBe(
+        403,
+      );
+
+      expect((await setRole(page, target, Role.agent)).status()).toBe(200);
+
+      // Deliberate per AC7, which protects the *currently* stored role: demoting
+      // and then deleting is two individually-legal steps, not a bypass.
+      expect((await page.request.delete(`/api/users/${target.id}`)).status()).toBe(
+        200,
+      );
+      expect(await storedRole(page, target.id)).toBeUndefined();
+    });
+  });
+
+  test.describe('Self role change is refused', () => {
+    test('should refuse to let an admin demote themselves', async ({ page }) => {
+      await loginAsAdmin(page);
+
+      const me = await page.request.get('/api/me');
+      const self = (await me.json()).user;
+      expect(self.role).toBe(Role.admin);
+
+      const response = await page.request.put(`/api/users/${self.id}`, {
+        data: {
+          name: self.name,
+          email: self.email,
+          password: '',
+          role: Role.agent,
+        },
+      });
+
+      expect(response.status()).toBe(403);
+      expect((await response.json()).error).toBe(
+        'You cannot change your own role',
+      );
+
+      // Still an admin, and the session still works
+      expect((await page.request.get('/api/users')).status()).toBe(200);
+      expect(await storedRole(page, self.id)).toBe(Role.admin);
+    });
+
+    test('should allow an admin to save their own profile with an unchanged role', async ({
+      page,
+    }) => {
+      await loginAsAdmin(page);
+
+      const me = await page.request.get('/api/me');
+      const self = (await me.json()).user;
+
+      // The guard is about *changing* your own role, not about touching your row
+      const response = await page.request.put(`/api/users/${self.id}`, {
+        data: {
+          name: self.name,
+          email: self.email,
+          password: '',
+          role: Role.admin,
+        },
+      });
+
+      expect(response.status()).toBe(200);
+      expect(await storedRole(page, self.id)).toBe(Role.admin);
+    });
+  });
+
+  test.describe('Unknown user', () => {
+    test('should return 404 for a role change against an unknown id', async ({
+      page,
+    }) => {
+      await loginAsAdmin(page);
+
+      const response = await page.request.put(
+        `/api/users/${crypto.randomUUID()}`,
+        {
+          data: {
+            name: 'Nobody At All',
+            email: `nobody-${unique()}@example.com`,
+            password: '',
+            role: Role.admin,
+          },
+        },
+      );
+
+      expect(response.status()).toBe(404);
     });
   });
 });
