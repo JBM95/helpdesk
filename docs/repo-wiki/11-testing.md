@@ -88,12 +88,14 @@ Loading skeletons; detail render; HTML body when `bodyHtml` is present; 404 dist
 
 Carries a **jsdom PointerEvent polyfill at lines 13-28**, required for any test that drives a Radix `Select`. Reuse it rather than rediscovering the need.
 
-### `pages/UserForm.test.tsx` — 287 LOC
+### `pages/UserForm.test.tsx` — 28 tests
 
-*Create mode:* field rendering; validation for a short name, a short password and a missing email; `aria-invalid`; `POST /api/users`; `onSuccess`; form reset; a 409 surfaced from `data.error`; a generic non-Axios error; the "Creating…" disabled state.
+*Create mode:* field rendering; validation for a short name, a short password and a missing email; `aria-invalid`; `POST /api/users`; `onSuccess`; form reset; a 409 surfaced from `data.error`; a generic non-Axios error; the "Creating…" disabled state; and, since GH-8, that no role control renders and no `role` reaches the POST body.
 *Edit mode:* pre-population; the "Save Changes" label; the password placeholder; an empty password permitted; `PUT` both with and without a password; `onSuccess`; the "Saving…" state; validation still enforced; update errors displayed.
+*Role control* (GH-8): pre-selection from the stored role for an agent and for an admin; exactly two options offered; promotion and demotion each reaching the `PUT` payload; the chosen role reflected in the control before submitting.
 
-**No role control is asserted anywhere in this file, because none exists.**
+**See the PointerEvent warning in [[04-features/edit-user]] §Tests before copying the Radix
+polyfill from `TicketDetailPage.test.tsx` into this or any other form test.**
 
 ### `pages/UsersPage.test.tsx` — 273 LOC
 
@@ -118,9 +120,17 @@ Subject heading; sender name and email; "Created:" and "Updated:" labels; plain-
 
 ## E2E inventory
 
-Five specs, 102 tests.
+**Five specs, 87 tests** — counted with `bunx playwright test --list` on 2026-09-08:
+`auth.spec.ts` 31 · `users.spec.ts` 25 · `webhook-inbound-email.spec.ts` 22 ·
+`tickets.spec.ts` 5 · `ticket-detail.spec.ts` 4.
 
-### `auth.spec.ts` — 63 tests across 8 describes
+> **Correction.** This section previously claimed 102 tests, with 63 in `auth.spec.ts` and
+> 23 in `webhook-inbound-email.spec.ts`. Those numbers were never right — the real
+> pre-GH-8 total was 69. The per-describe counts below were written by reading the source
+> rather than running the lister, and the describe-level figures should be treated with the
+> same suspicion until re-counted.
+
+### `auth.spec.ts` — 31 tests across 8 describes
 
 **Login Page** (11) — form elements visible; valid admin login redirecting home with the name in the nav; client validation for invalid email format, empty email, empty password and both empty; server validation for a non-existent user and a wrong password; the "Signing in…" disabled state via a route intercept; an already-authenticated visit to `/login` redirecting home; a server error clearing on resubmission.
 
@@ -137,7 +147,10 @@ Five specs, 102 tests.
 
 **Navigation Bar** (3) — user name and Sign Out visible; branding visible; admin sees the "Users" link, with the agent case noted as future work.
 
-### `users.spec.ts` — 7 tests across 4 describes
+### `users.spec.ts` — 25 tests across 11 describes
+
+> 7 of these predate GH-8; the 18 in the `Role management` describe arrived with it and are
+> summarised under Authorization coverage below.
 
 **View Users** (1) — the table renders columns Name, Email, Role, Created, Actions. Note it asserts the **Role column exists**, so role is already displayed and column-tested.
 
@@ -196,17 +209,22 @@ Helpers: `toMultipart(payload)` converts to SendGrid's multipart shape; `createV
 Worth its own section, because it is thinner than the test count suggests.
 
 **What exists:**
-- `UsersPage.test.tsx:190` — the delete button is absent on admin rows. **The only test of role-conditional UI anywhere.**
-- `auth.spec.ts:328-397` — the admin *can* reach `/users`, and the link is visible. Positive cases only.
-- `users.spec.ts:137-149` — a newly created user is an `agent`.
+- `UsersPage.test.tsx:190` — the delete button is absent on admin rows. The only test of role-conditional UI.
+- `auth.spec.ts` — the admin *can* reach `/users`, and the link is visible. Positive cases only.
+- `users.spec.ts` — a newly created user is an `agent`.
+- **Since GH-8 (2026-09-08), API-level authorization is asserted.** The `Role management` describe in `users.spec.ts` closes most of the gap this section used to record:
+  - `requireAdmin` refuses a non-admin `PUT`, asserted on the `"Forbidden"` body so it cannot be confused with a different 403.
+  - An unauthenticated `PUT` is a 401.
+  - `DELETE` against a stored admin is a 403 at the API, not merely a hidden button.
+  - Both role transitions, in both directions, including their effect on an **already-authenticated session**: a demoted admin's live session gets 401, a promoted agent's live session gets 200 with no re-login.
+  - Invalid, missing and null roles are each rejected with the stored role left unchanged.
 
-**What does not exist:**
-- **No test asserts authorization at the API level.** Every authorization assertion in the suite is a UI observation — a link is visible, a button is present, a route redirects. Since the server has no test suite, nothing anywhere proves that `requireAdmin` refuses a non-admin request.
-- **No test covers the non-admin branch** of `AdminRoute` or the admin-only nav condition — those are precisely the two tests commented out at `auth.spec.ts:384-397`, disabled for want of a seeded agent user.
-- **No test covers any role transition**, in either direction, because role is currently immutable.
-- **No test covers what an already-authenticated session does after its user's role changes.**
+**What still does not exist:**
+- **No test covers the non-admin branch** of `AdminRoute` or the admin-only nav condition — still the two tests commented out at `auth.spec.ts:384-397`. GH-8 did **not** unlock them: it creates its principals through `POST /api/users` inside each test rather than seeding one, so there is still no agent user at seed time for those tests to log in as. Enabling them remains a seed change.
+- **No server-layer unit or integration tests.** Everything above is full-stack E2E, because there is still no server suite.
+- **No attribution test**, because there is nothing to attribute to — no `modifiedBy` column exists ([[07-data-model]]).
 
-The gap has a single root cause: **the seed creates exactly one user, an admin** (`server/prisma/seed.ts`, and see [[07-data-model]]). Without a second, non-admin principal, no negative authorization case can be written at all. Anything that introduces one unlocks the two disabled tests as a side effect.
+The original root cause was **the seed creating exactly one user, an admin** (`server/prisma/seed.ts`, and see [[07-data-model]]). That is still true. GH-8 worked around it per-test rather than fixing it, which is why the two disabled tests remain disabled.
 
 ### Can the suite express a two-session test?
 
@@ -258,7 +276,7 @@ Client component testing is **selective rather than systematic**: the four highe
 7. Cover both Axios errors (`response.data.error`) and non-Axios errors wherever the handling differs.
 8. `waitFor` for async assertions.
 9. Nest `describe` blocks when a file covers distinct modes — `UserForm.test.tsx` and `ReplyForm.test.tsx` do; the other six are flat, which tells in the 400-LOC `TicketsPage.test.tsx`.
-10. Reuse the PointerEvent polyfill from `TicketDetailPage.test.tsx:13-28` for any Radix dropdown.
+10. For any Radix dropdown, stub the pointer-capture methods and `scrollIntoView` — copy the block at the top of `UserForm.test.tsx`, **not** the one in `TicketDetailPage.test.tsx:13-28`. The latter also overwrites `window.PointerEvent` with an `Event` subclass, which breaks native click-to-submit in any file that submits a form (Radix opens on `pointerdown`; a form submit needs a real `MouseEvent`). It is harmless in `TicketDetailPage.test.tsx` only because nothing there submits a form.
 
 ## Patterns a new E2E test should follow
 
@@ -279,9 +297,48 @@ Per [[00-scope]]: an absent pipeline is not a green pipeline. Every gate here is
 
 ## Run commands
 
-From root: `bun run test:e2e` (102 tests, full-stack), plus `test:e2e:ui` and `test:e2e:headed`.
-From `client/`: `bun run test` (8 files), `bun run test:watch`.
+From root: `bun run test:e2e` (87 tests, full-stack), plus `test:e2e:ui` and `test:e2e:headed`.
+From `client/`: `bun run test` (8 files, 142 tests), `bun run test:watch`.
 From `server/`: nothing — no suite exists.
+
+### `bun run test:e2e` does not work on Windows as configured
+
+Found while running the suite for GH-8 on 2026-09-08. `playwright.config.ts` starts the client
+dev server with a POSIX inline-env prefix:
+
+```ts
+command: "VITE_API_URL=http://localhost:3001 bun run --cwd client vite --port 5174",
+```
+
+Playwright spawns `webServer` commands through the platform shell, which on Windows is
+`cmd.exe`. `cmd.exe` has no `VAR=value cmd` form, so it silently runs nothing, the client
+never binds 5174, and the whole run dies with
+`Error: Timed out waiting 60000ms from config.webServer` — before a single test executes.
+Nothing in the failure names the real cause.
+
+**Workaround** (what GH-8 used): start both servers by hand in a POSIX shell, then run
+Playwright, which reuses them via `reuseExistingServer`.
+
+```bash
+bun run --cwd server --env-file=.env.test src/index.ts &
+VITE_API_URL=http://localhost:3001 bun run --cwd client vite --port 5174 &
+bun run test:e2e
+```
+
+**Real fix** — not applied, because it fell outside GH-8's agreed blast radius: use
+Playwright's cross-platform `env` option instead of the shell prefix.
+
+```ts
+{
+  command: "bun run --cwd client vite --port 5174",
+  env: { VITE_API_URL: "http://localhost:3001" },
+  url: "http://localhost:5174",
+  reuseExistingServer: !process.env.CI,
+}
+```
+
+Worth pairing with a longer `timeout`: cold Vite start-up was measured at ~22s here, which is
+uncomfortably close to the 60s default once the server's own boot is added.
 
 ## Related
 

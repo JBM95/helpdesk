@@ -112,7 +112,7 @@ A fourth, independent reason points the same way: Better Auth does not cookie-ca
 | `*` | `/api/auth/{*any}` | Better Auth | `authLimiter` | no | Sign-in, sign-out, session management (library-owned) |
 | `GET` | `/api/users` | [Users router](#users-router) | `requireAuth` + `requireAdmin` | no | List users (excludes AI agent and soft-deleted) |
 | `POST` | `/api/users` | [Users router](#users-router) | `requireAuth` + `requireAdmin` | no | Create user — hardcodes `role: agent` |
-| `PUT` | `/api/users/:id` | [Users router](#users-router) | `requireAuth` + `requireAdmin` | no | Update name, email, password — **no role change** |
+| `PUT` | `/api/users/:id` | [Users router](#users-router) | `requireAuth` + `requireAdmin` | no | Update name, email, password **and role** (all required). 403 on a self role change; a demotion also drops the target's sessions |
 | `DELETE` | `/api/users/:id` | [Users router](#users-router) | `requireAuth` + `requireAdmin` | no | Soft-delete, unassign tickets, delete sessions |
 | `GET` | `/api/tickets/stats` | [Tickets router](#tickets-router) | `requireAuth` | no | Aggregate stats via stored function |
 | `GET` | `/api/tickets/stats/daily-volume` | [Tickets router](#tickets-router) | `requireAuth` | no | Rolling 30-day ticket counts |

@@ -47,7 +47,7 @@ Nav link at `Layout.tsx:56-61`, rendered for admins only.
 |--------|-------|---------|------|---------|
 | GET | `/api/users` | `users.ts:13-20` | `requireAuth` + `requireAdmin` | List users; excludes soft-deleted and the AI agent |
 | POST | `/api/users` | `users.ts:22-69` | `requireAuth` + `requireAdmin` | Create user plus credential account, transactionally |
-| PUT | `/api/users/:id` | `users.ts:71-104` | `requireAuth` + `requireAdmin` | Update name, email, optional password — **not role** |
+| PUT | `/api/users/:id` | `users.ts:71-121` | `requireAuth` + `requireAdmin` | Update name, email, optional password, **and role** |
 | DELETE | `/api/users/:id` | `users.ts:106-133` | `requireAuth` + `requireAdmin` | Soft-delete, unassign tickets, delete sessions |
 
 Full detail with citations in [[05-api-surface]].
@@ -58,7 +58,7 @@ Full detail with citations in [[05-api-surface]].
 |--------|------|-------------|--------------|----------|
 | GET | `/api/users` | `UsersTable.tsx:39` | — | `{ users: { id, name, email, role, createdAt }[] }` |
 | POST | `/api/users` | `UserForm.tsx:47` | `{ name, email, password }` | `{ user: { id, name, email, role, createdAt } }` |
-| PUT | `/api/users/:id` | `UserForm.tsx:44` | `{ name, email, password? }` | `{ user: { id, name, email, role, createdAt } }` |
+| PUT | `/api/users/:id` | `UserForm.tsx:44` | `{ name, email, password, role }` — all four required | `{ user: { id, name, email, role, createdAt } }` |
 | DELETE | `/api/users/:id` | `UsersPage.tsx:47` | — | `{ message: "User deleted" }` |
 
 All four invalidate the `["users"]` query key on success.
@@ -67,24 +67,34 @@ User ids are UUID strings, so the server's numeric `parseId` helper does not app
 
 ## Role handling — current state
 
-**Creation** (`users.ts:45`):
+> Changed by GH-8 (2026-09-08). Role was immutable after creation until then; the
+> paragraphs below describe the state *after* that story.
+
+**Creation** (`users.ts:45`): unchanged and deliberately so — still hardcoded, no choice offered.
 
 ```typescript
-role: Role.agent,  // hardcoded; no choice offered
+role: Role.agent,
 ```
 
-**Update** (`users.ts:85-88`):
+`createUserSchema` declares no `role` field, and `UserForm` renders no role control in create mode. A `role` supplied to `POST /api/users` is silently stripped by Zod, so it cannot be smuggled in at creation.
+
+**Update**: role is writable, admin-only, through the existing `PUT /api/users/:id`.
 
 ```typescript
 await prisma.user.update({
   where: { id: id },
-  data: { name, email, updatedAt: new Date() },  // role is absent
+  data: { name, email, role, updatedAt: new Date() },
 });
 ```
 
-**Validation contract** (`core/schemas/users.ts:3-7`, `:11-18`): neither `createUserSchema` nor `updateUserSchema` declares a `role` field.
+**Validation contract** (`core/schemas/users.ts`): `updateUserSchema` declares `role: z.enum(Role, "Role must be either agent or admin")` — **required**, not optional. A `PUT` omitting `role` is a 400 and writes nothing. That asymmetry with `createUserSchema` is intentional: creation has no role to change, updates always carry one.
 
-**Role is therefore immutable after creation.** Every user created through the product is an `agent`. The one admin exists because `server/prisma/seed.ts` creates it; there is no second admin and no in-product way to make one. `role` *is* returned by `GET /api/users` and rendered as a badge in `UsersTable.tsx`, so the UI displays a value it cannot change.
+**Two rules guard the transition** (`users.ts`):
+
+1. **No self role change** — 403 when the caller's own id is the target and the requested role differs from their stored one. This doubles as the last-admin floor: reaching zero admins requires demoting the final admin, and only that admin could be making the call.
+2. **Demotion drops sessions** — `admin → agent` also runs `prisma.session.deleteMany({ where: { userId: id } })`, so the demoted user's next request is a 401 rather than a 403. Promotion deliberately leaves sessions intact, so a promoted user gains access on their existing session with no re-login.
+
+The handler now loads the target user before writing, which it previously never did. A `PUT` against an unknown id is therefore a clean 404; before GH-8 it reached Prisma as a `P2025` and surfaced through Express 5's default handler as a **500**, despite this wiki and [[edit-user]] both claiming 404.
 
 ## Delete protection
 
@@ -107,7 +117,9 @@ if (user.role === Role.admin) {
 }
 ```
 
-Server enforcement is correct, and it reads the **currently stored** role at delete time — it is not a record of what the user once was. That distinction has no consequence today, because role is immutable. It would acquire one the moment role became writable: an admin could be demoted and then deleted, reaching an outcome the rule blocks in one step through two steps that are each individually legal. Recorded as an open question below rather than as a defect, because whether demote-then-delete is the intended way to retire an admin is a product decision, not a code fact.
+Server enforcement is correct, and it reads the **currently stored** role at delete time — it is not a record of what the user once was. Since GH-8 made role writable, that distinction has a consequence: an admin can be demoted and then deleted, reaching in two individually-legal steps an outcome the rule blocks in one.
+
+**Resolved as intended, not a defect.** AC7 of GH-8 requires that a user *whose current stored role is admin* stay protected, which is exactly what the rule does. It does not require the two-step path to be closed. `users.spec.ts` asserts both halves: the delete is refused while the user is an admin, and permitted once demoted.
 
 **Side effects of deletion** (`users.ts:125-130`):
 
@@ -152,10 +164,12 @@ The AI agent is a pseudo-user used as `assignedToId` while the AI works a ticket
 
 Recorded as questions because they are product decisions the code cannot settle:
 
-- **Demote-then-delete.** With role writable, an admin could be demoted to `agent` and then deleted, reaching an outcome `users.ts:115-118` blocks directly. Is that the intended way to retire an admin, or should the path be closed?
-- **Self-demotion.** Nothing would stop an admin demoting themselves, after which their next request fails `requireAdmin` and they lose access to the very screen they were using. Block it server-side, disable the control for the current user, or allow it?
-- **Last-admin demotion.** There is one seeded admin and no spare (`server/prisma/seed.ts`). Demoting the last admin would leave the system with no one able to administer it, and — sign-up being disabled — no in-product way to recover. Should a floor be enforced?
-- **Attribution.** No `modifiedBy` column exists anywhere ([[07-data-model]]), so a role change would leave no record of who made it. Acceptable, or a gap?
+**Answered by GH-8** (2026-09-08), kept here with their answers because the reasoning is the useful part:
+
+- ~~**Demote-then-delete.**~~ **Permitted, deliberately.** AC7 protects the currently stored role; the two-step path is not a bypass of it. See Delete protection above.
+- ~~**Self-demotion.**~~ **Blocked server-side** with a 403. Chosen over disabling the control for the current user, because a client-side condition is a display rule and this is an authorization rule.
+- ~~**Last-admin demotion.**~~ **No separate floor needed.** The self-role-change guard is the floor: only an admin can call the endpoint, so if one admin remains, that caller is that admin and the guard refuses. Zero admins is unreachable through the API.
+- **Attribution.** Still open, and still a gap. No `modifiedBy` column exists anywhere ([[07-data-model]]), so a role change — now a real privilege transition — leaves no record of who made it. GH-8 put an audit-log subsystem out of scope explicitly, so this was accepted rather than solved.
 - The table lists admins as well as agents. Confirmed deliberate: the server returns every user except the AI agent.
 - The relationship between `/api/users` here and `/api/agents` in [[tickets]] is resolved: same table, different projections and filters.
 

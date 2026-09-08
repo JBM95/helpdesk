@@ -114,7 +114,16 @@ Three facts from this repo bear on whether a role change reaches an already-auth
 2. `betterAuth()` configures no `session` block (`lib/auth.ts:6-31`), so `session.cookieCache` stays at its default of off. No signed cookie snapshot is in play.
 3. `getSession()` runs per request, not once per session (`require-auth.ts:6`).
 
-Together these indicate the role is resolved from the `User` row on every request, so a role change would take effect on the next one. **That is inference, not verified behaviour** — the step from "no cookie cache configured" to "a database read happens" rests on documented Better Auth behaviour this codebase does not itself prove. Verify empirically before depending on it for an authorization decision. Same analysis, from the guard's side, in [[05-api-surface]]; from the schema's side, in [[07-data-model]].
+Together these indicate the role is resolved from the `User` row on every request, so a role change takes effect on the next one.
+
+**Verified by GH-8 (2026-09-08). This is no longer inference.** Two independent confirmations:
+
+1. **Library source**, `better-auth@1.4.18`. `getSession` consults the cookie cache only when `options.session.cookieCache.enabled` (`dist/api/routes/session.mjs:93`), which is unreachable here because no `session` block is configured. It therefore falls through to `internalAdapter.findSession(token)` (`:181`), which — with no `secondaryStorage` configured — issues a live `findOne` against `session` with `join: { user: true }` (`dist/db/internal-adapter.mjs:208-215`) and returns the joined user.
+2. **Empirically**, `e2e/tests/users.spec.ts` → *"should authorize admin APIs on a promoted agent existing session"*. An agent signs in, is promoted by an admin, and their **pre-existing** session then succeeds against `GET /api/users` with no reload and no re-login. A cached role could not produce that result.
+
+Two consequences worth carrying: this is a **load-bearing dependency on the absence of `session.cookieCache`** — enabling it would silently stale every authorization decision by up to its `maxAge`. And because it is load-bearing, GH-8 additionally invalidates sessions on demotion rather than relying on the read alone, so privilege *loss* does not depend on this behaviour at all. Privilege *gain* still does.
+
+Same analysis, from the guard's side, in [[05-api-surface]]; from the schema's side, in [[07-data-model]].
 
 ## Session handling
 
@@ -123,8 +132,8 @@ Session expiry is detected lazily. There is no Axios 401 interceptor, so an expi
 ## Relationship with user-management
 
 - auth **provides** the `User` and `Session` models and the `requireAuth` / `requireAdmin` guards
-- [[user-management]] **mutates** `User.name`, `User.email`, `User.deletedAt` through `/api/users`
-- `User.role` is auth-owned and currently mutated by nothing — it is set once at creation and never written again
+- [[user-management]] **mutates** `User.name`, `User.email`, `User.deletedAt` and — since GH-8 — `User.role` through `/api/users`
+- `User.role` is auth-owned and written by [[user-management]]: set to `agent` at creation, changed only by an admin through `PUT /api/users/:id`, and read back by `require-admin.ts:5` on every request. It also deletes `Session` rows on a demotion, the second place in the repo to do so
 
 Any change to how roles are written is a user-management change to an auth-owned field, and lands in both T3 domains at once.
 

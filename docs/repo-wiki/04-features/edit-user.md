@@ -9,9 +9,9 @@ tags: [user-management, feature]
 
 ## What the user does
 
-An admin clicks the pencil icon on a row, adjusts name, email or password in a modal, and saves. Leaving the password blank keeps the current one — the placeholder says so (`UserForm.tsx:95`).
+An admin clicks the pencil icon on a row, adjusts name, email, password or **role** in a modal, and saves. Leaving the password blank keeps the current one — the placeholder says so (`UserForm.tsx:95`).
 
-**Role is not editable.** The form has no role control, the schema has no role field, and the handler neither reads nor writes one. The Users table *displays* a role badge, so the UI shows a value this feature cannot change.
+**Role is editable, admin-only, since GH-8** (2026-09-08). The modal carries a two-option `Select` (Agent / Admin) pre-set to the user's stored role, rendered in edit mode only. The server is the authority: see [[user-management]] §Role handling for the two guards that constrain the transition, and the As-is baseline table below for what each layer looked like beforehand.
 
 ## Entry
 
@@ -27,11 +27,11 @@ Users page, edit icon per row (`UsersTable.tsx:95-102`).
 
 ### Server trace
 
-**Handler:** `server/src/routes/users.ts:71-104`
+**Handler:** `server/src/routes/users.ts:71-121`
 **Guards:** `requireAuth` + `requireAdmin`
-**Route param:** `:id` — a UUID string, **not validated**. `parseId` is numeric-only and does not apply, and nothing replaces it, so a malformed id reaches Prisma and surfaces as a 404.
-**Request DTO:** `updateUserSchema` (`core/schemas/users.ts:11-18`)
-**Validation:** `validate(updateUserSchema, req.body, res)` at `:74` — 400 with the first issue's message if it fails
+**Route param:** `:id` — a UUID string, **not validated**. `parseId` is numeric-only and does not apply, and nothing replaces it. Since GH-8 the handler loads the target row first, so an id matching no user is a clean 404 rather than an unhandled Prisma error.
+**Request DTO:** `updateUserSchema` (`core/schemas/users.ts`)
+**Validation:** `validate(updateUserSchema, req.body, res)` — 400 with the first issue's message if it fails
 
 The schema, in full:
 
@@ -43,39 +43,37 @@ export const updateUserSchema = z.object({
     z.literal(""),
     z.string().trim().min(8, "Password must be at least 8 characters"),
   ]),
+  role: z.enum(Role, "Role must be either agent or admin"),
 });
 ```
 
-All three keys are **required to be present**; `password` may be the empty string but may not be omitted. There is no `.strict()`, so any additional key — `role` included — is silently stripped rather than rejected (see [[13-cross-cutting]]).
+All four keys are **required to be present**; `password` may be the empty string but may not be omitted, and `role` must be one of the two enum members. There is still no `.strict()`, so any *other* additional key is silently stripped rather than rejected (see [[13-cross-cutting]]) — GH-8 deliberately did not change that, since rejecting unknown keys is a wider contract change than the story called for.
 
-**Fields destructured** — `users.ts:77`:
-
-```typescript
-const { name, email, password } = data;
-```
-
-**Uniqueness check** — `users.ts:79-83`:
+**Fields destructured:**
 
 ```typescript
-const existing = await prisma.user.findUnique({ where: { email } });
-if (existing && existing.id !== id) {
-  res.status(409).json({ error: "Email already exists" });
-  return;
-}
+const { name, email, password, role } = data;
 ```
 
-**Prisma writes — two, and not transactional:**
+**Order of checks**, chosen so nothing is written on a rejected request:
 
-1. `users.ts:85-88`:
+1. **Validation** → 400 (this is where a missing or unsupported `role` stops).
+2. **Target row loaded** → 404 when the id matches no user. New in GH-8, and needed by both rules below.
+3. **Self role change refused** → 403 `"You cannot change your own role"` when the caller's own id is the target and `role` differs from the stored one. Placed before the uniqueness check so an authorization refusal is never masked by a data conflict.
+4. **Email uniqueness** → 409 when another user already holds the email.
+
+**Prisma writes — up to three, and not transactional:**
+
+1. Always:
 
    ```typescript
    await prisma.user.update({
      where: { id: id },
-     data: { name, email, updatedAt: new Date() },
+     data: { name, email, role, updatedAt: new Date() },
    });
    ```
 
-2. Conditionally, when `password` is truthy (`users.ts:90-96`):
+2. Conditionally, when `password` is truthy:
 
    ```typescript
    await prisma.account.updateMany({
@@ -84,28 +82,39 @@ if (existing && existing.id !== id) {
    });
    ```
 
-Because the two are separate writes, a failure between them leaves the profile updated and the password not.
+3. Conditionally, on a demotion only (`target.role === admin && role === agent`):
 
-**Post-write read** — `users.ts:98-101` re-selects `{ id, name, email, role, createdAt }`.
+   ```typescript
+   await prisma.session.deleteMany({ where: { userId: id } });
+   ```
 
-**Response:** `200` with `{ user }`, **including the unchanged `role`**.
+Because these are separate writes, a failure between them leaves earlier ones applied — the pre-existing profile/password split, now with the session drop as a third step. All three are ordered after the write they depend on.
 
-**Error paths:** 400 on validation failure · 409 on an email already held by another user · 401 unauthenticated · 403 non-admin · 404 when the id matches no user.
+**Post-write read** re-selects `{ id, name, email, role, createdAt }`.
 
-### As-is baseline for role mutation
+**Response:** `200` with `{ user }`, including the **new** `role`.
 
-Recorded precisely, because this is the card any role-mutation work changes:
+**Error paths:** 400 on validation failure (including a missing or unsupported role) · 403 non-admin, **or an admin changing their own role** · 409 on an email already held by another user · 401 unauthenticated · 404 when the id matches no user.
 
-| Layer | Location | Present state |
-|-------|----------|---------------|
-| Validation contract | `core/schemas/users.ts:11-18` | no `role` key |
-| Handler destructure | `server/src/routes/users.ts:77` | `{ name, email, password }` — no `role` |
-| Prisma `data` | `server/src/routes/users.ts:87` | `{ name, email, updatedAt }` — no `role` |
-| Client form | `client/src/pages/UserForm.tsx` | no role control rendered |
-| Response | `server/src/routes/users.ts:98-101` | `role` **is** selected and returned |
-| Database column | `server/prisma/schema.prisma:46` | `role Role @default(agent)` — exists, both enum members present, **no migration needed** |
+### As-is baseline for role mutation — superseded by GH-8
 
-A request carrying `role` today is accepted with a 200 and the role is ignored — stripped by Zod before the handler sees it.
+Kept as a historical record. The "before" column is what this card documented up to
+2026-09-08; the "after" column is current.
+
+| Layer | Before GH-8 | After GH-8 |
+|-------|-------------|------------|
+| Validation contract | no `role` key | `role: z.enum(Role, …)`, **required** |
+| Handler destructure | `{ name, email, password }` | `{ name, email, password, role }` |
+| Prisma `data` | `{ name, email, updatedAt }` | `{ name, email, role, updatedAt }` |
+| Client form | no role control rendered | two-option `Select`, edit mode only |
+| Response | `role` selected and returned | unchanged |
+| Database column | `role Role @default(agent)` | unchanged — **no migration was needed** |
+| Target-row read | none | loaded before writing, for the guards below |
+| Unknown id | Prisma `P2025` → Express default handler → **500** | **404** |
+
+Before GH-8 a request carrying `role` was accepted with a 200 and the role silently
+ignored — stripped by Zod before the handler saw it. That is still true of
+`POST /api/users`, which remains agent-only by design.
 
 ## Validation
 
@@ -117,11 +126,11 @@ As [[create-user]], differing in: an "Edit User" title, the form pre-populated f
 
 ## Tests
 
-**Component:** `pages/UserForm.test.tsx` (287 LOC) — pre-population, the button label, the password placeholder, submitting with and without a password, the success callback, the loading state, validation still applying to a supplied password, and error display on failure.
+**Component:** `pages/UserForm.test.tsx` (28 tests) — pre-population, the button label, the password placeholder, submitting with and without a password, the success callback, the loading state, validation still applying to a supplied password, and error display on failure. Since GH-8 also: the role control pre-selected from the user's stored role for both roles, exactly two options offered, promotion and demotion each reaching the `PUT` payload, and the control's **absence** in create mode.
 
-**E2E:** `e2e/tests/users.spec.ts` — the dialog opens pre-populated with an empty password field and the "leave blank to keep current" placeholder; editing name and email together updates the table and the old values disappear.
+**E2E:** `e2e/tests/users.spec.ts` (25 tests) — the dialog opens pre-populated with an empty password field and the "leave blank to keep current" placeholder; editing name and email together updates the table and the old values disappear. Since GH-8, a `Role management` describe covers the transitions and their authorization boundary, including the two session-scoped cases described in [[auth]].
 
-Neither asserts anything about role, because there is nothing to assert.
+**Gotcha for anyone adding a component test here.** `TicketDetailPage.test.tsx:13-28` replaces `window.PointerEvent` with an `Event` subclass to satisfy Radix. Copying that block wholesale into a form test **breaks native click-to-submit** — Radix opens on `pointerdown`, but submitting a form needs a real `MouseEvent` click, so every submit assertion fails while the dropdown still appears to work. `UserForm.test.tsx` stubs only the pointer-capture methods and `scrollIntoView`, which is all Radix actually needs.
 
 ## Related
 

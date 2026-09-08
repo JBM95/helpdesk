@@ -41,7 +41,9 @@ if (user.role === Role.admin) {
 }
 ```
 
-**This tests the currently stored role.** It is a check on what the user *is*, not a record of what they have been. While role is immutable that distinction has no consequence. It acquires one the moment role becomes writable: demoting an admin to `agent` and then deleting them reaches, in two individually-legal steps, the outcome this rule refuses in one. Whether that composed path is the intended way to retire an admin or a hole to close is a product decision, recorded as an open question in [[user-management]] rather than asserted here.
+**This tests the currently stored role.** It is a check on what the user *is*, not a record of what they have been. Since GH-8 made role writable (2026-09-08) that distinction has a consequence: demoting an admin to `agent` and then deleting them reaches, in two individually-legal steps, the outcome this rule refuses in one.
+
+**Resolved as intended.** GH-8's AC7 requires that a user whose *current stored role* is admin stay protected — which this rule does, unchanged. It does not require the composed path to be closed. `e2e/tests/users.spec.ts` asserts both halves explicitly: refused while admin, permitted once demoted. See [[user-management]] §Delete protection.
 
 **Prisma writes — three, and not transactional** (`users.ts:120-130`):
 
