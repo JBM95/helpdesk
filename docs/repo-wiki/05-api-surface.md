@@ -77,10 +77,11 @@ pg-boss workers registered at boot (`lib/queue.ts:18-26`), before `app.listen()`
 
 Recorded here because [[user-management]] and [[auth]] split ownership of `User.role`, and the split is where role-change work lands.
 
-**Current state:**
-- `POST /api/users` hardcodes `role: Role.agent` (`routes/users.ts:45`) — new users are always agents.
-- `PUT /api/users/:id` accepts only `name`, `email`, `password` (`routes/users.ts:71-104`, validated by `updateUserSchema` at `core/schemas/users.ts:11-18`) — **no `role` field in the schema, not extracted from the request, not passed to Prisma.**
-- **There is no way to change a user's role through the API today.** Admins are seeded (`server/prisma/seed.ts`) or promoted by direct database write.
+**Current state** (since GH-8, 2026-09-08):
+- `POST /api/users` still hardcodes `role: Role.agent` (`routes/users.ts:45`) — new users are always agents, deliberately.
+- `PUT /api/users/:id` accepts `name`, `email`, `password` **and `role`** (`routes/users.ts:71-136`, validated by `updateUserSchema`). `role` is a **required** enum of `agent | admin`; a payload omitting it is a 400.
+- Two rules constrain the transition: 403 when an admin changes **their own** role, and a `session.deleteMany` for the target on a demotion (`admin → agent`), batched into the same `$transaction` as the role write. Promotion leaves sessions intact.
+- Before GH-8 there was no way to change a role through the API — admins were seeded (`server/prisma/seed.ts`) or promoted by direct database write.
 
 ### Authorization refresh behaviour
 
@@ -94,12 +95,11 @@ The question that role-change work turns on: does a role change take effect for 
 2. **The `Session` table denormalizes nothing.** It carries `userId` as a foreign key and no copy of `role` (`prisma/schema.prisma:58-70`, and see [[07-data-model]]). There is no stale column for a snapshot to live in.
 3. **`getSession()` runs per request**, not once per session (`require-auth.ts:6`), and returns `session.user` populated through the Prisma adapter.
 
-A fourth, independent reason points the same way: Better Auth does not cookie-cache custom `additionalFields`, and `role` is declared as one (`auth.ts:17-23`). So even if a cookie cache were switched on later, `role` would still be re-fetched.
+A fourth claim used to sit here: that Better Auth does not cookie-cache custom `additionalFields`, so `role` would be re-fetched even with a cookie cache switched on. **Removed as unverified** — GH-8 read the relevant source and found the cookie-cache path short-circuits before the adapter read (`dist/api/routes/session.mjs:93`) without establishing which fields it carries. Whether enabling `session.cookieCache` would stale `role` is therefore **not known either way**, and should be treated as a risk to test rather than a reassurance. That uncertainty is the reason GH-8 invalidates sessions on demotion instead of relying on the read alone.
 
-**Confidence and its limit.** Facts 1–3 are read directly from this repo. The step from "no cookie cache configured" to "therefore a DB read happens" rests on documented Better Auth behaviour, which is **library behaviour this codebase does not itself prove**. Treat the conclusion as well-grounded inference, not as verified behaviour, and settle it empirically before relying on it for an authorization decision: hold a live session as an admin, demote that user, then call an admin-only `/api/users` route on the existing session and observe whether it is refused.
+**Settled by GH-8 (2026-09-08): the read is fresh.** Confirmed against `better-auth@1.4.18`'s own source — the cookie-cache branch at `dist/api/routes/session.mjs:93` is unreachable without a `session` block, so `findSession` issues a live `findOne` on `session` with `join: { user: true }` (`dist/db/internal-adapter.mjs:208-215`) — and empirically, by the E2E case that promotes an agent holding a live session and sees that same session go from 403 to 200 with no re-login. Full write-up in [[auth]] §How a role reaches an authorization decision.
 
-**If fresh (expected):** adding role mutation is sufficient on its own — the next request reads the current role.
-**If stale (contradicted by the three facts above, but cheap to rule out):** role mutation alone would leave a demoted admin privileged until session expiry, and would additionally need session invalidation for the affected user — the precedent already exists at `routes/users.ts:130`.
+So role mutation was sufficient on its own for the next request to read the current role. GH-8 nonetheless invalidates sessions on **demotion** as defence in depth, since the freshness guarantee is a load-bearing dependency on `session.cookieCache` staying unconfigured. Privilege loss therefore does not depend on it; privilege gain still does.
 
 ## Master endpoint table
 
@@ -135,14 +135,15 @@ A fourth, independent reason points the same way: Better Auth does not cookie-ca
 | Finding | Location | Assessment |
 |---------|----------|------------|
 | Every business endpoint requires `requireAuth` or `requireWebhookSecret`. Only `/api/health` and Better Auth's own routes are public. | — | Good |
-| Admin-deletion protection: admins cannot be deleted. | `routes/users.ts:115-118` | Good |
-| Session invalidation on user deletion: all sessions removed when a user is soft-deleted. | `routes/users.ts:130` | Good |
+| Admin-deletion protection: admins cannot be deleted. | `routes/users.ts:147-150` | Good |
+| Session invalidation on user deletion: all sessions removed when a user is soft-deleted. | `routes/users.ts:162` | Good |
 | Soft-delete enforced in the auth guard: users with `deletedAt` are rejected even holding a valid session. | `middleware/require-auth.ts:15-18` | Good |
-| Role immutability: no way to change a user's role, so promotion and demotion are impossible through the product. | `routes/users.ts:71-104` | Feature gap |
-| Admin-deletion protection is composable-around **once role mutation exists**: demote an admin to agent, then delete them. Nothing today prevents the two-step path because step one is currently impossible. | `routes/users.ts:115-118` | Design decision required before role mutation ships |
+| Role mutation is admin-only, server-authoritative, and refuses a self role change. | `routes/users.ts:91-94`, `:112-120` | Good — **closed the prior "role immutability" feature gap** in GH-8 (2026-09-08) |
+| No admin floor: two admins demoting each other inside one request window both pass `requireAdmin` before either write commits, so the roster can reach zero admins with no in-product recovery. The self-change guard closes every *sequential* path but is not a floor. | `routes/users.ts:91-94` | Accepted in GH-8 — no AC asked for a floor; a real one needs a serializable transaction around a post-write admin count. Tracked in [[user-management]] §Open questions |
+| Admin-deletion protection is composable-around now that role mutation exists: demote an admin to agent, then delete them. | `routes/users.ts:147-150` | **Resolved as intended** in GH-8 — AC7 protects a user whose *currently stored* role is admin, and does not require the two-step path to be closed |
 | No output encoding for email bodies. Prisma is parameterized so there is no SQL-injection vector, but HTML is not escaped server-side. | All routes | Acceptable at current maturity per [[00-vision]] |
 | GPT endpoints unbounded: `/summarize` and `/polish` have no rate limit or cost cap beyond the auth limiter, which does not cover them. | `routes/replies.ts:70, 112` | Known, accepted per [[00-scope]] |
-| `PUT`/`DELETE /api/users/:id` do not validate the `id` route param — user ids are UUID strings, so the numeric `parseId` helper does not apply and nothing replaces it. | `routes/users.ts:71, 106` | Minor; a bad id falls through to a 404 |
+| `PUT`/`DELETE /api/users/:id` do not validate the `id` route param — user ids are UUID strings, so the numeric `parseId` helper does not apply and nothing replaces it. | `routes/users.ts:71, 138` | Minor; a bad id falls through to a 404 |
 
 ## Counts
 
@@ -179,7 +180,7 @@ A fourth, independent reason points the same way: Better Auth does not cookie-ca
 #### `POST /api/users`
 
 **Handler:** `users.ts:22-69` · **Auth:** admin-only
-**Request DTO:** `createUserSchema` (`core/schemas/users.ts:3-7`) — `{ name: min 3, email, password: min 8 }`
+**Request DTO:** `createUserSchema` (`core/schemas/users.ts:4-8`) — `{ name: min 3, email, password: min 8 }`
 **Response:** the created user, 201
 
 **Prisma writes**, wrapped in a transaction (`users.ts:38-61`):
@@ -192,35 +193,51 @@ New users are always agents. No `role` parameter is accepted.
 
 #### `PUT /api/users/:id`
 
-**Handler:** `users.ts:71-104` · **Auth:** admin-only
-**Route param:** `id` — a UUID string, not validated (`parseId` is numeric-only and does not apply)
-**Request DTO:** `updateUserSchema` (`core/schemas/users.ts:11-18`) — `{ name: min 3, email, password: "" | min 8 }`
+**Handler:** `users.ts:71-136` · **Auth:** admin-only
+**Route param:** `id` — a UUID string, not validated (`parseId` is numeric-only and does not apply). The handler loads the target row before writing, so an unknown id is a 404.
+**Request DTO:** `updateUserSchema` — `{ name: min 3, email, password: "" | min 8, role: agent | admin }`, all four required
 
 Fields accepted and updated, verbatim:
 
 ```typescript
-// users.ts:77
-const { name, email, password } = data;
+const { name, email, password, role } = data;
 
-// users.ts:85-88
 await prisma.user.update({
   where: { id: id },
-  data: { name, email, updatedAt: new Date() },
+  data: { name, email, role, updatedAt: new Date() },
 });
 ```
 
-`role` is absent from the schema, from the destructure, and from the Prisma `data`. **This is the endpoint role mutation would extend.**
+**`role` is writable here since GH-8** (2026-09-08) — this is the only endpoint that mutates it. Two rules constrain it:
 
-**Validation:** email uniqueness against other users — `users.ts:79-83`, 409 if taken. Password optional; empty string means no change — `users.ts:90-96`.
+```typescript
+// 403 when an admin changes their own role
+if (req.user.id === id && role !== target.role) { ... }
+
+// a demotion also drops that user's sessions, in the same transaction as the
+// role write so the two cannot disagree
+const demoted = target.role === Role.admin && role === Role.agent;
+
+await prisma.$transaction([
+  prisma.user.update({ where: { id: id }, data: { name, email, role, updatedAt: new Date() } }),
+  ...(demoted ? [prisma.session.deleteMany({ where: { userId: id } })] : []),
+]);
+```
+
+The self-role-change refusal is ordered **before** the email-uniqueness check, so an authorization refusal is never masked by a 409.
+
+**Validation:** email uniqueness against other users, 409 if taken. Password optional; empty string means no change.
+
+**Two filters `GET /api/users` applies that this endpoint does not:** `deletedAt: null` and `id: { not: AI_AGENT_ID }`. So a soft-deleted user or the AI pseudo-user can both be written to by id. Neither is exploitable — `require-auth.ts:15-18` 401s any soft-deleted session, and the AI user has no `Account` row so it cannot sign in — but the asymmetry is real and predates GH-8 for `name`/`email`.
 
 #### `DELETE /api/users/:id`
 
-**Handler:** `users.ts:106-133` · **Auth:** admin-only · **Response:** `{ message: "User deleted" }`
+**Handler:** `users.ts:138-165` · **Auth:** admin-only · **Response:** `{ message: "User deleted" }`
 
 **Admin-deletion protection**, verbatim:
 
 ```typescript
-// users.ts:115-118
+// users.ts:147-150
 if (user.role === Role.admin) {
   res.status(403).json({ error: "Admin users cannot be deleted" });
   return;
@@ -232,12 +249,12 @@ Note the rule reads the **currently stored** role at delete time. It is not a re
 **Session deletion**, verbatim:
 
 ```typescript
-// users.ts:130
+// users.ts:162
 await prisma.session.deleteMany({ where: { userId: id } });
 ```
 
-**Writes:** soft-delete via `deletedAt` (`users.ts:120-123`), unassign all tickets (`:125-128`), delete all sessions (`:130`).
-**Validation:** user existence — `users.ts:109-113`, 404 if absent.
+**Writes:** soft-delete via `deletedAt` (`users.ts:152-155`), unassign all tickets (`:157-160`), delete all sessions (`:162`).
+**Validation:** user existence — `users.ts:141-145`, 404 if absent.
 
 ---
 

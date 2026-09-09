@@ -25,14 +25,14 @@ Users page, delete icon per row (`UsersTable.tsx:104-111`) — rendered only whe
 
 ### Server trace
 
-**Handler:** `server/src/routes/users.ts:106-133`
+**Handler:** `server/src/routes/users.ts:138-165`
 **Guards:** `requireAuth` + `requireAdmin`
 **Route param:** `:id` — a UUID string, **not validated**
 **Request body:** none · **Validation:** none
 
-**Existence check** — `users.ts:109-113`: 404 `{ error: "User not found" }` when absent.
+**Existence check** — `users.ts:141-145`: 404 `{ error: "User not found" }` when absent.
 
-**Admin-deletion protection** — `users.ts:115-118`:
+**Admin-deletion protection** — `users.ts:147-150`:
 
 ```typescript
 if (user.role === Role.admin) {
@@ -45,7 +45,7 @@ if (user.role === Role.admin) {
 
 **Resolved as intended.** GH-8's AC7 requires that a user whose *current stored role* is admin stay protected — which this rule does, unchanged. It does not require the composed path to be closed. `e2e/tests/users.spec.ts` asserts both halves explicitly: refused while admin, permitted once demoted. See [[user-management]] §Delete protection.
 
-**Prisma writes — three, and not transactional** (`users.ts:120-130`):
+**Prisma writes — three, and not transactional** (`users.ts:152-162`):
 
 1. Soft-delete: `prisma.user.update({ where: { id }, data: { deletedAt: new Date() } })`
 2. Unassign tickets: `prisma.ticket.updateMany({ where: { assignedToId: id }, data: { assignedToId: null } })`
@@ -53,7 +53,7 @@ if (user.role === Role.admin) {
 
 A failure part-way leaves the sequence half-applied — a soft-deleted user with tickets still assigned, or with sessions still live. The `deletedAt` check in `requireAuth` (`middleware/require-auth.ts:15-18`) is the backstop for that last case, which is why it is not the dead code it might look like ([[13-cross-cutting]]).
 
-Write 3 is the repo's **only existing precedent for invalidating sessions in response to a change in a user's standing** — worth knowing, and worth not reaching for reflexively: role changes do not need it, because `getSession()` re-reads the user row on every request (see [[13-cross-cutting]] for the library-source evidence).
+Write 3 was the repo's **only precedent for invalidating sessions in response to a change in a user's standing** until GH-8 followed it: `PUT /api/users/:id` now runs the same `deleteMany` on a demotion. Strictly, a role change does not *need* it — `getSession()` re-reads the user row on every request (see [[auth]] for the library-source evidence) — so it is defence in depth rather than the mechanism, chosen so privilege loss does not depend on a library behaviour a future `session.cookieCache` setting could change.
 
 **Response:** `200` with `{ message: "User deleted" }`.
 **Error paths:** 404 absent user · 403 target is an admin · 401 unauthenticated · 403 caller is not an admin.
@@ -80,7 +80,7 @@ The second `DELETE` of a double-click hits the existence check and 404s, so the 
 
 **E2E:** `e2e/tests/users.spec.ts` — the confirmation dialog names the user and offers Cancel and Confirm; confirming removes the row.
 
-**No test anywhere asserts the 403 on deleting an admin.** The protection is only ever verified through the UI's hidden button, never through a direct request — see [[11-testing]] on the absence of API-level authorization tests.
+**Since GH-8 the 403 is asserted at the API.** `e2e/tests/users.spec.ts` → *"should refuse to delete a user whose stored role is admin"* issues a direct `DELETE` against a promoted user and asserts both the 403 and the `"Admin users cannot be deleted"` body; a companion case asserts the delete succeeds once that user is demoted. Before GH-8 the protection was only ever verified through the UI's hidden button — see [[11-testing]] §Authorization coverage today.
 
 ## Related
 

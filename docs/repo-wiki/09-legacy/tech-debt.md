@@ -153,7 +153,7 @@ tags: [tech-debt, register, full-stack]
 
 ## TD-09 — `DELETE /api/users/:id` — three writes, no transaction
 
-**Area** Server API · **File** `routes/users.ts:120-130` · **Severity** Medium · **Effort** ~15 min
+**Area** Server API · **File** `routes/users.ts:152-162` · **Severity** Medium · **Effort** ~15 min
 
 **Evidence.** `user.update` (soft-delete), `ticket.updateMany` (unassign), `session.deleteMany` (invalidate) run sequentially, unwrapped.
 
@@ -165,15 +165,17 @@ tags: [tech-debt, register, full-stack]
 
 ---
 
-## TD-10 — `PUT /api/users/:id` — two writes, no transaction
+## TD-10 — `PUT /api/users/:id` — profile and password writes still unbatched
 
-**Area** Server API · **File** `routes/users.ts:85-96` · **Severity** Medium · **Effort** ~10 min
+**Area** Server API · **File** `routes/users.ts:112-128` · **Severity** Medium · **Effort** ~10 min
 
-**Evidence.** `user.update` (name, email), then conditionally `account.updateMany` (password).
+**Evidence.** `$transaction([user.update, …session.deleteMany])` (`:112-120`), then conditionally `account.updateMany` (password, `:122-128`) outside it.
 
-**Why it matters.** A failure between them means the admin sees a saved profile and the user's password silently did not change — the two halves of one "save" diverging with no signal.
+**Narrowed by GH-8 (2026-09-08), not closed.** The handler now uses `$transaction`, but only around the profile write and the demotion session drop — the case with an authorization consequence. The password write was left outside it, so the original divergence this item describes still stands.
 
-**Recommendation: worth fixing.** Wrap both in `$transaction`, keeping the password write conditional.
+**Why it matters.** A failure between the transaction and the password write means the admin sees a saved profile and the user's password silently did not change — the two halves of one "save" diverging with no signal.
+
+**Recommendation: worth fixing.** Fold `account.updateMany` into the existing `$transaction`, keeping it conditional. The batch is already there; the password write just needs moving into it.
 
 **Blast radius.** One route handler.
 
@@ -181,9 +183,9 @@ tags: [tech-debt, register, full-stack]
 
 ## TD-11 — `Account` rows never cleaned for a soft-deleted user
 
-**Area** Server data · **File** `routes/users.ts:120-133` · **Severity** Low · **Effort** ~10 min
+**Area** Server data · **File** `routes/users.ts:152-162` · **Severity** Low · **Effort** ~10 min
 
-**Evidence.** Sessions are deleted (`:130`); `Account` rows (`schema.prisma:72-89`) are not. Found by [[07-data-model]].
+**Evidence.** Sessions are deleted (`:162`); `Account` rows (`schema.prisma:72-89`) are not. Found by [[07-data-model]].
 
 **Why it matters.** A password hash outlives the user it authenticates. Harmless while the user's `deletedAt` blocks sign-in, but it is stored credential material with no owner.
 
@@ -297,7 +299,7 @@ tags: [tech-debt, register, full-stack]
 
 **Area** Testing · **Severity** Medium · **Effort** ~2 h · Found by [[11-testing]]
 
-**Evidence.** Every authorization assertion in the suite is a UI observation. With no server test suite, nothing proves `requireAdmin` refuses a non-admin request, and nothing proves the admin-deletion 403 at `routes/users.ts:115-118` fires.
+**Evidence.** Every authorization assertion in the suite is a UI observation. With no server test suite, nothing proves `requireAdmin` refuses a non-admin request, and nothing proves the admin-deletion 403 at `routes/users.ts:147-150` fires.
 
 **Why it matters.** The client's own guards are explicitly display-only in two places ([[13-cross-cutting]]), so the server is the entire boundary — and the boundary is the untested part. A regression that removed `requireAdmin` from a route would break no test.
 

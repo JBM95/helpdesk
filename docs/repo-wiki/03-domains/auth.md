@@ -102,7 +102,7 @@ export const auth = betterAuth({
 - `require-auth.ts:10-13` — 401 when there is no session
 - `require-auth.ts:15-18` — 401 when the user is soft-deleted, checked on every request
 - `require-admin.ts:5-8` — 403 when `req.user.role !== Role.admin`
-- `users.ts:115-118` — 403 when deleting a user whose stored role is `admin`
+- `users.ts:147-150` — 403 when deleting a user whose stored role is `admin`
 
 ## How a role reaches an authorization decision
 
@@ -121,7 +121,7 @@ Together these indicate the role is resolved from the `User` row on every reques
 1. **Library source**, `better-auth@1.4.18`. `getSession` consults the cookie cache only when `options.session.cookieCache.enabled` (`dist/api/routes/session.mjs:93`), which is unreachable here because no `session` block is configured. It therefore falls through to `internalAdapter.findSession(token)` (`:181`), which — with no `secondaryStorage` configured — issues a live `findOne` against `session` with `join: { user: true }` (`dist/db/internal-adapter.mjs:208-215`) and returns the joined user.
 2. **Empirically**, `e2e/tests/users.spec.ts` → *"should authorize admin APIs on a promoted agent existing session"*. An agent signs in, is promoted by an admin, and their **pre-existing** session then succeeds against `GET /api/users` with no reload and no re-login. A cached role could not produce that result.
 
-Two consequences worth carrying: this is a **load-bearing dependency on the absence of `session.cookieCache`** — enabling it would silently stale every authorization decision by up to its `maxAge`. And because it is load-bearing, GH-8 additionally invalidates sessions on demotion rather than relying on the read alone, so privilege *loss* does not depend on this behaviour at all. Privilege *gain* still does.
+Two consequences worth carrying. First, this is a **load-bearing dependency on the absence of `session.cookieCache`**: the verification above establishes that the cached branch is not taken *here*, not what that branch would serve if it were enabled. Whether turning it on would stale `role` is **unverified in either direction** — treat it as a risk to test before enabling, not as a known outcome. Second, that uncertainty is exactly why GH-8 also invalidates sessions on demotion rather than relying on the read alone: privilege *loss* does not depend on this behaviour at all. Privilege *gain* still does.
 
 Same analysis, from the guard's side, in [[05-api-surface]]; from the schema's side, in [[07-data-model]].
 

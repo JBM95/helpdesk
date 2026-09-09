@@ -76,15 +76,15 @@ Job *execution* retries three times; job *enqueueing* does not retry at all. The
 
 ### Non-transactional writes
 
-**`DELETE /api/users/:id` — three writes, no transaction** (`routes/users.ts:120-130`): soft-delete the user, unassign their tickets, delete their sessions. A partial failure leaves a soft-deleted user whose sessions are still live, or whose tickets are still assigned. → [[tech-debt|TD-09]]
+**`DELETE /api/users/:id` — three writes, no transaction** (`routes/users.ts:152-162`): soft-delete the user, unassign their tickets, delete their sessions. A partial failure leaves a soft-deleted user whose sessions are still live, or whose tickets are still assigned. → [[tech-debt|TD-09]]
 
-**`PUT /api/users/:id` — two writes, no transaction** (`routes/users.ts:85-96`): the profile update, then conditionally the password. A failure between them updates the profile and leaves the password unchanged. → [[tech-debt|TD-10]]
+**`PUT /api/users/:id` — the password write sits outside the transaction** (`routes/users.ts:112-128`): the profile update and the demotion session drop are batched, then conditionally the password is written separately. A failure between them updates the profile and leaves the password unchanged. GH-8 (2026-09-08) added the `$transaction` around the first two only — the case with an authorization consequence — so this narrowed rather than closed. → [[tech-debt|TD-10]]
 
-Both are notable because `POST /api/users` at `:38-61` **does** use `$transaction` — the pattern is present in the same file and simply not applied to the other two handlers.
+Both are notable because `POST /api/users` at `:38-61` **does** use `$transaction` — the pattern is present in the same file, applied to the `PUT` only in part and not at all to `DELETE`.
 
 ### Data model gaps
 
-**`Account` rows are never cleaned for a soft-deleted user** — `DELETE /api/users/:id` removes sessions (`:130`) but not credentials (`schema.prisma:72-89`), so a password outlives the user it belongs to. Found by [[07-data-model]]. → [[tech-debt|TD-11]]
+**`Account` rows are never cleaned for a soft-deleted user** — `DELETE /api/users/:id` removes sessions (`:162`) but not credentials (`schema.prisma:72-89`), so a password outlives the user it belongs to. Found by [[07-data-model]]. → [[tech-debt|TD-11]]
 
 **No actor attribution on any table** — no `createdBy` or `modifiedBy` column exists anywhere. Timestamps record *when*, never *who*. Found by [[07-data-model]]. → [[tech-debt|TD-12]]
 

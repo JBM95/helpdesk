@@ -54,7 +54,7 @@ Excludes soft-deleted users and the AI pseudo-user, ordered oldest first. **`rol
 
 ## Delete visibility is display, not access control
 
-`UsersTable.tsx:103` renders the delete button only when `user.role !== Role.admin`. That is a **display condition** — it stops a click, not a request. The enforcement that matters is server-side at `routes/users.ts:115-118`, which 403s a `DELETE` aimed at an admin regardless of what the client rendered. See [[delete-user]].
+`UsersTable.tsx:103` renders the delete button only when `user.role !== Role.admin`. That is a **display condition** — it stops a click, not a request. The enforcement that matters is server-side at `routes/users.ts:147-150`, which 403s a `DELETE` aimed at an admin regardless of what the client rendered. See [[delete-user]].
 
 ## Tests
 

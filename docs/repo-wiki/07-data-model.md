@@ -158,7 +158,7 @@ Applied to `User.role` with `@default(agent)`. The core-package equivalent is `c
 
 ### Orphan potential
 
-- **Soft-deleted users** keep their `Session` and `Account` rows, because cascade deletes only fire on a hard delete. `DELETE /api/users/:id` compensates for sessions (`server/src/routes/users.ts:130`) but **not** for `Account` rows.
+- **Soft-deleted users** keep their `Session` and `Account` rows, because cascade deletes only fire on a hard delete. `DELETE /api/users/:id` compensates for sessions (`server/src/routes/users.ts:162`) but **not** for `Account` rows.
 - **AI-authored replies** have `userId: null` and no FK to the AI pseudo-user, so "all AI replies" cannot be found by a user join.
 
 ## Migration timeline
@@ -210,7 +210,7 @@ Dashboard stats. `STABLE`, reads `ticket`, and excludes `new`/`processing` from 
 - `GET /api/agents` — same (`server/src/routes/agents.ts:10`)
 - `requireAuth` — rejects a session whose user is soft-deleted (`server/src/middleware/require-auth.ts:15-17`)
 
-**Written by:** `DELETE /api/users/:id` (`server/src/routes/users.ts:120-123`).
+**Written by:** `DELETE /api/users/:id` (`server/src/routes/users.ts:152-155`).
 
 **Gaps:** `Account` rows are never cleaned for a soft-deleted user, and no job prunes soft-deleted rows, so a soft delete is permanent in practice.
 
@@ -286,11 +286,11 @@ Three queues are registered (`server/src/lib/queue.ts:21-23`): `classify-ticket`
 
 | Gap | Evidence | Impact |
 |-----|----------|--------|
-| `User.role` has no Zod schema | `core/schemas/users.ts:3-20` | The column is unwritable through the API. |
+| ~~`User.role` has no Zod schema~~ — **closed by GH-8 (2026-09-08)** | `updateUserSchema` now declares `role: z.enum(Role, …)`, required (`core/schemas/users.ts:12-20`) | The column is writable through `PUT /api/users/:id`, admin-only. `createUserSchema` still declares no `role`, deliberately — creation stays agent-only. |
 | `Ticket.subject` / `body` / `bodyHtml` length caps exist only in Zod | `core/schemas/tickets.ts:10` vs unbounded `String` in Prisma | The API is protected; direct DB writes, seeds and migrations are not. |
 | No actor attribution on any model | No `createdBy` / `modifiedBy` columns anywhere | Nothing records who changed a user's role. |
 | AI pseudo-user has no `Account` row | `server/prisma/seed.ts:59-77` | Cannot be excluded by an "has credentials" query; every exclusion is by hardcoded id. |
-| Soft-deleted users keep `Account` rows | `server/src/routes/users.ts:120-133` | Credential rows outlive the user they belong to. |
+| Soft-deleted users keep `Account` rows | `server/src/routes/users.ts:152-162` | Credential rows outlive the user they belong to. |
 
 ## Counts
 

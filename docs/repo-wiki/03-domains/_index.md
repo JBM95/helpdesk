@@ -34,7 +34,7 @@ The **Student Sender** persona from [[00-vision]] appears in no domain as a UI a
 Every domain depends on **auth** for session and role enforcement.
 
 - **auth** — zero outbound dependencies. The foundation domain.
-- **user-management** → auth (guards, and it mutates auth's `User` model), tickets (nulls `Ticket.assignedToId` on user deletion, `server/src/routes/users.ts:125-128`)
+- **user-management** → auth (guards, and it mutates auth's `User` model), tickets (nulls `Ticket.assignedToId` on user deletion, `server/src/routes/users.ts:157-160`)
 - **tickets** → auth (guards), user-management (`GET /api/agents` supplies the assignment dropdown)
 - **dashboard** → tickets (two stats endpoints, read-only), auth (guards)
 

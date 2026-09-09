@@ -96,10 +96,18 @@ Order of checks in the handler, chosen so nothing is written on a rejected reque
 3. Self-change guard → 403 when `req.user.id === id` and `data.role !== targetUser.role`.
 4. Existing email-uniqueness check → 409.
 5. `prisma.user.update` now includes `role`.
-6. When `targetUser.role === admin && data.role === agent`, delete that user's sessions.
+6. When `targetUser.role === admin && data.role === agent`, delete that user's sessions —
+   **batched into the same `prisma.$transaction` as step 5**, so the role write and the session
+   drop cannot disagree. A demoted user is never left holding live session rows.
 
 Step 6 reuses the only existing precedent for invalidating sessions on a change of standing,
-`users.ts:130` in the delete handler ([[user-management]] §Delete protection).
+the `session.deleteMany` in the delete handler ([[user-management]] §Delete protection). It goes
+further than that precedent by making the pair atomic: the delete handler's three writes are still
+unbatched ([[tech-debt|TD-09]]), and this story did not change them.
+
+**The password write stays outside that transaction.** Folding it in would close [[tech-debt|TD-10]],
+which is a pre-existing item this story did not agree to fix — so the profile/password divergence
+TD-10 describes still stands, and TD-10 is updated to say so rather than being marked closed.
 
 ### Demote-then-delete is permitted, deliberately
 
@@ -132,14 +140,16 @@ recorded here as the reading being built. This answers the **demote-then-delete*
 | 2 | `server/src/routes/users.ts` | `PUT` handler: destructure `role`, load the target user, self-change guard, include `role` in the update, invalidate sessions on demotion. |
 | 3 | `client/src/pages/UserForm.tsx` | Add a shadcn `Select` for role in **edit mode only**; add `role` to `UserData`; default it from the passed user; include it in the `PUT` payload. |
 | 4 | `client/src/pages/UsersPage.tsx` | Add `role` to `EditingUser` so it reaches `UserForm`. |
-| 5 | `client/src/pages/UsersTable.tsx` | Pass `role` through `onEdit`. Its `User` interface already carries `role`; the badge already renders it. |
-| 6 | `client/src/pages/UserForm.test.tsx` | New role-control cases; existing edit-mode `PUT` assertions now carry `role`. |
-| 7 | `client/src/pages/UsersPage.test.tsx` | Mock data and the edit-dialog case now carry `role`. |
-| 8 | `e2e/tests/users.spec.ts` | Role-transition and API-level authorization cases (AC2–AC5, AC7). |
+| 5 | `client/src/pages/UserForm.test.tsx` | New role-control cases; existing edit-mode `PUT` assertions now carry `role`. |
+| 6 | `e2e/tests/users.spec.ts` | Role-transition and API-level authorization cases (AC2–AC5, AC7). |
 
-Items 1–5 are the 5 files recon predicted, plus their tests. Recon's conditional 6th
-(`require-auth.ts` / `require-admin.ts`) is **not** needed — resolved above. Anything beyond this
-list is scope drift and, at T3, a hard pause.
+**Six files, corrected after the fresh review.** An earlier draft of this table listed eight,
+including `client/src/pages/UsersTable.tsx` and `client/src/pages/UsersPage.test.tsx`. Neither
+needed changing and neither was changed: `UsersTable` already passes the whole row through
+`onEdit` (so `role` was flowing before this story — only `UsersPage`'s `EditingUser` interface
+narrowed it away), and `UsersPage.test.tsx`'s mock users already carried `role`. Recon's
+conditional file (`require-auth.ts` / `require-admin.ts`) is **not** needed either — resolved
+above. Anything beyond this list is scope drift and, at T3, a hard pause.
 
 ## AC → test map
 
@@ -160,14 +170,14 @@ needs no fixture changes for this ([[11-testing]] §Can the suite express a two-
 | AC1 | Edit dialog exposes current role and can change it | role `Select` renders in edit mode, pre-selected from the user, absent in create mode; changing it puts `role` in the `PUT` body | component (`UserForm.test.tsx`) |
 | AC1 | Same, end to end | admin edits a user's role in the dialog and saves | E2E |
 | AC2 | Only the admin-protected API mutates role | agent's authenticated context `PUT`s a role → **403**; unauthenticated `PUT` → **401** | E2E (`request`) |
-| AC3 | Strict validation | `role: "superuser"` → 400 · `role` omitted → 400 · `role: null` → 400; in each case a follow-up `GET` shows the stored role **unchanged** | E2E (`request`) |
+| AC3 | Strict validation | `role: "superuser"` → 400 · `role` omitted → 400 · `role: null` → 400 · `role: "Admin"` → 400 (`z.enum` is case-sensitive); in each case a follow-up `GET` shows the stored role **unchanged** | E2E (`request`) |
 | AC4 | Demotion binds an active session | admin context demotes an admin user who already has a live session; that user's next `GET /api/users` → **401** (session invalidated) | E2E (two contexts) |
 | AC5 | Promotion binds an active session | admin context promotes an agent who already has a live session; that same session's next `GET /api/users` → **200**, no re-login. *This is the test that proves the fresh role read.* | E2E (two contexts) |
 | AC6 | Creation policy unchanged | `POST /api/users` returns `role: "agent"`; no role control in create mode | E2E (extends `users.spec.ts:137-149`) + component |
 | AC7 | Delete protection preserved | `DELETE` on a user whose stored role is `admin` → **403** at the API, not merely a hidden button | E2E (`request`) |
 | AC8 | List reflects canonical role | after a role change the table badge shows the new role without a manual refresh (`["users"]` invalidation already exists at `UserForm.tsx:51`) | component + E2E |
 | AC9 | Regression coverage | satisfied by the seven rows above; the negative and transition cases are the point |  |
-| — | Self-change guard (decision 2) | admin `PUT`s their own id with the other role → **403**, own role unchanged | E2E (`request`) |
+| — | Self-change guard (decision 2) | admin `PUT`s their own id with the other role → **403**, own role unchanged; and the same refusal driven **through the dialog**, asserting the server's message reaches the user rather than being swallowed | E2E (`request` + UI) |
 
 AC7's row is a genuine coverage gain: [[11-testing]] §Authorization coverage today records that
 **no test anywhere asserts authorization at the API level** — every current authorization assertion
@@ -187,9 +197,11 @@ Existing tests that must stay green, and why each is at risk:
 | `users.spec.ts` — Create User (2) / Delete User (2) | Must be unaffected. |
 | `auth.spec.ts` (63 tests) | Should be untouched — nothing here changes login or the guards. Any failure here means the middleware was modified, which this spec says not to do. |
 
-Command gates: `cd client && bun run test` (8 files) and `bun run test:e2e` (102 tests) both green
-before self-review, per `solvo.json → quality.tests`. A pre-existing failure is a full stop, not a
-baseline.
+Command gates: `cd client && bun run test` and `bun run test:e2e` both green before self-review,
+per `solvo.json → quality.tests`. A pre-existing failure is a full stop, not a baseline.
+
+Baselines measured, not assumed: **134 client tests / 8 files** and **69 E2E tests / 5 files** before
+this story. ([[11-testing]] claimed 102 E2E tests; that was wrong and is corrected there.)
 
 Two Radix/shadcn specifics that will otherwise cost a cycle: the role control is a `Select`, so any
 component test driving it needs the **PointerEvent polyfill** from

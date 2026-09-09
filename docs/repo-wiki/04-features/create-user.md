@@ -21,13 +21,13 @@ Users page, "New User" button (`UsersPage.tsx:58-61`).
 
 ## API
 
-`POST /api/users` at `UserForm.tsx:47`, body `{ name, email, password }`. Invalidates `["users"]` (`:51`).
+`POST /api/users` at `UserForm.tsx:64`, body `{ name, email, password }`. Invalidates `["users"]` (`:68`).
 
 ### Server trace
 
 **Handler:** `server/src/routes/users.ts:22-69`
 **Guards:** `requireAuth` + `requireAdmin`
-**Request DTO:** `createUserSchema` (`core/schemas/users.ts:3-7`) — `{ name: trimmed min 3, email, password: trimmed min 8 }`
+**Request DTO:** `createUserSchema` (`core/schemas/users.ts:4-8`) — `{ name: trimmed min 3, email, password: trimmed min 8 }`
 **Validation:** `validate(createUserSchema, req.body, res)` at `:23`. No `.strict()`, so extra keys are stripped silently ([[13-cross-cutting]]).
 
 **Uniqueness check, before the transaction** — `users.ts:28-32`:

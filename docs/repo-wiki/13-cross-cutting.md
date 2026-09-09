@@ -108,7 +108,7 @@ export const requireAuth: RequestHandler = async (req, res, next) => {
 
 `getSession()` runs on **every** request, and `req.user` is whatever it returns.
 
-The `deletedAt` check at `:15-18` is defence in depth rather than the primary mechanism: `DELETE /api/users/:id` already deletes the user's sessions (`routes/users.ts:130`), so in the normal flow `getSession()` returns null and `:10-13` fires first. The check still earns its place — a user soft-deleted by any other route (a direct database write, a future code path, a partially-failed delete, since those three writes are not transactional) would otherwise keep a working session.
+The `deletedAt` check at `:15-18` is defence in depth rather than the primary mechanism: `DELETE /api/users/:id` already deletes the user's sessions (`routes/users.ts:162`), so in the normal flow `getSession()` returns null and `:10-13` fires first. The check still earns its place — a user soft-deleted by any other route (a direct database write, a future code path, a partially-failed delete, since those three writes are not transactional) would otherwise keep a working session.
 
 **Express type augmentation** — `server/src/types/express.d.ts:3-10`:
 
@@ -167,11 +167,13 @@ The short-circuit is gated on `session.cookieCache.enabled`. With no `session` k
 
 So: `requireAuth` → `getSession()` → `findSession` → a join on `user` → `req.user.role` is the current stored value, and `requireAdmin` decides on that. A demotion takes effect on the demoted user's next request; a promotion likewise.
 
-**Independent corroboration:** Better Auth does not cookie-cache custom `additionalFields`, and `role` is declared as one — so even if a cookie cache were switched on later, `role` would still be re-fetched. The repo's own `.agents/skills/better-auth-best-practices/SKILL.md` records this as gotcha #4.
+**~~Independent corroboration~~ — withdrawn by GH-8 (2026-09-08).** This previously claimed that Better Auth does not cookie-cache custom `additionalFields`, so `role` would be re-fetched even with a cookie cache enabled, citing `.agents/skills/better-auth-best-practices/SKILL.md` gotcha #4. That gotcha reads *"Cookie cache — Custom session fields NOT cached, always re-fetched"*: it is about custom **session** fields, and `role` is a user `additionalField` (`lib/auth.ts:17-23`), not a session field. The claim does not transfer, and nothing else here establishes it.
+
+So whether enabling `session.cookieCache` would serve a stale `role` is **unverified in either direction**. Both plausible outcomes are bad — a stale role, or an absent one that makes `requireAdmin` refuse everyone — so treat it as a change to test, not one the library protects you from.
 
 **What would change this.** The property depends on configuration, not on application code, so it is quietly reversible. Adding `secondaryStorage`, or a `session.cookieCache` block, to `server/src/lib/auth.ts` would move role resolution off the live row and reintroduce exactly the staleness the agent wrongly reported. Anything touching that config should treat this as a behaviour it can break without touching a single line of authorization code.
 
-**Still worth an end-to-end test**, for the same reason: the guarantee rests on library internals and on an absent config key, and neither is protected by anything today. See [[11-testing]] on why a two-session test is achievable here.
+**Now covered by an end-to-end test** — GH-8 added it, for exactly the reason stated above. `e2e/tests/users.spec.ts` → *"should authorize admin APIs on a promoted agent existing session"* signs an agent in, promotes them, and asserts their **pre-existing** session goes from 403 to 200 with no re-login. That is a live assertion of this property, so adding `secondaryStorage` or `session.cookieCache` to `lib/auth.ts` should now fail a test rather than silently regress authorization. The companion demotion case asserts a 401 instead, because a demotion also drops the target's sessions.
 
 ### Server — the `requireAdmin` guard
 
@@ -246,7 +248,7 @@ Two things to be aware of: the comparison is a plain `!==` rather than a constan
 
 ### Server — the real boundary
 
-The hidden-control gaps above are safe **because the server independently enforces the same rules**. Every `/api/users` route carries `requireAuth` + `requireAdmin` (`routes/users.ts:13,22,71,106`), so a non-admin gets 403 whether the call came from the UI or from curl. And the admin-deletion rule is enforced server-side at `routes/users.ts:115-118`:
+The hidden-control gaps above are safe **because the server independently enforces the same rules**. Every `/api/users` route carries `requireAuth` + `requireAdmin` (`routes/users.ts:13,22,71,138`), so a non-admin gets 403 whether the call came from the UI or from curl. And the admin-deletion rule is enforced server-side at `routes/users.ts:147-150`:
 
 ```typescript
 if (user.role === Role.admin) {
@@ -261,8 +263,8 @@ Note it tests the **currently stored** role, not a history of what the user has 
 
 | Role | Can | Cannot |
 |------|-----|--------|
-| `agent` | read and update all tickets, create replies, view the agent list, read own user info | manage users |
-| `admin` | everything an agent can, plus create, update and delete users | delete a user whose stored role is `admin` |
+| `agent` | read and update all tickets, create replies, view the agent list, read own user info | manage users; change any role, including their own |
+| `admin` | everything an agent can, plus create, update and delete users, and **promote or demote any other user** (since GH-8, 2026-09-08) | delete a user whose stored role is `admin`; change **their own** role (403) |
 
 ## Validation
 
@@ -314,15 +316,15 @@ if (!id) { res.status(400).json({ error: "Invalid ticket ID" }); return; }
 
 ### Core — the shared-schema pattern
 
-One schema in `core/schemas/*.ts` serves both sides: the client through `zodResolver` (`UserForm.tsx:33`), the server through `validate` (`routes/users.ts:23`).
+One schema in `core/schemas/*.ts` serves both sides: the client through `zodResolver` (`UserForm.tsx:47`), the server through `validate` (`routes/users.ts:23`).
 
 **Buys:** a single source of truth, so the two sides cannot drift on what is required; plus types for free via `z.infer`.
 **Costs:** `core` must stay dependency-free to remain importable by both, and a schema change is a coordinated change.
 
 | Schema | Defined | Client | Server |
 |--------|---------|--------|--------|
-| `createUserSchema` | `core/schemas/users.ts:3-7` | `UserForm.tsx:33` | `users.ts:23` |
-| `updateUserSchema` | `core/schemas/users.ts:11-18` | `UserForm.tsx:33` | `users.ts:74` |
+| `createUserSchema` | `core/schemas/users.ts:4-8` | `UserForm.tsx:47` | `users.ts:23` |
+| `updateUserSchema` | `core/schemas/users.ts:12-20` | `UserForm.tsx:47` | `users.ts:74` |
 | `createReplySchema` | `core/schemas/replies.ts:3-5` | `ReplyForm.tsx:29` | `replies.ts:42` |
 | `polishReplySchema` | `core/schemas/replies.ts:9-11` | — | `replies.ts:119` |
 | `inboundEmailSchema` | `core/schemas/tickets.ts:5-11` | — | `webhooks.ts:36` |
@@ -333,7 +335,7 @@ Four of the seven are server-only, which is the clearest evidence that **client 
 
 ### Core — unknown fields are stripped, silently
 
-**No schema in `core/schemas/` calls `.strict()` or `.passthrough()`**, so Zod v4's default `.strip()` applies. Verified directly against `core/schemas/users.ts:3-18`.
+**No schema in `core/schemas/` calls `.strict()` or `.passthrough()`**, so Zod v4's default `.strip()` applies. Verified directly against `core/schemas/users.ts:4-20`.
 
 Send `{ name, email, password, role: "admin" }` to `POST /api/users` and the parsed result is `{ name, email, password }`. The `role` key is dropped, **no 400 is raised**, and the caller gets a 201 describing a user whose role is `agent`.
 
@@ -406,7 +408,7 @@ Note `send-email.ts:35` logs the recipient address, so email addresses reach the
 | Mutation | Invalidates | Location |
 |----------|-------------|----------|
 | Delete user | `["users"]` | `UsersPage.tsx:49` |
-| Create/update user | `["users"]` | `UserForm.tsx:51` |
+| Create/update user | `["users"]` | `UserForm.tsx:68` |
 | Update ticket | `["ticket", id]` | `UpdateTicket.tsx:41` |
 | Create reply | `["replies", ticketId]` | `ReplyForm.tsx:43` |
 
@@ -484,7 +486,7 @@ Recorded so their absence is a known fact rather than an assumption: no feature 
 
 2. **Zod strips unknown fields silently.** No schema is `.strict()`, so an unexpected key in a request body is dropped without a 400. Secure, but it means a client can send a field, get a success response, and have been ignored.
 
-3. **A role change takes effect on the next request — and that property lives in config, not code.** `getSession()` joins the user row every time (see the correction above), so authorization is always current. But adding `secondaryStorage` or a `session.cookieCache` block to `lib/auth.ts` would silently make it stale, and no test guards that today.
+3. **A role change takes effect on the next request — and that property lives in config, not code.** `getSession()` joins the user row every time (see the correction above), so authorization is always current. Adding `secondaryStorage` or a `session.cookieCache` block to `lib/auth.ts` would move role resolution off the live row. **Since GH-8 a test guards it** — the promotion case in `e2e/tests/users.spec.ts` asserts a pre-existing session picks up a new role — so that change should now break a test rather than pass quietly.
 
 ## Three inconsistencies
 

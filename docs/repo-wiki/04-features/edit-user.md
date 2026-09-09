@@ -9,7 +9,7 @@ tags: [user-management, feature]
 
 ## What the user does
 
-An admin clicks the pencil icon on a row, adjusts name, email, password or **role** in a modal, and saves. Leaving the password blank keeps the current one — the placeholder says so (`UserForm.tsx:95`).
+An admin clicks the pencil icon on a row, adjusts name, email, password or **role** in a modal, and saves. Leaving the password blank keeps the current one — the placeholder says so (`UserForm.tsx:112`).
 
 **Role is editable, admin-only, since GH-8** (2026-09-08). The modal carries a two-option `Select` (Agent / Admin) pre-set to the user's stored role, rendered in edit mode only. The server is the authority: see [[user-management]] §Role handling for the two guards that constrain the transition, and the As-is baseline table below for what each layer looked like beforehand.
 
@@ -23,11 +23,11 @@ Users page, edit icon per row (`UsersTable.tsx:95-102`).
 
 ## API
 
-`PUT /api/users/:id` at `UserForm.tsx:44`, body `{ name, email, password }`. Invalidates `["users"]` (`:51`).
+`PUT /api/users/:id` at `UserForm.tsx:59`, body `{ name, email, password, role }` — all four required since GH-8. Invalidates `["users"]` (`:68`).
 
 ### Server trace
 
-**Handler:** `server/src/routes/users.ts:71-121`
+**Handler:** `server/src/routes/users.ts:71-136`
 **Guards:** `requireAuth` + `requireAdmin`
 **Route param:** `:id` — a UUID string, **not validated**. `parseId` is numeric-only and does not apply, and nothing replaces it. Since GH-8 the handler loads the target row first, so an id matching no user is a clean 404 rather than an unhandled Prisma error.
 **Request DTO:** `updateUserSchema` (`core/schemas/users.ts`)
@@ -62,18 +62,26 @@ const { name, email, password, role } = data;
 3. **Self role change refused** → 403 `"You cannot change your own role"` when the caller's own id is the target and `role` differs from the stored one. Placed before the uniqueness check so an authorization refusal is never masked by a data conflict.
 4. **Email uniqueness** → 409 when another user already holds the email.
 
-**Prisma writes — up to three, and not transactional:**
+**Prisma writes — two statements, only the first transactional:**
 
-1. Always:
+1. Always — the profile write, with the demotion session drop batched into the **same
+   transaction** so the role and the sessions can never disagree:
 
    ```typescript
-   await prisma.user.update({
-     where: { id: id },
-     data: { name, email, role, updatedAt: new Date() },
-   });
+   const demoted = target.role === Role.admin && role === Role.agent;
+
+   await prisma.$transaction([
+     prisma.user.update({
+       where: { id: id },
+       data: { name, email, role, updatedAt: new Date() },
+     }),
+     ...(demoted
+       ? [prisma.session.deleteMany({ where: { userId: id } })]
+       : []),
+   ]);
    ```
 
-2. Conditionally, when `password` is truthy:
+2. Conditionally, when `password` is truthy — **outside** that transaction:
 
    ```typescript
    await prisma.account.updateMany({
@@ -82,13 +90,10 @@ const { name, email, password, role } = data;
    });
    ```
 
-3. Conditionally, on a demotion only (`target.role === admin && role === agent`):
-
-   ```typescript
-   await prisma.session.deleteMany({ where: { userId: id } });
-   ```
-
-Because these are separate writes, a failure between them leaves earlier ones applied — the pre-existing profile/password split, now with the session drop as a third step. All three are ordered after the write they depend on.
+GH-8 chose the transaction for step 1 specifically so a demoted user is never left holding live
+session rows — the one divergence here with an authorization consequence. The profile/password
+split in step 2 is untouched and still non-transactional: a failure between the two leaves the
+profile saved and the password unchanged. That remains [[tech-debt|TD-10]].
 
 **Post-write read** re-selects `{ id, name, email, role, createdAt }`.
 
@@ -118,17 +123,17 @@ ignored — stripped by Zod before the handler saw it. That is still true of
 
 ## Validation
 
-`updateUserSchema`, chosen over the create schema by mode at `UserForm.tsx:33` and applied server-side at `routes/users.ts:74`. The same schema on both sides is the house pattern ([[08-standards/observed]]); the server call is the gate, the client call is the affordance.
+`updateUserSchema`, chosen over the create schema by mode at `UserForm.tsx:47` and applied server-side at `routes/users.ts:74`. The same schema on both sides is the house pattern ([[08-standards/observed]]); the server call is the gate, the client call is the affordance.
 
 ## UI states
 
-As [[create-user]], differing in: an "Edit User" title, the form pre-populated from the row, a "Save Changes" label, "Saving…" while submitting (`:113`), and an empty password permitted.
+As [[create-user]], differing in: an "Edit User" title, the form pre-populated from the row, a "Save Changes" label, "Saving…" while submitting (`:147`), and an empty password permitted.
 
 ## Tests
 
 **Component:** `pages/UserForm.test.tsx` (28 tests) — pre-population, the button label, the password placeholder, submitting with and without a password, the success callback, the loading state, validation still applying to a supplied password, and error display on failure. Since GH-8 also: the role control pre-selected from the user's stored role for both roles, exactly two options offered, promotion and demotion each reaching the `PUT` payload, and the control's **absence** in create mode.
 
-**E2E:** `e2e/tests/users.spec.ts` (25 tests) — the dialog opens pre-populated with an empty password field and the "leave blank to keep current" placeholder; editing name and email together updates the table and the old values disappear. Since GH-8, a `Role management` describe covers the transitions and their authorization boundary, including the two session-scoped cases described in [[auth]].
+**E2E:** `e2e/tests/users.spec.ts` (27 tests) — the dialog opens pre-populated with an empty password field and the "leave blank to keep current" placeholder; editing name and email together updates the table and the old values disappear. Since GH-8, a `Role management` describe covers the transitions and their authorization boundary, including the two session-scoped cases described in [[auth]].
 
 **Gotcha for anyone adding a component test here.** `TicketDetailPage.test.tsx:13-28` replaces `window.PointerEvent` with an `Event` subclass to satisfy Radix. Copying that block wholesale into a form test **breaks native click-to-submit** — Radix opens on `pointerdown`, but submitting a form needs a real `MouseEvent` click, so every submit assertion fails while the dropdown still appears to work. `UserForm.test.tsx` stubs only the pointer-capture methods and `scrollIntoView`, which is all Radix actually needs.
 

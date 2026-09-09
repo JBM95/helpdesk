@@ -16,13 +16,13 @@ Admins manage the agent roster — creating, editing and removing accounts. Beca
 ## Code locations
 
 **Backend**
-- `server/src/routes/users.ts` (135 LOC) — user CRUD; every route guarded by `requireAuth` + `requireAdmin`
+- `server/src/routes/users.ts` (167 LOC) — user CRUD; every route guarded by `requireAuth` + `requireAdmin`
 
 **Frontend**
-- `client/src/pages/UsersPage.tsx` (105 LOC) — dialog state, delete mutation
-- `client/src/pages/UsersTable.tsx` (120 LOC) — table and row actions
-- `client/src/pages/UserForm.tsx` (120 LOC) — create and edit in one component, mode by prop
-- Tests: `UsersPage.test.tsx` (273 LOC), `UserForm.test.tsx` (287 LOC)
+- `client/src/pages/UsersPage.tsx` (107 LOC) — dialog state, delete mutation
+- `client/src/pages/UsersTable.tsx` (119 LOC) — table and row actions
+- `client/src/pages/UserForm.tsx` (153 LOC) — create and edit in one component, mode by prop
+- Tests: `UsersPage.test.tsx` (273 LOC), `UserForm.test.tsx` (421 LOC)
 
 **Core (shared vocabulary)**
 - `core/schemas/users.ts` — `createUserSchema`, `updateUserSchema` (Zod)
@@ -33,7 +33,7 @@ Admins manage the agent roster — creating, editing and removing accounts. Beca
 
 **Test coverage**
 - Component: 2 of 3 files have direct tests; `UsersTable` is exercised indirectly through `UsersPage.test.tsx`
-- E2E: `e2e/tests/users.spec.ts` (393 LOC) — CRUD flow and admin-only access
+- E2E: `e2e/tests/users.spec.ts` (911 LOC) — CRUD flow and admin-only access
 
 ## Entry points
 
@@ -47,8 +47,8 @@ Nav link at `Layout.tsx:56-61`, rendered for admins only.
 |--------|-------|---------|------|---------|
 | GET | `/api/users` | `users.ts:13-20` | `requireAuth` + `requireAdmin` | List users; excludes soft-deleted and the AI agent |
 | POST | `/api/users` | `users.ts:22-69` | `requireAuth` + `requireAdmin` | Create user plus credential account, transactionally |
-| PUT | `/api/users/:id` | `users.ts:71-121` | `requireAuth` + `requireAdmin` | Update name, email, optional password, **and role** |
-| DELETE | `/api/users/:id` | `users.ts:106-133` | `requireAuth` + `requireAdmin` | Soft-delete, unassign tickets, delete sessions |
+| PUT | `/api/users/:id` | `users.ts:71-136` | `requireAuth` + `requireAdmin` | Update name, email, optional password, **and role** |
+| DELETE | `/api/users/:id` | `users.ts:138-165` | `requireAuth` + `requireAdmin` | Soft-delete, unassign tickets, delete sessions |
 
 Full detail with citations in [[05-api-surface]].
 
@@ -57,8 +57,8 @@ Full detail with citations in [[05-api-surface]].
 | Method | Path | Called from | Request body | Response |
 |--------|------|-------------|--------------|----------|
 | GET | `/api/users` | `UsersTable.tsx:39` | — | `{ users: { id, name, email, role, createdAt }[] }` |
-| POST | `/api/users` | `UserForm.tsx:47` | `{ name, email, password }` | `{ user: { id, name, email, role, createdAt } }` |
-| PUT | `/api/users/:id` | `UserForm.tsx:44` | `{ name, email, password, role }` — all four required | `{ user: { id, name, email, role, createdAt } }` |
+| POST | `/api/users` | `UserForm.tsx:64` | `{ name, email, password }` | `{ user: { id, name, email, role, createdAt } }` |
+| PUT | `/api/users/:id` | `UserForm.tsx:59` | `{ name, email, password, role }` — all four required | `{ user: { id, name, email, role, createdAt } }` |
 | DELETE | `/api/users/:id` | `UsersPage.tsx:47` | — | `{ message: "User deleted" }` |
 
 All four invalidate the `["users"]` query key on success.
@@ -78,13 +78,18 @@ role: Role.agent,
 
 `createUserSchema` declares no `role` field, and `UserForm` renders no role control in create mode. A `role` supplied to `POST /api/users` is silently stripped by Zod, so it cannot be smuggled in at creation.
 
-**Update**: role is writable, admin-only, through the existing `PUT /api/users/:id`.
+**Update**: role is writable, admin-only, through the existing `PUT /api/users/:id`. The write is batched with the demotion session drop so the two can never diverge:
 
 ```typescript
-await prisma.user.update({
-  where: { id: id },
-  data: { name, email, role, updatedAt: new Date() },
-});
+const demoted = target.role === Role.admin && role === Role.agent;
+
+await prisma.$transaction([
+  prisma.user.update({
+    where: { id: id },
+    data: { name, email, role, updatedAt: new Date() },
+  }),
+  ...(demoted ? [prisma.session.deleteMany({ where: { userId: id } })] : []),
+]);
 ```
 
 **Validation contract** (`core/schemas/users.ts`): `updateUserSchema` declares `role: z.enum(Role, "Role must be either agent or admin")` — **required**, not optional. A `PUT` omitting `role` is a 400 and writes nothing. That asymmetry with `createUserSchema` is intentional: creation has no role to change, updates always carry one.
@@ -92,7 +97,7 @@ await prisma.user.update({
 **Two rules guard the transition** (`users.ts`):
 
 1. **No self role change** — 403 when the caller's own id is the target and the requested role differs from their stored one. This closes every sequential path to zero admins, though it is not a floor under concurrency — see Open questions below.
-2. **Demotion drops sessions** — `admin → agent` also runs `prisma.session.deleteMany({ where: { userId: id } })`, so the demoted user's next request is a 401 rather than a 403. Promotion deliberately leaves sessions intact, so a promoted user gains access on their existing session with no re-login.
+2. **Demotion drops sessions** — `admin → agent` batches `prisma.session.deleteMany({ where: { userId: id } })` into the **same `$transaction`** as the role write, so the demoted user's next request is a 401 rather than a 403 and the two can never disagree. Promotion deliberately leaves sessions intact, so a promoted user gains access on their existing session with no re-login.
 
 The handler now loads the target user before writing, which it previously never did. A `PUT` against an unknown id is therefore a clean 404; before GH-8 it reached Prisma as a `P2025` and surfaced through Express 5's default handler as a **500**, despite this wiki and [[edit-user]] both claiming 404.
 
@@ -108,7 +113,7 @@ The handler now loads the target user before writing, which it previously never 
 
 A display condition only — it does not stop a direct `DELETE` call.
 
-**Server** (`users.ts:115-118`):
+**Server** (`users.ts:147-150`):
 
 ```typescript
 if (user.role === Role.admin) {
@@ -121,7 +126,7 @@ Server enforcement is correct, and it reads the **currently stored** role at del
 
 **Resolved as intended, not a defect.** AC7 of GH-8 requires that a user *whose current stored role is admin* stay protected, which is exactly what the rule does. It does not require the two-step path to be closed. `users.spec.ts` asserts both halves: the delete is refused while the user is an admin, and permitted once demoted.
 
-**Side effects of deletion** (`users.ts:125-130`):
+**Side effects of deletion** (`users.ts:157-162`):
 
 ```typescript
 await prisma.ticket.updateMany({ where: { assignedToId: id }, data: { assignedToId: null } });
@@ -137,7 +142,7 @@ Ticket assignments are nulled — a dependency on [[tickets]] — and active ses
 
 **Outbound** — what this domain depends on
 - [[auth]] — the `requireAuth` and `requireAdmin` guards; the `User` model it mutates; `hashPassword` from `better-auth/crypto`
-- [[tickets]] — nulls `Ticket.assignedToId` on deletion (`users.ts:125-128`)
+- [[tickets]] — nulls `Ticket.assignedToId` on deletion (`users.ts:157-160`)
 - `core/constants/role.ts`, `core/schemas/users.ts`
 - Prisma client
 

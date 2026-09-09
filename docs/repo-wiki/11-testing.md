@@ -120,8 +120,8 @@ Subject heading; sender name and email; "Created:" and "Updated:" labels; plain-
 
 ## E2E inventory
 
-**Five specs, 87 tests** — counted with `bunx playwright test --list` on 2026-09-08:
-`auth.spec.ts` 31 · `users.spec.ts` 25 · `webhook-inbound-email.spec.ts` 22 ·
+**Five specs, 89 tests** — counted with `bunx playwright test --list` on 2026-09-08:
+`auth.spec.ts` 31 · `users.spec.ts` 27 · `webhook-inbound-email.spec.ts` 22 ·
 `tickets.spec.ts` 5 · `ticket-detail.spec.ts` 4.
 
 > **Correction.** This section previously claimed 102 tests, with 63 in `auth.spec.ts` and
@@ -147,9 +147,9 @@ Subject heading; sender name and email; "Created:" and "Updated:" labels; plain-
 
 **Navigation Bar** (3) — user name and Sign Out visible; branding visible; admin sees the "Users" link, with the agent case noted as future work.
 
-### `users.spec.ts` — 25 tests across 11 describes
+### `users.spec.ts` — 27 tests across 11 describes
 
-> 7 of these predate GH-8; the 18 in the `Role management` describe arrived with it and are
+> 7 of these predate GH-8; the 20 in the `Role management` describe arrived with it and are
 > summarised under Authorization coverage below.
 
 **View Users** (1) — the table renders columns Name, Email, Role, Created, Actions. Note it asserts the **Role column exists**, so role is already displayed and column-tested.
@@ -172,7 +172,7 @@ Helpers: `createTicketViaWebhook(request, payload)` posts to `/api/webhooks/inbo
 
 Unauthenticated access to `/tickets/:id` redirects to `/login`; update persistence across a reload (status Open → Resolved, category None → Technical, assignment Unassigned → Admin, all three verified after reload); reply persistence across a reload; and a full agent workflow from list → detail → updates → reply → "Back to Tickets".
 
-### `webhook-inbound-email.spec.ts` — 23 tests across 4 describes
+### `webhook-inbound-email.spec.ts` — 22 tests across 4 describes
 
 **Authentication** (6) — rejects a missing secret, a wrong secret in the header, and a wrong secret in the query param, each 401; accepts the correct secret in either the header or the query param, 201.
 
@@ -217,7 +217,8 @@ Worth its own section, because it is thinner than the test count suggests.
   - An unauthenticated `PUT` is a 401.
   - `DELETE` against a stored admin is a 403 at the API, not merely a hidden button.
   - Both role transitions, in both directions, including their effect on an **already-authenticated session**: a demoted admin's live session gets 401, a promoted agent's live session gets 200 with no re-login.
-  - Invalid, missing and null roles are each rejected with the stored role left unchanged.
+  - Invalid, missing, null and wrong-case (`"Admin"`) roles are each rejected with the stored role left unchanged — `z.enum` is case-sensitive, asserted rather than left implied.
+  - An admin changing **their own** role is refused with a 403, asserted both at the API and through the dialog, where the server's message has to reach the user rather than being swallowed.
 
 **What still does not exist:**
 - **No test covers the non-admin branch** of `AdminRoute` or the admin-only nav condition — still the two tests commented out at `auth.spec.ts:384-397`. GH-8 did **not** unlock them: it creates its principals through `POST /api/users` inside each test rather than seeding one, so there is still no agent user at seed time for those tests to log in as. Enabling them remains a seed change.
@@ -297,7 +298,7 @@ Per [[00-scope]]: an absent pipeline is not a green pipeline. Every gate here is
 
 ## Run commands
 
-From root: `bun run test:e2e` (87 tests, full-stack), plus `test:e2e:ui` and `test:e2e:headed`.
+From root: `bun run test:e2e` (89 tests, full-stack), plus `test:e2e:ui` and `test:e2e:headed`.
 From `client/`: `bun run test` (8 files, 142 tests), `bun run test:watch`.
 From `server/`: nothing — no suite exists.
 
