@@ -289,6 +289,32 @@ Client component testing is **selective rather than systematic**: the four highe
 6. Wait for API responses explicitly where the UI gives no deterministic signal: `page.waitForResponse((r) => r.url().includes("/api/…") && r.status() === 200)`.
 7. Database state: global setup resets and seeds `helpdesk_test` once before all tests, and teardown is a no-op. Tests must tolerate the seeded admin already existing, and should create and clean their own data where isolation matters.
 8. For an API-level assertion, drive `request` directly rather than the UI — see `webhook-inbound-email.spec.ts`.
+9. **A webhook-created ticket is not quiescent.** The webhook enqueues `classify-ticket` and `auto-resolve-ticket`, and `auto-resolve` ends by writing `{ status: "open", assignedToId: null }` (`auto-resolve-ticket.ts:67-69`). Any test that sets a status or assignment on such a ticket must wait for that write first, or the job will silently revert it — see `waitForAutoResolveToSettle` in `ticket-detail.spec.ts`. Do not stand a manual `PATCH` to `"open"` in for it: it looks like the same state but does not prove the job is finished.
+
+### The AI jobs always fail under test, and the queue used to leak between runs
+
+`server/.env.test` sets no `OPENAI_API_KEY`, so **every** `classify-ticket` and `auto-resolve-ticket`
+job throws in E2E. Two consequences worth knowing before writing a test:
+
+- **No AI behaviour is covered end to end.** Classification never writes a category (it only writes
+  on success) and auto-resolve always takes its failure branch to `open`. The `resolved`-by-AI path,
+  the `ESCALATE` path and the reply-generation path have no E2E coverage at all — the suite exercises
+  the failure branch exclusively. That is a genuine gap, not a deliberate exclusion.
+- **`classify-ticket` rethrows, so it retries** (`retryLimit: 3`, `retryDelay: 30`, `retryBackoff`),
+  producing failing jobs and log noise on a 30s cadence throughout the run. `auto-resolve-ticket`
+  swallows its error and runs once.
+
+Until GH-8 (2026-09-08) those failed jobs accumulated across runs: `prisma migrate reset` recreates
+`public`, but pg-boss owns a separate `pgboss` schema the reset never touched, so each run inherited
+the previous run's jobs — carrying ticket ids that no longer existed. Measured on one checkout before
+the fix: **364 pending and ~4,800 failed jobs**, growing with every run, with a fresh job queuing
+behind the backlog. The visible symptom was `ticket-detail.spec.ts` failing roughly 1 run in 3 while
+passing in isolation, and a ticket still reading status `new` thirty seconds after its webhook
+returned 201. `global-setup.ts` now truncates `pgboss.job` (never `pgboss.queue`, which holds the
+registrations a reused worker depends on) — see `e2e/clear-job-queue.sql`.
+
+**The lesson generalises:** a suite whose reliability decays with use will look flaky and get blamed
+on whichever test happens to expose it. Suspect shared state that the reset does not reach.
 
 ## CI integration
 
