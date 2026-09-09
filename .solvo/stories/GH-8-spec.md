@@ -191,17 +191,17 @@ above says what is claimed; this says where to look.
 
 | AC | Scenarios (`e2e/tests/users.spec.ts` unless noted) |
 |----|---------------------------------------------------|
-| AC1 | `:462` promote via dialog · `:492` demote via dialog · `:529` no role control in create mode · `UserForm.test.tsx` role-control cases (pre-selection both roles, exactly two options, promotion and demotion each reaching the `PUT` body, absence in create mode) |
-| AC2 | `:547` authenticated non-admin → 403 `Forbidden` · `:582` unauthenticated → 401 · `:602` agent self-promotion → 403 |
-| AC3 | `:630` unsupported value · `:652` key omitted · `:670` wrong case (`"Admin"`) · `:687` `null` · `:706` rejected on another field · `:733` rejected on email conflict (409) |
-| AC4 | `:805` demoted admin's live session → 401 |
-| AC5 | `:827` promoted agent's live session → 200, no re-login |
-| AC6 | `:853` `POST` yields `agent` · `:863` `POST` ignores a supplied role · `:529` no create-mode control |
-| AC7 | `:886` `DELETE` on a stored admin → 403 · `:902` permitted once demoted |
-| AC8 | `:462` and `:492` — badge repaints in both directions off the `["users"]` invalidation, each paired with a `storedRole` read proving the table matches the server |
+| AC1 | `:461` promote via dialog · `:491` demote via dialog · `:528` no role control in create mode · `UserForm.test.tsx` role-control cases (pre-selection both roles, exactly two options, promotion and demotion each reaching the `PUT` body, absence in create mode) |
+| AC2 | `:546` authenticated non-admin → 403 `Forbidden` · `:581` unauthenticated → 401 · `:601` agent self-promotion → 403 |
+| AC3 | `:629` unsupported value · `:651` key omitted · `:669` wrong case (`"Admin"`) · `:686` `null` · `:705` rejected on another field · `:732` rejected on email conflict (409) |
+| AC4 | `:756` demoted admin's live session → 401 |
+| AC5 | `:778` promoted agent's live session → 200, no re-login |
+| AC6 | `:804` `POST` yields `agent` · `:814` `POST` ignores a supplied role · `:528` no create-mode control |
+| AC7 | `:837` `DELETE` on a stored admin → 403 · `:853` permitted once demoted |
+| AC8 | `:461` and `:491` — badge repaints in both directions off the `["users"]` invalidation, each paired with a `storedRole` read proving the table matches the server |
 | AC9 | The rows above are the regression coverage; the negative and transition cases are the point |
-| — | Self-role-change: `:924` API 403 · `:952` refusal surfaced in the dialog · `:980` unchanged-role self-save → 200 |
-| — | `:1004` unknown id → 404 · `:765` AI pseudo-user role refused · `:785` soft-deleted user role refused |
+| — | Self-role-change: `:875` API 403 · `:903` refusal surfaced in the dialog · `:931` unchanged-role self-save → 200 |
+| — | `:955` unknown id → 404 |
 
 Every AC has at least one scenario, and each negative case pairs its status assertion with a
 follow-up read proving nothing was persisted. Line numbers move; the describe names (`AC1, AC8 …`

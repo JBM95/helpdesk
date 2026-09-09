@@ -295,15 +295,37 @@ tags: [tech-debt, register, full-stack]
 
 ---
 
-## TD-21 — No authorization tested at API level
+## TD-21 — No authorization tested at API level — **largely closed by GH-8**
 
-**Area** Testing · **Severity** Medium · **Effort** ~2 h · Found by [[11-testing]]
+**Area** Testing · **Severity** Low (was Medium) · **Effort** ~30 min remaining · Found by [[11-testing]]
 
-**Evidence.** Every authorization assertion in the suite is a UI observation. With no server test suite, nothing proves `requireAdmin` refuses a non-admin request, and nothing proves the admin-deletion 403 at `routes/users.ts:147-150` fires.
+**Was.** Every authorization assertion in the suite was a UI observation. With no server test suite, nothing proved `requireAdmin` refuses a non-admin request, and nothing proved the admin-deletion 403 at `routes/users.ts:147-150` fires.
 
-**Why it matters.** The client's own guards are explicitly display-only in two places ([[13-cross-cutting]]), so the server is the entire boundary — and the boundary is the untested part. A regression that removed `requireAdmin` from a route would break no test.
+**Closed by GH-8 (2026-09-08)** for `/api/users`. The `Role management` describe in `e2e/tests/users.spec.ts` drives Playwright's `request` fixture directly and asserts, at the API: `requireAdmin` refusing a non-admin `PUT` (on the `"Forbidden"` body, so it cannot be confused with a later 403), a 401 for an unauthenticated caller, and the admin-deletion 403 itself. These are the first API-level authorization assertions in the repo.
 
-**Recommendation: worth fixing.** Drive Playwright's `request` fixture directly and assert the status codes, following `webhook-inbound-email.spec.ts`, which already tests auth this way for the webhook secret. Needs a seeded non-admin user, same as TD-20.
+**What remains.** The other guarded surfaces — `/api/tickets`, `/api/tickets/:id/replies`, `/api/agents`, `/api/me` — still have no API-level authorization assertion, and neither does the `requireAuth`-only tier as distinct from `requireAdmin`. GH-8 did not need them, so it did not add them.
+
+**Recommendation: finish it.** Follow the pattern GH-8 established. Note it creates its principals through `POST /api/users` per test rather than seeding one, so this still does not unblock TD-20 — see [[11-testing]] §Authorization coverage today.
+
+---
+
+## TD-22 — Role is writable on principals that cannot sign in
+
+**Area** Server API · **File** `routes/users.ts:71-136` · **Severity** Low · **Effort** ~15 min · Found at GH-8 fresh review (2026-09-08)
+
+**Evidence.** `PUT /api/users/:id` loads its target with a bare `findUnique({ where: { id } })`. `GET /api/users` filters out soft-deleted rows and the AI pseudo-user (`:15`); `PUT` does not. Traced live during review: `PUT /api/users/ai-agent` with `role: "admin"` returns 200, after which `DELETE /api/users/ai-agent` returns 403 `"Admin users cannot be deleted"`.
+
+**Why it matters — and why it is Low.** Neither principal can authenticate: the AI pseudo-user has no `Account` row (`prisma/seed.ts`) and a soft-deleted user is refused at `middleware/require-auth.ts:15-18`. So **no privilege is escalated**. What happens is that the row ends up carrying a role the product never intends, and becomes undeletable, because the delete guard reads the stored role. `name`/`email` were already writable on these rows before GH-8; `role` is the new capability and the only one with a consequence.
+
+**Attempted and deliberately reverted in GH-8.** A guard refusing the role change on these rows was written, tested and then reverted on the human's decision: it was scope beyond the story's ACs on a T3 auth endpoint, and it raised a design question worth settling on its own rather than at a merge gate — see below.
+
+**The design question to settle first.** A 403 confirms the row exists and holds a different role, which is a (low-value, admin-only) existence oracle, and it leaves an inconsistency: a role change on a soft-deleted row would be refused while a `name`/`email` write on the same row still returns 200. Treating a soft-deleted target as **404 for the whole `PUT`** is more coherent, but widens the endpoint's contract. Pick one deliberately:
+
+1. Refuse only the role change (403) — smallest, keeps the inconsistency.
+2. Treat a soft-deleted target as 404 for the whole `PUT` — coherent, wider contract change.
+3. Leave it — the outcome is cosmetic, and this entry is the record.
+
+**Blast radius.** One route handler, plus whichever E2E scenarios the chosen option needs.
 
 ---
 
