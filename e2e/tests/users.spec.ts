@@ -797,6 +797,41 @@ test.describe('Role management', () => {
 
       await context.close();
     });
+
+    test('should leave an agent existing session alone when a save does not demote them', async ({
+      page,
+      browser,
+    }) => {
+      await loginAsAdmin(page);
+      const target = await createAgent(page, 'Rename Me');
+
+      const { context, page: targetPage } = await signIn(browser, target.email);
+      expect((await targetPage.request.get('/api/users')).status()).toBe(403);
+
+      // A profile edit that leaves the role at agent. The session drop is
+      // narrowed to admin -> agent precisely so this does not sign the user
+      // out: widening it to `role === agent` would log every renamed agent
+      // out of every device, and nothing else in this suite would notice.
+      const renamed = `${target.name} Renamed`;
+      const response = await page.request.put(`/api/users/${target.id}`, {
+        data: {
+          name: renamed,
+          email: target.email,
+          password: '',
+          role: Role.agent,
+        },
+      });
+      expect(response.status()).toBe(200);
+
+      // 403, not 401: the session is still authenticating, it just is not an
+      // admin. A 401 here would mean the save had destroyed it.
+      expect((await targetPage.request.get('/api/users')).status()).toBe(403);
+
+      const me = await targetPage.request.get('/api/me');
+      expect((await me.json()).user.name).toBe(renamed);
+
+      await context.close();
+    });
   });
 
   test.describe('AC6 — creation policy is unchanged', () => {

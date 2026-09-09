@@ -195,14 +195,14 @@ above says what is claimed; this says where to look.
 | AC1 | `:461` promote via dialog · `:491` demote via dialog · `:528` no role control in create mode · `UserForm.test.tsx` role-control cases (pre-selection both roles, exactly two options, promotion and demotion each reaching the `PUT` body, absence in create mode) |
 | AC2 | `:546` authenticated non-admin → 403 `Forbidden` · `:581` unauthenticated → 401 · `:601` agent self-promotion → 403 |
 | AC3 | `:629` unsupported value · `:651` key omitted · `:669` wrong case (`"Admin"`) · `:686` `null` · `:705` rejected on another field · `:732` rejected on email conflict (409) |
-| AC4 | `:755` demoted admin's live session → 401 |
+| AC4 | `:755` demoted admin's live session → 401 · `:801` a save that does **not** demote leaves the session alive (403, not 401) |
 | AC5 | `:777` promoted agent's live session → 200, no re-login |
-| AC6 | `:803` `POST` yields `agent` · `:813` `POST` ignores a supplied role · `:528` no create-mode control |
-| AC7 | `:836` `DELETE` on a stored admin → 403 · `:852` permitted once demoted |
+| AC6 | `:838` `POST` yields `agent` · `:848` `POST` ignores a supplied role · `:528` no create-mode control |
+| AC7 | `:871` `DELETE` on a stored admin → 403 · `:887` permitted once demoted |
 | AC8 | `:461` and `:491` — badge repaints in both directions off the `["users"]` invalidation, each paired with a `storedRole` read proving the table matches the server |
 | AC9 | The rows above are the regression coverage; the negative and transition cases are the point |
-| — | Self-role-change: `:874` API 403 · `:905` 403 not 409 when the email is also taken · `:938` refusal surfaced in the dialog · `:966` unchanged-role self-save → 200 |
-| — | `:990` unknown id → 404 |
+| — | Self-role-change: `:909` API 403 · `:940` 403 not 409 when the email is also taken · `:973` refusal surfaced in the dialog · `:1001` unchanged-role self-save → 200 |
+| — | `:1025` unknown id → 404 |
 
 Every AC has at least one scenario, and each negative case pairs its status assertion with a
 follow-up read proving nothing was persisted. Line numbers move; the describe names (`AC1, AC8 …`
