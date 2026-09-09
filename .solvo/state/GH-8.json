@@ -120,9 +120,9 @@
   ],
   "checks": {
     "green": true,
-    "at": "2026-09-09T07:39:29Z",
+    "at": "2026-09-09T07:41:35Z",
     "command": "cd client && bun run test (142 passed, 8 files) && bun run test:e2e (92 passed, 5 files)",
-    "commit": "696d2d8bef742b7181638f06526064355877b56e",
+    "commit": "bf4ee7b5df727cbec31fc740e0af4cc9c470e044",
     "ambiguityScan": {
       "cleared": true
     },
@@ -137,7 +137,8 @@
       "stability": "full suite 92 passed x2; the previously-red pair (ticket-detail + webhook-inbound-email) 26 passed x4 earlier; users.spec.ts alone 30 passed"
     },
     "typecheck": "client tsc -b: 3 errors, all pre-existing and identical on main (ReplyForm.test.tsx:19, TicketSummary.test.tsx:19, vite.config.ts:41). server: 1 pre-existing (prisma/seed-replies.ts:377). None in files this branch touches.",
-    "rerunAtPrPhase": "Re-run at 696d2d8, the last content commit; this state file is the commit that follows, alone."
+    "rerunAtPrPhase": "Checks last ran at 696d2d8 (client 142/142, E2E 92/92 x2). bf4ee7b is a prose-only follow-up touching one sentence of the story spec and no code or test, so the recorded result carries forward; this state file is the trailing commit.",
+    "selfAudit": "Post-round-4 self audit of the finding class the rounds kept hitting. (1) All 70 qualified file:line citations into the 9 files this branch changed re-resolved against the source: 67 point at exactly the claimed construct, 3 are the spec's deliberately-marked as-is (main-frame) references. Zero out of range. (2) All test counts re-derived from `playwright test --list` and `wc -l` rather than by hand: 92 total, 30 in users.spec.ts, 23 story scenarios, 14 describes, 2,642 E2E LOC. (3) Grep sweep for claims contradicting role writability: none remaining. Three pre-existing off-by-one citations survive in 07-data-model.md (ticket-status.ts:1-24, a migration.sql:1-32, seed.ts:11-86) — all in files this branch never touched, left alone as out of scope."
   },
   "attempts": {
     "recon": 2,
