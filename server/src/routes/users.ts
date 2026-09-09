@@ -99,10 +99,25 @@ router.put("/:id", requireAuth, requireAdmin, async (req, res) => {
     return;
   }
 
-  await prisma.user.update({
-    where: { id: id },
-    data: { name, email, role, updatedAt: new Date() },
-  });
+  // requireAdmin reads the role Better Auth joins fresh from the User row on
+  // every request, so a demotion already binds the next one. Dropping the
+  // sessions means privilege loss does not rest on that library behaviour at
+  // all -- relevant because what session.cookieCache would serve if it were
+  // ever enabled is unverified in either direction.
+  //
+  // The drop is in the same transaction as the role write so the two cannot
+  // disagree: a demoted user is never left holding live session rows.
+  const demoted = target.role === Role.admin && role === Role.agent;
+
+  await prisma.$transaction([
+    prisma.user.update({
+      where: { id: id },
+      data: { name, email, role, updatedAt: new Date() },
+    }),
+    ...(demoted
+      ? [prisma.session.deleteMany({ where: { userId: id } })]
+      : []),
+  ]);
 
   if (password) {
     const hashedPassword = await hashPassword(password);
@@ -110,13 +125,6 @@ router.put("/:id", requireAuth, requireAdmin, async (req, res) => {
       where: { userId: id, providerId: "credential" },
       data: { password: hashedPassword, updatedAt: new Date() },
     });
-  }
-
-  // requireAdmin reads the role Better Auth joins fresh from the User row on
-  // every request, so a demotion already binds the next one. Dropping the
-  // sessions makes that hold even if session.cookieCache is ever enabled.
-  if (target.role === Role.admin && role === Role.agent) {
-    await prisma.session.deleteMany({ where: { userId: id } });
   }
 
   const user = await prisma.user.findUnique({
