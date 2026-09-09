@@ -36,7 +36,7 @@ tags: [features, index]
 
 ## Current state worth recording
 
-- **Role is not editable** through [[edit-user]] — absent from the validation schema, the route handler and the UI. Admins are seeded or promoted by direct database write. The `User.role` column and both enum members already exist, so nothing about this is a schema limitation ([[07-data-model]]).
+- **Role is editable** through [[edit-user]], admin-only, since GH-8 (2026-09-08) — declared in `updateUserSchema`, written by the `PUT` handler, and offered as a two-option `Select` in edit mode only. Before that it was absent from all three layers and admins could only be seeded or promoted by direct database write. Creation is still agent-only, deliberately ([[create-user]]).
 - **No clear-filters control exists** on the tickets list; the three filters reset individually.
 - **Filter, sort and pagination state is not in the URL**, so no filtered view can be linked or restored ([[06-frontend-map]]).
 - **Three features are GPT-backed** — [[generate-ticket-summary]], [[polish-reply]], and the unattended auto-resolution that runs server-side before this UI is involved. The first two fire from a button with no throttle and no rate limit ([[13-cross-cutting]]).
@@ -47,7 +47,7 @@ tags: [features, index]
 - **[[view-dashboard]]** — 204 LOC, no component test; E2E only checks that the redirect lands, never the content. The largest untested surface in the client.
 - **[[sign-in]], [[sign-out]]** — no component tests; E2E only, which is defensible since both depend on real session cookies.
 - **[[toggle-theme]]** — no test at any level, appropriately: a `localStorage`-backed CSS class toggle carries no business logic.
-- **Authorization is tested only through the UI.** No test anywhere asserts a role or permission at the API level — see [[11-testing]], including the two tests commented out at `auth.spec.ts:384-397` awaiting a seeded non-admin user.
+- **Authorization is tested at the API level for `/api/users` only**, since GH-8 (2026-09-08): the `Role management` describe in `users.spec.ts` asserts `requireAdmin`'s 403 on the response body, the 401 for an unauthenticated caller, and the admin-deletion 403. Every other guarded surface — `/api/tickets`, `/api/tickets/:id/replies`, `/api/agents`, `/api/me` — is still covered only by UI observation ([[tech-debt|TD-21]]). The two tests commented out at `auth.spec.ts:384-397` remain disabled: GH-8 creates its principals per test rather than seeding one, so a seeded non-admin is still missing ([[11-testing]]).
 
 ## Related
 

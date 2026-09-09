@@ -41,7 +41,7 @@ for the same reason, because the file is committed before the PR opens.
   → transactional write.
 - `client/src/pages/UserForm.tsx` — the role `Select`, rendered in **edit mode only**.
 - `client/src/pages/UsersPage.tsx` — `EditingUser` must carry `role` for it to reach the form.
-- `e2e/tests/users.spec.ts` — the `Role management` describe, 22 scenarios, organised by AC.
+- `e2e/tests/users.spec.ts` — the `Role management` describe, 23 scenarios, organised by AC.
 - `e2e/clear-job-queue.sql` + `e2e/global-setup.ts` — the job-queue reset.
 
 ## Patterns established
@@ -70,8 +70,8 @@ for the same reason, because the file is committed before the PR opens.
 
 ## Tests (regression baseline)
 
-- **E2E**: `e2e/tests/users.spec.ts` — 29 scenarios (22 new). `e2e/tests/ticket-detail.spec.ts` — 4
-  (2 modified). Full suite **91 passed / 5 files**.
+- **E2E**: `e2e/tests/users.spec.ts` — 30 scenarios (23 new). `e2e/tests/ticket-detail.spec.ts` — 4
+  (2 modified). Full suite **92 passed / 5 files**.
 - **Component**: `client/src/pages/UserForm.test.tsx` — 28 tests. Suite **142 passed / 8 files**.
 - **No server suite exists** and none was introduced (`solvo.json → quality.tests.backend` is
   `n/a`). Every server-side claim above is proven through Playwright.

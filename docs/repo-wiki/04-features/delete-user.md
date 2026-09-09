@@ -67,9 +67,9 @@ Write 3 was the repo's **only precedent for invalidating sessions in response to
 | State | Rendering |
 |-------|-----------|
 | Closed | dialog hidden |
-| Open | alert dialog naming the user, Cancel + Confirm (`:81-102`) |
+| Open | alert dialog naming the user, Cancel + Confirm (`:83-104`) |
 | Mutating | **no loading state — Confirm stays clickable**, so a double-click fires a second request |
-| Error | `ErrorAlert` inside the dialog (`:89-91`), dialog stays open |
+| Error | `ErrorAlert` inside the dialog (`:91-93`), dialog stays open |
 | Success | dialog closes, `["users"]` invalidated |
 
 The second `DELETE` of a double-click hits the existence check and 404s, so the damage is a spurious error rather than a double deletion — but the missing pending state is a real gap.

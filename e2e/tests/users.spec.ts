@@ -749,7 +749,6 @@ test.describe('Role management', () => {
       expect((await response.json()).error).toBe('Email already exists');
       expect(await storedRole(page, target.id)).toBe(Role.agent);
     });
-
   });
 
   test.describe('AC4, AC5 — a role change binds an existing session', () => {
@@ -896,6 +895,42 @@ test.describe('Role management', () => {
       // Still an admin, and the session still works
       expect((await page.request.get('/api/users')).status()).toBe(200);
       expect(await storedRole(page, self.id)).toBe(Role.admin);
+    });
+
+    // The self-role guard is ordered *before* the email-uniqueness check so an
+    // authorization refusal is never reported as a data conflict. Nothing else in
+    // the suite distinguishes the two orders: every other case trips only one of
+    // them. This is the payload that trips both at once, so it is the only
+    // scenario that fails if the guards are ever swapped.
+    test('should refuse a self role change with a 403, not a 409, when the email is also taken', async ({
+      page,
+    }) => {
+      await loginAsAdmin(page);
+      const other = await createAgent(page, 'Email Holder');
+
+      const self = (await (await page.request.get('/api/me')).json()).user;
+      expect(self.role).toBe(Role.admin);
+
+      const response = await page.request.put(`/api/users/${self.id}`, {
+        data: {
+          name: self.name,
+          email: other.email, // already held by another user -> would be a 409
+          password: '',
+          role: Role.agent, // ...but this is a self role change -> must be a 403
+        },
+      });
+
+      expect(response.status()).toBe(403);
+      expect((await response.json()).error).toBe(
+        'You cannot change your own role',
+      );
+
+      // Neither field was written, and the caller keeps their own email
+      expect(await storedRole(page, self.id)).toBe(Role.admin);
+      const users = await (await page.request.get('/api/users')).json();
+      expect(
+        users.users.find((u: { id: string }) => u.id === self.id).email,
+      ).toBe(self.email);
     });
 
     // The role control renders on every row, including the caller's own, so this

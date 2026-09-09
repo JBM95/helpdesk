@@ -120,8 +120,8 @@ Subject heading; sender name and email; "Created:" and "Updated:" labels; plain-
 
 ## E2E inventory
 
-**Five specs, 89 tests** — counted with `bunx playwright test --list` on 2026-09-08:
-`auth.spec.ts` 31 · `users.spec.ts` 27 · `webhook-inbound-email.spec.ts` 22 ·
+**Five specs, 92 tests** — counted with `bunx playwright test --list` on 2026-09-08:
+`auth.spec.ts` 31 · `users.spec.ts` 30 · `webhook-inbound-email.spec.ts` 22 ·
 `tickets.spec.ts` 5 · `ticket-detail.spec.ts` 4.
 
 > **Correction.** This section previously claimed 102 tests, with 63 in `auth.spec.ts` and
@@ -147,9 +147,9 @@ Subject heading; sender name and email; "Created:" and "Updated:" labels; plain-
 
 **Navigation Bar** (3) — user name and Sign Out visible; branding visible; admin sees the "Users" link, with the agent case noted as future work.
 
-### `users.spec.ts` — 27 tests across 11 describes
+### `users.spec.ts` — 30 tests across 14 describes
 
-> 7 of these predate GH-8; the 20 in the `Role management` describe arrived with it and are
+> 7 of these predate GH-8; the 23 in the `Role management` describe arrived with it and are
 > summarised under Authorization coverage below.
 
 **View Users** (1) — the table renders columns Name, Email, Role, Created, Actions. Note it asserts the **Role column exists**, so role is already displayed and column-tested.
@@ -209,7 +209,7 @@ Helpers: `toMultipart(payload)` converts to SendGrid's multipart shape; `createV
 Worth its own section, because it is thinner than the test count suggests.
 
 **What exists:**
-- `UsersPage.test.tsx:190` — the delete button is absent on admin rows. The only test of role-conditional UI.
+- `UsersPage.test.tsx:190` — the delete button is absent on admin rows. The only *static* test of role-conditional UI; since GH-8 the E2E demotion scenario also asserts the same button vanishing on promotion and returning on demotion.
 - `auth.spec.ts` — the admin *can* reach `/users`, and the link is visible. Positive cases only.
 - `users.spec.ts` — a newly created user is an `agent`.
 - **Since GH-8 (2026-09-08), API-level authorization is asserted.** The `Role management` describe in `users.spec.ts` closes most of the gap this section used to record:
@@ -258,13 +258,13 @@ For assertions that must be about the API rather than the UI, `webhook-inbound-e
 | `client/src/components/ui/` | 13 | 0 | vendored, excluded |
 | `core/` | 9 | 0 | 0.00 |
 | `server/src/` (excl. generated) | 23 | 0 | 0.00 — no suite exists |
-| `e2e/tests/` | — | 5 | 2,051 LOC, 102 tests |
+| `e2e/tests/` | — | 5 | 2,642 LOC, 92 tests |
 
 Client component testing is **selective rather than systematic**: the four highest-traffic surfaces are covered thoroughly and in depth, while guards, presentational components and the dashboard are covered indirectly or not at all. That is a defensible shape at this size; it is worth knowing rather than assuming uniformity.
 
 ## Distribution against the declared policy
 
-[[08-standards/conflicts]] §3 records the E2E suite (2,051 LOC) at roughly 1.88× the server's logic (~1,091 LOC), inverting CLAUDE.md's "prefer component tests" preference. The caveat recorded there applies here: Playwright specs are verbose by construction, so the ratio overstates the gap and is a prompt to look rather than proof of duplication. The suite's genuinely full-stack scenarios — webhook integration, session persistence, email threading — justify the allocation. Note also that with no server suite at all, E2E is the *only* place server behaviour is exercised, which is a second reason the balance sits where it does.
+[[08-standards/conflicts]] §3 records the E2E suite (2,642 LOC at HEAD) at roughly 2.4× the server's logic (~1,091 LOC), inverting CLAUDE.md's "prefer component tests" preference. The caveat recorded there applies here: Playwright specs are verbose by construction, so the ratio overstates the gap and is a prompt to look rather than proof of duplication. The suite's genuinely full-stack scenarios — webhook integration, session persistence, email threading — justify the allocation. Note also that with no server suite at all, E2E is the *only* place server behaviour is exercised, which is a second reason the balance sits where it does.
 
 ## Patterns a new client test should follow
 
@@ -324,7 +324,7 @@ Per [[00-scope]]: an absent pipeline is not a green pipeline. Every gate here is
 
 ## Run commands
 
-From root: `bun run test:e2e` (89 tests, full-stack), plus `test:e2e:ui` and `test:e2e:headed`.
+From root: `bun run test:e2e` (92 tests, full-stack), plus `test:e2e:ui` and `test:e2e:headed`.
 From `client/`: `bun run test` (8 files, 142 tests), `bun run test:watch`.
 From `server/`: nothing — no suite exists.
 

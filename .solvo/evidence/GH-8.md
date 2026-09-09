@@ -74,7 +74,9 @@ suite-level pass".
 
 ## 5. Commits
 
-`git log --oneline main..HEAD` (17 commits, oldest first). Trailer grammar per `gated-cycle`.
+`git log --oneline main..HEAD` — 17 commits at pack-write time, oldest first; this pack's own
+commit and the state-file commit that follows it are not listed, because both postdate the write.
+Both carry the trailers too. Trailer grammar per `gated-cycle`.
 
 | Commit | Subject | `SOLVO-Run` / `SOLVO-Why` |
 |--------|---------|---------------------------|
@@ -105,12 +107,14 @@ byte-identical to `5a219fa`, the pre-guard tip.
 ## 6. Tests
 
 Final check run, recorded in `.solvo/state/GH-8.json → checks` at commit
-`e26550e2e3a7dab0f0d4f80370ac24a9a172eb7f`.
+`1992a413500a8d97f0bafd8a95cb5d73fc70ed6b` — the evidence-pack commit, which is where the
+`gated-cycle` PR phase requires the checks to be re-run. An earlier identical run at `e26550e`
+preceded it.
 
 | Suite | Command | Result |
 |-------|---------|--------|
 | Client (Vitest) | `cd client && bun run test` | **142 passed / 8 files** |
-| E2E (Playwright) | `bun run test:e2e` | **91 passed / 5 files** |
+| E2E (Playwright) | `bun run test:e2e` | **92 passed / 5 files** |
 
 **Coverage: `n/a`.** No coverage tooling is configured anywhere in this repo — verified at install
 and recorded in `solvo.json → quality.coverageWaiver`, with `coverageArtifact` set to an `n/a`
@@ -118,10 +122,10 @@ marker. No measured line or branch percentage exists, so the 80/75 values in `qu
 shipped fallback rather than a repo threshold. `solvo.json` is untouched by this branch, so no
 quality key moved in either direction.
 
-**E2E obligation: covered.** 91 scenarios run, 91 passed. 22 are new to this story — the
-`Role management` describe in `e2e/tests/users.spec.ts` (7 scenarios in that file on `main`, 29 at
+**E2E obligation: covered.** 92 scenarios run, 92 passed. 23 are new to this story — the
+`Role management` describe in `e2e/tests/users.spec.ts` (7 scenarios in that file on `main`, 30 at
 HEAD) — plus 2 pre-existing `ticket-detail` scenarios modified to use the new settle barrier.
-69 baseline + 22 = 91, which reconciles with the run.
+69 baseline + 23 = 92, which reconciles with the run.
 
 Every server-side claim is proven through Playwright, using the `request` fixture. That is a
 recorded decision, not a gap: no server test suite exists in this repo and
@@ -130,8 +134,8 @@ are the repo's **first API-level authorization assertions** — `docs/repo-wiki/
 previously recorded that every authorization assertion was a UI observation.
 
 **Stability**, because this story exposed a pre-existing flake and had to prove the fix:
-full suite 91 passed ×3; the previously-red pair (`ticket-detail.spec.ts` +
-`webhook-inbound-email.spec.ts`) 26 passed ×2; `users.spec.ts` alone 29 passed.
+full suite 92 passed; the previously-red pair (`ticket-detail.spec.ts` +
+`webhook-inbound-email.spec.ts`) 26 passed ×2; `users.spec.ts` alone 30 passed.
 
 **Typecheck:** client `tsc -b` reports 3 errors and server 1, all pre-existing and identical on
 `main` (`ReplyForm.test.tsx:19`, `TicketSummary.test.tsx:19`, `vite.config.ts:41`,

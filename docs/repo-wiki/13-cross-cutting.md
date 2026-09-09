@@ -341,7 +341,14 @@ Four of the seven are server-only, which is the clearest evidence that **client 
 
 Send `{ name, email, password, role: "admin" }` to `POST /api/users` and the parsed result is `{ name, email, password }`. The `role` key is dropped, **no 400 is raised**, and the caller gets a 201 describing a user whose role is `agent`.
 
-This is secure but mute: a client sending a field the server does not accept is told nothing. It is safe today only because no route reads `role` from a body — `POST` hardcodes `Role.agent` (`routes/users.ts:45`) and `updateUserSchema` has no `role` key. The moment a `role` key is *declared* in a schema, behaviour changes shape: a declared-but-invalid value fails enum validation and yields a 400, while an *undeclared* field is still silently dropped. Worth knowing which of those two a given requirement is actually asking for.
+This is secure but mute: a client sending a field the server does not accept is told nothing. The example above still holds for **`POST /api/users`**, which hardcodes `Role.agent` (`routes/users.ts:45`) and whose `createUserSchema` declares no `role`.
+
+**`PUT /api/users/:id` is the other case, and since GH-8 (2026-09-08) it is the live one.** `updateUserSchema` now *declares* `role`, so the two behaviours sit side by side in the same file and the distinction is no longer hypothetical:
+
+- **Declared** (`role` on `updateUserSchema`) — an invalid value fails enum validation and yields a **400**, and a *missing* one does too, because the field is required.
+- **Undeclared** (`role` on `createUserSchema`, and any other extra key on either) — silently dropped, **201/200**, no signal.
+
+GH-8 deliberately did not add `.strict()`, so unknown keys on the `PUT` are still stripped rather than rejected — a wider contract change than that story called for. When a requirement says "reject unexpected input", check which of these two it actually means.
 
 ## Error handling
 

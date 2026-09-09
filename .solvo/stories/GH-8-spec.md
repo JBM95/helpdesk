@@ -36,7 +36,7 @@ observable behaviour.
 Decision 1 is a **breaking change to the `PUT` contract**: today all three of `name`/`email`/
 `password` must be present and any extra key — `role` included — is silently stripped
 (`updateUserSchema` has no `.strict()`, see [[edit-user]] §Server trace). After this story a `PUT`
-without `role` returns 400. The only caller in the repo is `UserForm.tsx:44`, which this story
+without `role` returns 400. The only caller in the repo is `UserForm.tsx:44` (line numbers here and below are `main`'s, the as-is frame this spec was written against), which this story
 updates, so the blast radius of the break is contained to this diff.
 
 Decision 2 also closes every **sequential** path to zero admins: demoting the final admin can only
@@ -112,7 +112,7 @@ TD-10 describes still stands, and TD-10 is updated to say so rather than being m
 ### Demote-then-delete is permitted, deliberately
 
 AC7 is explicit that the delete rule protects "a user whose **current stored role** is `admin`".
-The rule at `users.ts:115-118` reads the stored role at delete time, so demoting an admin and then
+The rule at `users.ts:115-118` (as-is on `main`; `:147-150` after this story) reads the stored role at delete time, so demoting an admin and then
 deleting them is two individually-legal steps reaching an outcome the rule blocks in one. AC7 asks
 that the protection not be *weakened* — it does not ask that this path be closed. Left open, and
 recorded here as the reading being built. This answers the **demote-then-delete** open question in
@@ -123,7 +123,7 @@ recorded here as the reading being built. This answers the **demote-then-delete*
 - `POST /api/users` — still hardcodes `role: Role.agent` (`users.ts:45`). AC6.
 - `createUserSchema` — no `role` key. AC6.
 - `require-auth.ts` / `require-admin.ts` — untouched; see the verified fact above.
-- `users.ts:115-118` delete protection — untouched. AC7.
+- `users.ts:115-118` delete protection — untouched. AC7. (As-is line range; the code is unchanged, so it simply moved to `:147-150`.)
 - No `.strict()` on `updateUserSchema`. Rejecting *unknown* keys is a wider contract change than
   any AC asks for; other extra keys stay silently stripped.
 - No attribution. There is no `modifiedBy` column anywhere ([[auth]], [[user-management]] §Open
@@ -175,9 +175,9 @@ needs no fixture changes for this ([[11-testing]] §Can the suite express a two-
 | AC5 | Promotion binds an active session | admin context promotes an agent who already has a live session; that same session's next `GET /api/users` → **200**, no re-login. *This is the test that proves the fresh role read.* | E2E (two contexts) |
 | AC6 | Creation policy unchanged | `POST /api/users` returns `role: "agent"`; no role control in create mode | E2E (extends `users.spec.ts:137-149`) + component |
 | AC7 | Delete protection preserved | `DELETE` on a user whose stored role is `admin` → **403** at the API, not merely a hidden button | E2E (`request`) |
-| AC8 | List reflects canonical role | after a role change the table badge shows the new role without a manual refresh (`["users"]` invalidation already exists at `UserForm.tsx:51`) | component + E2E |
+| AC8 | List reflects canonical role | after a role change the table badge shows the new role without a manual refresh (`["users"]` invalidation already exists at `UserForm.tsx:51` as-is, `:68` after this story) | component + E2E |
 | AC9 | Regression coverage | satisfied by the seven rows above; the negative and transition cases are the point |  |
-| — | Self-change guard (decision 2) | admin `PUT`s their own id with the other role → **403**, own role unchanged; and the same refusal driven **through the dialog**, asserting the server's message reaches the user rather than being swallowed | E2E (`request` + UI) |
+| — | Self-change guard (decision 2) | admin `PUT`s their own id with the other role → **403**, own role unchanged; the same refusal driven **through the dialog**, asserting the server's message reaches the user rather than being swallowed; and a payload that trips the self-role guard *and* the email-uniqueness check at once → **403, not 409**, which is the only scenario that fails if the two guards are ever reordered | E2E (`request` + UI) |
 
 AC7's row is a genuine coverage gain: [[11-testing]] §Authorization coverage today records that
 **no test anywhere asserts authorization at the API level** — every current authorization assertion
@@ -194,14 +194,14 @@ above says what is claimed; this says where to look.
 | AC1 | `:461` promote via dialog · `:491` demote via dialog · `:528` no role control in create mode · `UserForm.test.tsx` role-control cases (pre-selection both roles, exactly two options, promotion and demotion each reaching the `PUT` body, absence in create mode) |
 | AC2 | `:546` authenticated non-admin → 403 `Forbidden` · `:581` unauthenticated → 401 · `:601` agent self-promotion → 403 |
 | AC3 | `:629` unsupported value · `:651` key omitted · `:669` wrong case (`"Admin"`) · `:686` `null` · `:705` rejected on another field · `:732` rejected on email conflict (409) |
-| AC4 | `:756` demoted admin's live session → 401 |
-| AC5 | `:778` promoted agent's live session → 200, no re-login |
-| AC6 | `:804` `POST` yields `agent` · `:814` `POST` ignores a supplied role · `:528` no create-mode control |
-| AC7 | `:837` `DELETE` on a stored admin → 403 · `:853` permitted once demoted |
+| AC4 | `:755` demoted admin's live session → 401 |
+| AC5 | `:777` promoted agent's live session → 200, no re-login |
+| AC6 | `:803` `POST` yields `agent` · `:813` `POST` ignores a supplied role · `:528` no create-mode control |
+| AC7 | `:836` `DELETE` on a stored admin → 403 · `:852` permitted once demoted |
 | AC8 | `:461` and `:491` — badge repaints in both directions off the `["users"]` invalidation, each paired with a `storedRole` read proving the table matches the server |
 | AC9 | The rows above are the regression coverage; the negative and transition cases are the point |
-| — | Self-role-change: `:875` API 403 · `:903` refusal surfaced in the dialog · `:931` unchanged-role self-save → 200 |
-| — | `:955` unknown id → 404 |
+| — | Self-role-change: `:874` API 403 · `:905` 403 not 409 when the email is also taken · `:938` refusal surfaced in the dialog · `:966` unchanged-role self-save → 200 |
+| — | `:990` unknown id → 404 |
 
 Every AC has at least one scenario, and each negative case pairs its status assertion with a
 follow-up read proving nothing was persisted. Line numbers move; the describe names (`AC1, AC8 …`

@@ -58,7 +58,7 @@ Excludes soft-deleted users and the AI pseudo-user, ordered oldest first. **`rol
 
 ## Tests
 
-**Component:** `pages/UsersPage.test.tsx` (273 LOC) — loading, render, date formatting, fetch error, empty table, dialog behaviour, and specifically that the delete button appears on agent rows and not on admin rows (`:190`). That single assertion is the only test of role-conditional UI anywhere in the repo ([[11-testing]]). `UsersTable.tsx` has no direct test but is fully exercised here and is used nowhere else.
+**Component:** `pages/UsersPage.test.tsx` (273 LOC) — loading, render, date formatting, fetch error, empty table, dialog behaviour, and specifically that the delete button appears on agent rows and not on admin rows (`:190`). Since GH-8 it is no longer the only test of role-conditional UI: `e2e/tests/users.spec.ts` asserts that same Delete button disappearing when a user is promoted and returning when they are demoted, which is the transition this static case cannot cover ([[11-testing]]). `UsersTable.tsx` has no direct test but is fully exercised here and is used nowhere else.
 
 **E2E:** `e2e/tests/users.spec.ts` — asserts the table renders columns Name, Email, **Role**, Created, Actions.
 

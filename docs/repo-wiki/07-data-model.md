@@ -227,14 +227,14 @@ Dashboard stats. `STABLE`, reads `ticket`, and excludes `new`/`processing` from 
 | Prisma model | Zod schema | Fields validated | Role coverage |
 |--------------|------------|------------------|---------------|
 | User | `createUserSchema` | `name`, `email`, `password` | **No `role` field.** Role is hardcoded to `Role.agent` at `server/src/routes/users.ts:45`. |
-| User | `updateUserSchema` | `name`, `email`, `password` | **No `role` field.** Role is not writable through `PUT /api/users/:id`. |
+| User | `updateUserSchema` | `name`, `email`, `password`, `role` | **`role: z.enum(Role, …)`, required** since GH-8 (`core/schemas/users.ts:12-20`). This is the only place role is writable; a `PUT` omitting it is a 400. |
 | Ticket | `inboundEmailSchema` | `from`, `fromName`, `subject`, `body`, `bodyHtml` | — |
 | Ticket | `updateTicketSchema` | `assignedToId`, `status`, `category` | — |
 | Ticket | `ticketListQuerySchema` | `sortBy`, `sortOrder`, `status`, `category`, `search`, `page`, `pageSize` | — |
 | Reply | `createReplySchema` | `body` | — |
 | Reply | `polishReplySchema` | `body` | — |
 
-**`User.role` is unreachable through the validation contract.** The column exists and is fully formed; no schema declares a `role` field, so no endpoint accepts a role value. Enabling role mutation means adding it to the contract, the handler and the UI — and no migration.
+**`User.role` is reachable through the validation contract, at exactly one endpoint.** `updateUserSchema` declares it and `PUT /api/users/:id` writes it; `createUserSchema` deliberately does not, so creation stays agent-only. GH-8 added it to the contract, the handler and the UI, and **needed no migration** — the column and both enum members already existed.
 
 ### Better Auth `additionalFields` — `server/src/lib/auth.ts:17-29`
 
@@ -251,19 +251,14 @@ user: {
 
 ### Does a role change reach an active session?
 
-The question any role-mutation work turns on, kept here because the schema supplies two of the three facts.
+**Yes — settled by GH-8 (2026-09-08). The full write-up lives in [[auth]] §How a role reaches an authorization decision; read that rather than re-deriving it here.**
 
-**Evidence from this repo:**
+The schema's contribution to that answer, which is why the question is mentioned at all: `Session` denormalizes no user fields, carrying only `userId` (`schema.prisma:58-70`). There is no column anywhere for a stale role to live in.
 
-1. `Session` denormalizes no user fields — only `userId` (`schema.prisma:58-70`). No table column can hold a stale role.
-2. `betterAuth()` configures **no `session` block at all** (`server/src/lib/auth.ts:6-31`), so `session.cookieCache` is left at its default, which is off. No signed cookie snapshot is being served.
-3. `requireAuth` calls `auth.api.getSession()` on every request and assigns `req.user = session.user` (`server/src/middleware/require-auth.ts:6-20`).
+Two things about the previous version of this section are worth knowing, because both were wrong in ways that would have cost real work:
 
-Together these say the role is resolved per request from the `User` row, so a demotion or promotion would take effect on the very next request.
-
-**This is inference, not verified behaviour.** Facts 1–3 are read from this repo, but the step from them to "a database read happens" depends on documented Better Auth behaviour that this codebase does not itself demonstrate. A second, independent line points the same way — Better Auth does not cookie-cache custom `additionalFields`, and `role` is one — but that is also library behaviour rather than local evidence.
-
-Settle it empirically before relying on it for an authorization decision: hold a live admin session, demote that user, then call an admin-only `/api/users` route on the same session and observe whether it is refused. Do not treat this section as the answer.
+- It recorded the conclusion as **inference, not verified behaviour**, and asked for an empirical check before anyone relied on it. That check now exists as an automated test — `e2e/tests/users.spec.ts` promotes an agent holding a live session and asserts that same session goes from 403 to 200 with no re-login. It is no longer an open question.
+- It offered a second, "independent" line of support: that Better Auth does not cookie-cache custom `additionalFields`. **That claim is withdrawn as unverified** — it conflated custom *session* fields with user `additionalFields`, and GH-8 found the cookie-cache branch short-circuits before the adapter read without establishing which fields it carries. Whether enabling `session.cookieCache` would stale `role` is **not known in either direction**. Treat it as a risk to test, never as a reassurance ([[05-api-surface]], [[13-cross-cutting]]).
 
 ## Seeded data — `server/prisma/seed.ts:11-86`
 

@@ -55,30 +55,32 @@ if (existing) {
 **Response:** `201` with `{ user }`, including `role`.
 **Error paths:** 400 validation · 409 duplicate email · 401 unauthenticated · 403 non-admin.
 
-**No `role` parameter is accepted.** It is absent from `createUserSchema`, so a client cannot set it, and `:45` hardcodes `agent`. The single admin in this system exists because `server/prisma/seed.ts` creates it — there is no in-product way to make another ([[07-data-model]]).
+**No `role` parameter is accepted** *at creation*. It is absent from `createUserSchema`, so a client cannot set it, and `:45` hardcodes `agent`. This is unchanged by GH-8 and deliberate: creation has no role to choose.
+
+Making another admin **is** possible in-product since GH-8 (2026-09-08), but only as a second step — create the user (an `agent`), then promote them through [[edit-user]]. The seeded admin (`server/prisma/seed.ts`) is no longer the only one obtainable without a direct database write ([[07-data-model]]).
 
 The password crosses the wire in plaintext under TLS and is hashed server-side.
 
 ## Validation
 
-`createUserSchema` via `zodResolver` (`:33`) on the client and via `validate` at `routes/users.ts:23` on the server — the same schema on both sides ([[08-standards/observed]]).
+`createUserSchema` via `zodResolver` (`:47`) on the client and via `validate` at `routes/users.ts:23` on the server — the same schema on both sides ([[08-standards/observed]]).
 
 ## UI states
 
 | State | Rendering |
 |-------|-----------|
 | Closed | dialog hidden |
-| Open | "Create User" modal, empty form (`:67-80`) |
-| Validation error | `ErrorMessage` per field (`:72-74`, `:86-88`, `:100-102`) |
-| Submitting | disabled, "Creating…" (`:114`) |
-| Error | `ErrorAlert` in the form (`:104-109`) |
-| Success | `onSuccess()` (`:54`) closes the dialog, `["users"]` invalidated, form reset |
+| Open | "Create User" modal, empty form (`:81-120`) |
+| Validation error | `ErrorMessage` per field (`:89-91`, `:103-105`, `:117-119`) |
+| Submitting | disabled, "Creating…" (`:145-148`) |
+| Error | `ErrorAlert` in the form (`:138-143`) |
+| Success | `onSuccess()` (`:71`) closes the dialog, `["users"]` invalidated, form reset |
 
 ## Tests
 
-**Component:** `pages/UserForm.test.tsx` (287 LOC) — field rendering, validation (short name, short password, missing email), `aria-invalid`, the request, the success callback, form reset, a 409 surfaced via `data.error`, a generic non-Axios error, and the loading state.
+**Component:** `pages/UserForm.test.tsx` (421 LOC) — field rendering, validation (short name, short password, missing email), `aria-invalid`, the request, the success callback, form reset, a 409 surfaced via `data.error`, a generic non-Axios error, and the loading state.
 
-**E2E:** `e2e/tests/users.spec.ts` — the dialog opens with the expected fields; a successful creation returns 201 and the new row shows the correct name, email, the **`agent`** role, and both edit and delete buttons (`:139-149`).
+**E2E:** `e2e/tests/users.spec.ts` — the dialog opens with the expected fields; a successful creation returns 201 and the new row shows the correct name, email, the **`agent`** role, and both edit and delete buttons (`:130-146`).
 
 That E2E assertion is the existing guard on creation defaulting to `agent`, and it is the regression test any change to role handling must keep green.
 

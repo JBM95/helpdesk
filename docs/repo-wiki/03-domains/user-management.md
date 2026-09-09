@@ -168,12 +168,12 @@ The AI agent is a pseudo-user used as `assignedToId` while the AI works a ticket
 
 ## Relationship with the auth domain
 
-- This domain **mutates** `User.name`, `User.email` and `User.deletedAt`
+- This domain **mutates** `User.name`, `User.email`, `User.deletedAt` and — since GH-8 — `User.role`
 - [[auth]] **owns** the `User` model and **provides** the guards protecting this domain
 - auth **reads** `User.role` at `require-admin.ts:5` to enforce access
 - This domain **creates** `Account` rows transactionally alongside `User` (`users.ts:38-61`)
 
-`User.role` sits exactly on the seam: auth-owned, auth-enforced, and written by nobody. Making it writable is a user-management change to an auth-owned field that feeds an authorization decision, which is why work here touches both T3 domains at once.
+`User.role` sits exactly on the seam: auth-owned, auth-enforced, and **written here and only here**. Before GH-8 (2026-09-08) nothing wrote it at all. That it is now writable makes this a user-management change to an auth-owned field that feeds an authorization decision, which is why work here touches both T3 domains at once — and why a change to the write path is a change to an authorization boundary, not to a form.
 
 ## Open questions
 
