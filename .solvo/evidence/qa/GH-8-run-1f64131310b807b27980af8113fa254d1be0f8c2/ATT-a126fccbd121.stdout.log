@@ -1,0 +1,8 @@
+Listing tests:
+  [chromium] › users.spec.ts:629:9 › Role management › AC3 — strict role validation › should reject an unsupported role and leave the stored role alone
+  [chromium] › users.spec.ts:651:9 › Role management › AC3 — strict role validation › should reject a missing role and leave the stored role alone
+  [chromium] › users.spec.ts:669:9 › Role management › AC3 — strict role validation › should reject a role differing only in case
+  [chromium] › users.spec.ts:686:9 › Role management › AC3 — strict role validation › should reject a null role and leave the stored role alone
+  [chromium] › users.spec.ts:705:9 › Role management › AC3 — strict role validation › should not change a role that was already rejected for another field
+  [chromium] › users.spec.ts:732:9 › Role management › AC3 — strict role validation › should not change a role when the email is already taken
+Total: 6 tests in 1 file

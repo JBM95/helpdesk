@@ -1,0 +1,11 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90mC:/Users/JBMccallaghan/Downloads/Personal Projects/helpdesk/client[39m
+
+ [32m✓[39m src/pages/UserForm.test.tsx [2m([22m[2m28 tests[22m[2m | [22m[33m27 skipped[39m[2m)[22m[33m 326[2mms[22m[39m
+     [33m[2m✓[22m[39m should offer exactly the agent and admin options [33m 325[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m1 passed[39m[22m[2m | [22m[33m27 skipped[39m[90m (28)[39m
+[2m   Start at [22m 15:01:31
+[2m   Duration [22m 90.80s[2m (transform 813ms, setup 7.36s, import 29.57s, tests 326ms, environment 51.32s)[22m
+

@@ -169,5 +169,60 @@
     "server",
     "e2e"
   ],
-  "evidencePackStatus": "INCOMPLETE — section 7 (Reviews) is unfillable: no qa block, no canonical QaRun, and none of the three exploratory charter areas issue #8 asks for, and no authority decision recorded for waiving them. quality.qa mode is 'warn' so it does not block, but the omission is unresolved and is the one thing on this story a human still has to decide. Every other section is complete, and the pack was refreshed at eb6af3c to cover rounds 4-5, the corrected commit and check attributions, the full 24-commit list, and the fourth scope decision."
+  "evidencePackStatus": "INCOMPLETE — section 7 (Reviews) is unfillable: no qa block, no canonical QaRun, and none of the three exploratory charter areas issue #8 asks for, and no authority decision recorded for waiving them. quality.qa mode is 'warn' so it does not block, but the omission is unresolved and is the one thing on this story a human still has to decide. Every other section is complete, and the pack was refreshed at eb6af3c to cover rounds 4-5, the corrected commit and check attributions, the full 24-commit list, and the fourth scope decision.",
+  "qa": {
+    "verdict": "fail",
+    "snapshotId": "vs-9e6758cb71f1134f3ee3468a7a3414f4",
+    "performedBy": "claude-code haiku-4.5 / solvo qa-verify (dispatched by JB)",
+    "at": "2026-09-09T15:46:00.755Z",
+    "runId": "RUN-3772b2b90d0e",
+    "testedCommit": "1f64131310b807b27980af8113fa254d1be0f8c2",
+    "recordPath": ".solvo/evidence/qa/GH-8-run-1f64131310b807b27980af8113fa254d1be0f8c2.json",
+    "executionSource": null,
+    "acResults": [
+      {
+        "ac": "AC1",
+        "status": "verified"
+      },
+      {
+        "ac": "AC2",
+        "status": "gap"
+      },
+      {
+        "ac": "AC3",
+        "status": "gap"
+      },
+      {
+        "ac": "AC4",
+        "status": "verified"
+      },
+      {
+        "ac": "AC5",
+        "status": "verified"
+      },
+      {
+        "ac": "AC6",
+        "status": "verified"
+      },
+      {
+        "ac": "AC7",
+        "status": "ambiguous"
+      },
+      {
+        "ac": "AC8",
+        "status": "verified"
+      },
+      {
+        "ac": "AC9",
+        "status": "gap"
+      }
+    ],
+    "handoff": [],
+    "reasons": [
+      "AC2: 4 of 5 enumerated instances covered, and the uncovered one is the AC's own exclusivity clause. Covered: users.spec.ts :546 authenticated non-admin (403 at :572, body error==='Forbidden' at :575, storedRole at :576), :581 unauthenticated (401 at :597 + read :598), :601 agent self-promotion (403 + 'Forbidden' :621 + read :622). GAP: AC2 sentence 1 says role mutation is accepted ONLY through the existing admin-protected user-management API, and nothing tests that exclusivity. Better Auth is mounted at /api/auth/{*any} and exposes update-user to any authenticated principal; the only thing preventing a role write through it is `input: false` on the role additionalField at server/src/lib/auth.ts:22. A grep of e2e/ for 'update-user' returns nothing. No case in the approved 68 enumerates it and no charter probed it. Implementation is sound by inspection — the only two writes to role in server/src are users.ts:45 (hardcoded Role.agent) and users.ts:115 (behind requireAuth + requireAdmin) — so this is load-bearing authorization with zero coverage, not a defect.",
+      "AC3: The whole-stored-user clause is now ESTABLISHED, but by the hand-performed charter rather than by the suite, and two invalid-input instances remain untested. On the clause: all six automated AC3 scenarios send the target's own current name and email (:636-641, :658, :674-679, :693-698) and assert one field via storedRole (:443-448 returns .role), so they cannot distinguish 'nothing was written' from 'role was not written but name and email were'; the two that do send mutated fields (:705 name 'ab', :732 a taken email) never read them back. The claim is carried entirely by ATT-18fc2f14440d (OBL-23ed9be84e8c, performedBy JB), whose arm 2 sent MUTATED NAME + a mutated email with role 'superuser', then the same with the role key omitted, and read back by psql: name, email and role all at baseline with updatedAt unmoved from creation at 15:16:26.005, plus a count of rows matching the mutated email of 0. Consistent with users.ts:74-75 where validate runs before the target is loaded. Two caveats: it rests on a single human attempt rather than a repeatable test, and it is filed against an AC2-tagged obligation, so AC3 has no obligation carrying its own clause. REMAINING GAP: CASE-bd320a8da365 (role as array, object, integer, boolean) and CASE-4c5cbc978ea4 (whitespace-padded ' admin ') are marked manual with no obligation, no attempt and no waiver, and both are 'unsupported role values' by the AC's own wording. core/schemas/users.ts:19 is z.enum with no coercion or trim, so the implementation is right by inspection and the instances are untested rather than broken. Also assertion-light relative to siblings: :669 and :686 assert status and storedRole but omit the error-body assertion their four siblings carry.",
+      "AC9: All seven behaviours AC9 names have asserting scenarios and all passed in one full-suite run (ATT-a49d0e7e45db.stdout.log:146, '93 passed (32.3s)', with each Role management scenario named ok at :95-143). Three gaps against AC9's own terms. First, 'invalid role input' coverage is incomplete: the two AC3 instances above have no automated test at all. Second, CASE-2c479a856aea — the case whose entire job is auditing that every negative scenario pairs with a persistence read — has no obligation; performed by hand the pairing holds 13 of 14 (users.spec.ts:1025 asserts only 404 with no follow-up read), but every pairing calls storedRole (:443-448) which returns exactly one field, so the recorded claim is broader than the assertion. Third, seven AC9 obligations were discharged with 'playwright test --list' captures (OBL-afa4a3005597, OBL-e5a9e201f59f, OBL-5ed1c1a42331, OBL-4764df24a602, OBL-ce6f1973480d, OBL-7baece1881f8, OBL-971cfeba952a); a listing is the test names, while those cases' own steps say to read the assertions, so they become proven only in combination with a source read and with a different obligation's full-suite log. Separately, OBL-9556cad8acce records pass/complete against CASE-23c59ddcf0fa, whose expected result requires more than one cold-database run and whose evidence is one run — the plan states that requirement itself at plan.md:368.",
+      "AC7: AC7 is two sentences that pull in opposite directions, and the tests encode only one reading. Reading A, which the code and tests adopt: sentence 1 protects a user whose CURRENT STORED role is admin, the guard reads the row fresh at users.ts:141 and tests user.role === Role.admin at :147, so demote-then-delete is two individually-authorized steps rather than a bypass — users.spec.ts:887 encodes this as intended and says so in a comment at :899-900. Reading B, equally honest and unencoded: sentence 2 says a role change must not weaken or bypass that protection, which reads most naturally as forbidding exactly the sequence Reading A permits; an admin who cannot be deleted at 10:00 and can be deleted at 10:01 solely because another admin changed one field has had the protection bypassed by a role change, the literal thing sentence 2 names. Nothing in AC7's own text says the protection attaches to the current role rather than to being an admin — that qualifier comes from the spec and the test comment, not from issue #8. Under Reading B, users.spec.ts:887 is a test pinning a bypass rather than proving protection. Routes to the issue author for a ruling, not to Dev and not to another test run. The covered half is solid: :871 asserts 403, the exact body, and storedRole admin at :884, which also proves no soft delete since storedRole reads the deletedAt-filtered list. Second-order observation on the same clause from ATT-0fa25dd59654: a role change also STRENGTHENS the protection onto rows the Users page cannot reach, since PUT reaches soft-deleted rows and the AI pseudo-user and promoting either makes it permanently undeletable through the API. Out of story scope (TD-22, guard reverted at 71ad3af)."
+    ]
+  }
 }
