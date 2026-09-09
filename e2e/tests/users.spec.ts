@@ -625,6 +625,24 @@ test.describe('Role management', () => {
       expect(await storedRole(page, target.id)).toBe(Role.agent);
     });
 
+    // z.enum is case-sensitive; documenting that rather than leaving it implied
+    test('should reject a role differing only in case', async ({ page }) => {
+      await loginAsAdmin(page);
+      const target = await createAgent(page, 'Cased Role');
+
+      const response = await page.request.put(`/api/users/${target.id}`, {
+        data: {
+          name: target.name,
+          email: target.email,
+          password: '',
+          role: 'Admin',
+        },
+      });
+
+      expect(response.status()).toBe(400);
+      expect(await storedRole(page, target.id)).toBe(Role.agent);
+    });
+
     test('should reject a null role and leave the stored role alone', async ({
       page,
     }) => {
@@ -813,6 +831,36 @@ test.describe('Role management', () => {
 
       // Still an admin, and the session still works
       expect((await page.request.get('/api/users')).status()).toBe(200);
+      expect(await storedRole(page, self.id)).toBe(Role.admin);
+    });
+
+    // The role control renders on every row, including the caller's own, so this
+    // refusal is reachable through the UI and not only by calling the API.
+    test('should show the refusal in the dialog when an admin demotes themselves', async ({
+      page,
+    }) => {
+      await loginAsAdmin(page);
+      const self = (await (await page.request.get('/api/me')).json()).user;
+      await page.goto('/users');
+
+      const ownRow = page.getByRole('row').filter({ hasText: self.email });
+      await ownRow
+        .getByRole('button', { name: new RegExp(`edit ${self.name}`, 'i') })
+        .click();
+
+      await expect(page.getByRole('combobox', { name: 'Role' })).toContainText(
+        'Admin',
+      );
+      await page.getByRole('combobox', { name: 'Role' }).click();
+      await page.getByRole('option', { name: 'Agent' }).click();
+      await page.getByRole('button', { name: /save changes/i }).click();
+
+      // The server's message reaches the user rather than being swallowed
+      await expect(
+        page.getByText('You cannot change your own role'),
+      ).toBeVisible();
+
+      // ...and nothing was persisted
       expect(await storedRole(page, self.id)).toBe(Role.admin);
     });
 
