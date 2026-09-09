@@ -2,7 +2,14 @@
   "id": "GH-8",
   "tier": "T3",
   "tierConfirmedBy": "JB",
-  "phase": "pr",
+  "phase": "merge-gate",
+  "pr": {
+    "number": 9,
+    "url": "https://github.com/JBM95/helpdesk/pull/9",
+    "openedAt": "2026-09-09T08:40:00Z",
+    "headCommit": "9bc32bb",
+    "note": "Opened after round 5's APPROVE cleared the gate-guard arm that refuses a PR while the recorded verdict is REQUEST_CHANGES. GATE 2 had approved opening it; the APPROVE was the outstanding precondition."
+  },
   "run": {
     "id": "3f0c9a41-7d52-4e88-9b31-6a2f5c1d8e40",
     "agent": "claude-code",
