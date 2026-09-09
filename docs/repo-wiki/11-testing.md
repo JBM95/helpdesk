@@ -272,7 +272,7 @@ Client component testing is **selective rather than systematic**: the four highe
 2. Use `renderWithQuery` from `@/test/render` for anything touching TanStack Query or the router.
 3. `vi.mock("axios")` at the top, `vi.mocked(axios, { deep: true })`, `vi.resetAllMocks()` in `beforeEach`.
 4. Inline mock data at the top of the file — there are no shared factories, and adding one is only worth it once data is reused across three or more files.
-5. Local render and fill helpers for complex setup, as in `UserForm.test.tsx:17-32` and `TicketDetailPage.test.tsx:49-62`.
+5. Local render and fill helpers for complex setup, as in `UserForm.test.tsx:27-55` and `TicketDetailPage.test.tsx:49-62`.
 6. Assert the loading state before the success and error states.
 7. Cover both Axios errors (`response.data.error`) and non-Axios errors wherever the handling differs.
 8. `waitFor` for async assertions.

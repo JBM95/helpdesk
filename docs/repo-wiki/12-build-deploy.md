@@ -92,7 +92,16 @@ These stand in for CI. All verified present.
 
 There is no aggregate lint or type-check script at root.
 
-**E2E runs unattended.** `playwright.config.ts:22-33` declares a `webServer` block that starts both the server (port 3001) and client (port 5174); `e2e/global-setup.ts:18` runs `prisma migrate reset --force` against `helpdesk_test` and seeds it at line 25. No manual setup needed beyond a reachable PostgreSQL and a populated `server/.env.test`.
+**E2E runs unattended — on a POSIX shell.** `playwright.config.ts:22-33` declares a `webServer` block that starts both the server (port 3001) and client (port 5174). `e2e/global-setup.ts` then does three things, in order: `prisma migrate reset --force` against `helpdesk_test` (`:18`), the seed (`:26`), and `prisma db execute` of `e2e/clear-job-queue.sql` to truncate pg-boss's job backlog (`:38`, added by GH-8 — see [[11-testing]] for why the reset alone is not enough). No manual setup needed beyond a reachable PostgreSQL and a populated `server/.env.test`.
+
+**It does not run unattended on Windows.** The client entry's command is
+`VITE_API_URL=http://localhost:3001 bun run --cwd client vite --port 5174`
+(`playwright.config.ts:29`) — POSIX inline-env syntax, which `cmd.exe` cannot execute, so
+`webServer` fails with `'VITE_API_URL' is not recognized...` and no test runs. The workaround is to
+start both servers yourself from a POSIX shell first; `reuseExistingServer: !process.env.CI` then
+adopts them. Pre-existing and unrelated to any one story, but it means "unattended" holds on
+Linux/macOS and CI only. A `cross-env`-style fix, or moving the variable into the client's own env
+file, would close it.
 
 ## Containerization
 
