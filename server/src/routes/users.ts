@@ -93,18 +93,6 @@ router.put("/:id", requireAuth, requireAdmin, async (req, res) => {
     return;
   }
 
-  // A role is only meaningful for a principal that can sign in. The AI pseudo-user
-  // has no Account row (prisma/seed.ts) and a soft-deleted user is refused at
-  // require-auth.ts:15-18, so promoting either grants no access -- but it does make
-  // the row undeletable, because the delete guard below refuses any stored admin.
-  // GET /api/users hides both of these (`:15`); this refuses only the role change,
-  // deliberately not widening the contract for name/email, which was writable on
-  // these rows before role was.
-  if (role !== target.role && (target.deletedAt || id === AI_AGENT_ID)) {
-    res.status(403).json({ error: "This user's role cannot be changed" });
-    return;
-  }
-
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing && existing.id !== id) {
     res.status(409).json({ error: "Email already exists" });

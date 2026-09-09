@@ -1,6 +1,5 @@
 import { expect, test, type Browser, type Page } from '@playwright/test';
 import { Role } from 'core/constants/role.ts';
-import { AI_AGENT_ID } from 'core/constants/ai-agent.ts';
 import { login, loginAsAdmin } from '../fixtures/auth';
 
 /**
@@ -751,54 +750,6 @@ test.describe('Role management', () => {
       expect(await storedRole(page, target.id)).toBe(Role.agent);
     });
 
-    // Role is refused on principals that cannot sign in. Promoting either would
-    // grant no access but would make the row undeletable, since the delete guard
-    // refuses any stored admin.
-    //
-    // Both cases assert the guard's own message rather than just the 403, because
-    // requireAdmin and the self-role-change guard also return 403 -- the message is
-    // what proves *this* guard fired. Neither user is readable afterwards
-    // (GET /api/users excludes the AI agent and soft-deleted rows, and there is no
-    // GET /api/users/:id), and the guard returns before the write, so the 403 is
-    // the evidence that nothing was persisted. Deliberately no DELETE here: the AI
-    // pseudo-user is shared and the suite runs fullyParallel.
-    test('should refuse to change the role of the AI pseudo-user', async ({
-      page,
-    }) => {
-      await loginAsAdmin(page);
-
-      const response = await page.request.put(`/api/users/${AI_AGENT_ID}`, {
-        data: {
-          name: 'AI Agent',
-          email: 'ai@helpdesk.local',
-          password: '',
-          role: Role.admin,
-        },
-      });
-
-      expect(response.status()).toBe(403);
-      expect((await response.json()).error).toBe(
-        "This user's role cannot be changed",
-      );
-    });
-
-    test('should refuse to change the role of a soft-deleted user', async ({
-      page,
-    }) => {
-      await loginAsAdmin(page);
-      const target = await createAgent(page, 'Soft Deleted');
-
-      expect(
-        (await page.request.delete(`/api/users/${target.id}`)).status(),
-      ).toBe(200);
-
-      const response = await setRole(page, target, Role.admin);
-
-      expect(response.status()).toBe(403);
-      expect((await response.json()).error).toBe(
-        "This user's role cannot be changed",
-      );
-    });
   });
 
   test.describe('AC4, AC5 — a role change binds an existing session', () => {
