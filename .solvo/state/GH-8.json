@@ -2,7 +2,7 @@
   "id": "GH-8",
   "tier": "T3",
   "tierConfirmedBy": "JB",
-  "phase": "build",
+  "phase": "pr",
   "run": {
     "id": "3f0c9a41-7d52-4e88-9b31-6a2f5c1d8e40",
     "agent": "claude-code",
@@ -17,22 +17,120 @@
     "Open questions"
   ],
   "grounding": [
-    { "path": "docs/repo-wiki/03-domains/user-management.md", "band": "unrated" },
-    { "path": "docs/repo-wiki/03-domains/auth.md", "band": "unrated" },
-    { "path": "docs/repo-wiki/04-features/edit-user.md", "band": "unrated" },
-    { "path": "docs/repo-wiki/11-testing.md", "band": "unrated" }
+    {
+      "path": "docs/repo-wiki/03-domains/user-management.md",
+      "band": "unrated"
+    },
+    {
+      "path": "docs/repo-wiki/03-domains/auth.md",
+      "band": "unrated"
+    },
+    {
+      "path": "docs/repo-wiki/04-features/edit-user.md",
+      "band": "unrated"
+    },
+    {
+      "path": "docs/repo-wiki/11-testing.md",
+      "band": "unrated"
+    }
   ],
   "gates": {
     "gate1": {
       "approved": true,
       "by": "JB",
       "at": "2026-09-08T18:11:31Z"
+    },
+    "gate2": {
+      "approved": true,
+      "by": "JB",
+      "at": "2026-09-09T06:55:00Z",
+      "decision": "Approve — write artifacts and open the PR",
+      "presentedWith": "diff + results + explicit notice that the 3-round fresh-review cap was exhausted and the post-revert tree has had no independent review"
     }
   },
+  "review": {
+    "verdict": "REQUEST_CHANGES",
+    "blockersOpen": 0,
+    "by": "fresh-reviewer",
+    "at": "2026-09-09T06:40:00Z",
+    "lenses": {
+      "blind": 4,
+      "edge": 3,
+      "acceptance": 3
+    },
+    "round": 3,
+    "roundsCap": 3,
+    "notes": "Round 3 returned 2 blockers, both fallout from the out-of-scope guard in 87603e7 rather than from the story: inserting 12 lines mid-handler shifted 32 file:line citations across 11 documents (re-breaking round 1's B2) and made four wiki claims wrong, one the opposite of the code. Resolved by reverting that product hunk on JB's decision (71ad3af): users.ts is byte-identical to 5a219fa, the pre-guard tip whose citations round 2 machine-checked, so all 32 are correct again with no document edited. Eight flagged anchors re-verified individually. Round 3 also confirmed R1 B3 and R2 B1 resolved, R1 B1 not a diff defect, and found the product code itself clean (4 mutation tests, all guards load-bearing, no vacuous assertions). Nits closed: storyScenarios 25 to 24, the settle docstring's status-only decoupling, TD-21's now-false claim. Carried: TD-22 for the reverted guard with its three design options, raised as an open question on the user-management doc. THE 3-ROUND FRESH-REVIEW CAP IS NOW EXHAUSTED: no reviewer has seen the post-revert tree. The revert is mechanically verifiable (byte-identical to an already-reviewed state) and the suites are green, but independent verification of the final tree is the T3 human deep review at the merge gate.",
+    "roundHistory": [
+      {
+        "round": 1,
+        "verdict": "REQUEST_CHANGES",
+        "blockers": 3,
+        "resolvedIn": "5a219fa"
+      },
+      {
+        "round": 2,
+        "verdict": "REQUEST_CHANGES",
+        "blockers": 1,
+        "resolvedIn": "84c0af3"
+      },
+      {
+        "round": 3,
+        "verdict": "REQUEST_CHANGES",
+        "blockers": 2,
+        "resolvedIn": "71ad3af (revert)"
+      }
+    ]
+  },
+  "scopeDecisions": [
+    {
+      "at": "2026-09-09T05:20:00Z",
+      "by": "JB",
+      "item": "Pre-existing E2E flake exposed (not caused) by this story",
+      "decision": "Fix the test-side determinism now; leave product code alone.",
+      "delivered": "e2e/global-setup.ts, e2e/clear-job-queue.sql, e2e/tests/ticket-detail.spec.ts -- test-only, outside the agreed 6-file blast radius. Root cause was NOT the first diagnosis: prisma migrate reset recreates `public` but never pg-boss's `pgboss` schema, so every run inherited the prior run's jobs (measured 364 pending / ~4,800 failed, growing per run). Truncating pgboss.job in global setup makes runs independent. Verified 6 consecutive clean full-suite runs vs 1-2 failures per ~3 runs before."
+    },
+    {
+      "at": "2026-09-09T05:20:00Z",
+      "by": "JB",
+      "item": "Reviewer decision items D1 (no admin floor under concurrency) and D2 (no role-change attribution)",
+      "decision": "Accept both as recorded. No AC asks for either; issue #8 puts audit logging out of scope.",
+      "delivered": "Recorded in the spec, users.ts:85-90, user-management.md Open questions, and 05-api-surface.md security posture."
+    },
+    {
+      "at": "2026-09-09T05:20:00Z",
+      "by": "JB",
+      "item": "House-convention nits needing files outside the blast radius (roleLabel to core/constants; E2E helpers to e2e/fixtures)",
+      "decision": "Leave all three; carry as follow-ups rather than widen the T3 diff."
+    },
+    {
+      "at": "2026-09-09T06:35:00Z",
+      "by": "JB",
+      "item": "Guard refusing a role change on the AI pseudo-user and soft-deleted rows (87603e7), added beyond the ACs without a T3 hard pause",
+      "decision": "Revert it and carry as a follow-up.",
+      "delivered": "71ad3af reverts the product hunk and its 2 scenarios, keeping the AC-relevant 409 scenario. Recorded as TD-22 with three design options plus an open question on the user-management doc. Reverting also resolved both round-3 blockers, since users.ts returned byte-identical to its pre-guard state."
+    }
+  ],
   "checks": {
+    "green": true,
+    "at": "2026-09-09T07:01:57Z",
+    "command": "cd client && bun run test (142 passed, 8 files) && bun run test:e2e (91 passed, 5 files)",
+    "commit": "1992a413500a8d97f0bafd8a95cb5d73fc70ed6b",
     "ambiguityScan": {
       "cleared": true
-    }
+    },
+    "coverage": "n/a: no coverage tooling is configured anywhere in this repo — see solvo.json quality.coverageWaiver",
+    "e2e": {
+      "obligation": "covered",
+      "scenarios": 91,
+      "passed": 91,
+      "storyScenarios": 22,
+      "storyScenariosNote": "22 new scenarios in the Role management describe of e2e/tests/users.spec.ts (main had 7 in that file, HEAD has 29), plus 2 pre-existing ticket-detail scenarios modified to use the settle barrier. 69 baseline + 22 = 91, which matches the run.",
+      "attribution": ".solvo/stories/GH-8-spec.md §AC → scenario index — per-AC scenario identifiers, per issue #8's requirement that AC evidence not rest on a suite-level pass",
+      "stability": "full suite 91 passed x3; the previously-red pair (ticket-detail + webhook-inbound-email) 26 passed x2; client 142 passed / 8 files"
+    },
+    "typecheck": "client tsc -b: 3 errors, all pre-existing and identical on main (ReplyForm.test.tsx:19, TicketSummary.test.tsx:19, vite.config.ts:41). server: 1 pre-existing (prisma/seed-replies.ts:377). None in files this branch touches.",
+    "rerunAtPrPhase": "Re-run at the evidence-pack commit 1992a41 per the gated-cycle PR-phase order; this state file is the commit that follows, alone."
   },
   "attempts": {
     "recon": 2,
@@ -40,11 +138,14 @@
   },
   "artifacts": {
     "recon": ".solvo/reconnaissance/GH-8-recon.md",
-    "spec": ".solvo/stories/GH-8-spec.md"
+    "spec": ".solvo/stories/GH-8-spec.md",
+    "evidence": ".solvo/evidence/GH-8.md",
+    "memory": "docs/repo-wiki/_memories/GH-8-promote-demote-users.md"
   },
   "autoExplored": [
     "core",
     "server",
     "e2e"
-  ]
+  ],
+  "evidencePackStatus": "INCOMPLETE — section 7 (Reviews) is unfillable: no qa block, no canonical QaRun, and none of the three exploratory charter areas issue #8 asks for. quality.qa mode is 'warn' so it does not block. Every other section is complete."
 }
