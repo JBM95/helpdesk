@@ -52,15 +52,15 @@
     "verdict": "REQUEST_CHANGES",
     "blockersOpen": 0,
     "by": "fresh-reviewer",
-    "at": "2026-09-09T06:40:00Z",
+    "at": "2026-09-09T07:20:00Z",
     "lenses": {
-      "blind": 4,
-      "edge": 3,
-      "acceptance": 3
+      "blind": 2,
+      "edge": 1,
+      "acceptance": 8
     },
-    "round": 3,
+    "round": 4,
     "roundsCap": 3,
-    "notes": "Round 3 returned 2 blockers, both fallout from the out-of-scope guard in 87603e7 rather than from the story: inserting 12 lines mid-handler shifted 32 file:line citations across 11 documents (re-breaking round 1's B2) and made four wiki claims wrong, one the opposite of the code. Resolved by reverting that product hunk on JB's decision (71ad3af): users.ts is byte-identical to 5a219fa, the pre-guard tip whose citations round 2 machine-checked, so all 32 are correct again with no document edited. Eight flagged anchors re-verified individually. Round 3 also confirmed R1 B3 and R2 B1 resolved, R1 B1 not a diff defect, and found the product code itself clean (4 mutation tests, all guards load-bearing, no vacuous assertions). Nits closed: storyScenarios 25 to 24, the settle docstring's status-only decoupling, TD-21's now-false claim. Carried: TD-22 for the reverted guard with its three design options, raised as an open question on the user-management doc. THE 3-ROUND FRESH-REVIEW CAP IS NOW EXHAUSTED: no reviewer has seen the post-revert tree. The revert is mechanically verifiable (byte-identical to an already-reviewed state) and the suites are green, but independent verification of the final tree is the T3 human deep review at the merge gate.",
+    "notes": "Round 4 returned 3 blockers, all documentation fidelity, none in product code; it also re-verified the revert byte-identical, all 32 round-3 citations correct, and every guard load-bearing under 4 mutation tests. B1: ten wiki claims falsified by this branch's own code across five documents (written by the recon commit pre-change; the refresh commits updated surrounding prose only). B2: ten stale bare ':NN' citations in two feature cards' UI-states tables — they carry no filename, so every earlier sweep missed them. B3: test counts in 11-testing.md and edit-user.md contradicted the state file and memory. All fixed in 696d2d8, with counts now derived from tooling. N1 was the substantive one: three documents assert the self-role 403 is ordered before the email 409, and the reviewer showed swapping them passed all 29 tests — a scenario tripping both guards at once is now added and verified to be the only test that fails under that exact swap. N2-N5 also fixed.",
     "roundHistory": [
       {
         "round": 1,
@@ -79,8 +79,15 @@
         "verdict": "REQUEST_CHANGES",
         "blockers": 2,
         "resolvedIn": "71ad3af (revert)"
+      },
+      {
+        "round": 4,
+        "verdict": "REQUEST_CHANGES",
+        "blockers": 3,
+        "resolvedIn": "696d2d8"
       }
-    ]
+    ],
+    "capExceeded": "Round 4 ran beyond the 3-round cap because the gate-guard hook refuses a PR while the recorded verdict is REQUEST_CHANGES, and the alternative — recording a human-resolved APPROVE — would have misrepresented JB, who approved proceeding to a PR at GATE 2 but had not reviewed the diff. Reported to JB rather than decided silently."
   },
   "scopeDecisions": [
     {
@@ -113,24 +120,24 @@
   ],
   "checks": {
     "green": true,
-    "at": "2026-09-09T07:01:57Z",
-    "command": "cd client && bun run test (142 passed, 8 files) && bun run test:e2e (91 passed, 5 files)",
-    "commit": "1992a413500a8d97f0bafd8a95cb5d73fc70ed6b",
+    "at": "2026-09-09T07:39:29Z",
+    "command": "cd client && bun run test (142 passed, 8 files) && bun run test:e2e (92 passed, 5 files)",
+    "commit": "696d2d8bef742b7181638f06526064355877b56e",
     "ambiguityScan": {
       "cleared": true
     },
     "coverage": "n/a: no coverage tooling is configured anywhere in this repo — see solvo.json quality.coverageWaiver",
     "e2e": {
       "obligation": "covered",
-      "scenarios": 91,
-      "passed": 91,
-      "storyScenarios": 22,
-      "storyScenariosNote": "22 new scenarios in the Role management describe of e2e/tests/users.spec.ts (main had 7 in that file, HEAD has 29), plus 2 pre-existing ticket-detail scenarios modified to use the settle barrier. 69 baseline + 22 = 91, which matches the run.",
+      "scenarios": 92,
+      "passed": 92,
+      "storyScenarios": 23,
+      "storyScenariosNote": "23 new scenarios in the Role management describe of e2e/tests/users.spec.ts (main had 7 in that file, HEAD has 30), plus 2 pre-existing ticket-detail scenarios modified to use the settle barrier. 69 baseline + 23 = 92, which matches the run.",
       "attribution": ".solvo/stories/GH-8-spec.md §AC → scenario index — per-AC scenario identifiers, per issue #8's requirement that AC evidence not rest on a suite-level pass",
-      "stability": "full suite 91 passed x3; the previously-red pair (ticket-detail + webhook-inbound-email) 26 passed x2; client 142 passed / 8 files"
+      "stability": "full suite 92 passed x2; the previously-red pair (ticket-detail + webhook-inbound-email) 26 passed x4 earlier; users.spec.ts alone 30 passed"
     },
     "typecheck": "client tsc -b: 3 errors, all pre-existing and identical on main (ReplyForm.test.tsx:19, TicketSummary.test.tsx:19, vite.config.ts:41). server: 1 pre-existing (prisma/seed-replies.ts:377). None in files this branch touches.",
-    "rerunAtPrPhase": "Re-run at the evidence-pack commit 1992a41 per the gated-cycle PR-phase order; this state file is the commit that follows, alone."
+    "rerunAtPrPhase": "Re-run at 696d2d8, the last content commit; this state file is the commit that follows, alone."
   },
   "attempts": {
     "recon": 2,
