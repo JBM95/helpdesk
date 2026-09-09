@@ -1,4 +1,9 @@
-import { test, expect, type APIRequestContext } from "@playwright/test";
+import {
+  test,
+  expect,
+  type APIRequestContext,
+  type Page,
+} from "@playwright/test";
 import { loginAsAdmin } from "../fixtures/auth";
 import type { InboundEmailInput } from "core/schemas/tickets.ts";
 
@@ -39,6 +44,43 @@ async function createTicketViaWebhook(
     status: string;
     category: string | null;
   };
+}
+
+/**
+ * Waits for the auto-resolve-ticket job to finish with this ticket.
+ *
+ * The inbound-email webhook enqueues auto-resolve-ticket, which first writes
+ * status "processing" and then, when the AI call fails, writes
+ * { status: "open", assignedToId: null } (auto-resolve-ticket.ts:67-69). Under
+ * test that call *always* fails, because .env.test configures no
+ * OPENAI_API_KEY. The job swallows the error rather than rethrowing, so it runs
+ * exactly once and nothing writes to the ticket afterwards.
+ *
+ * That final write used to race the edits these tests make: if it landed after
+ * a test had set status/assignment, it silently reverted both and the
+ * post-reload assertions failed. Waiting for "open" replaces the manual PATCH
+ * that used to stand in for it -- the job arrives at the same state, and once
+ * it has, the ticket is quiescent and safe to edit.
+ *
+ * (classify-ticket also runs and always fails here, but it only ever writes on
+ * success, so it cannot clobber anything -- it just retries and logs.)
+ */
+async function waitForAutoResolveToSettle(page: Page, ticketId: number) {
+  await expect
+    .poll(
+      async () => {
+        const response = await page.request.get(
+          `${API_BASE_URL}/api/tickets/${ticketId}`
+        );
+        expect(response.status()).toBe(200);
+        return (await response.json()).status;
+      },
+      {
+        message: `auto-resolve-ticket never settled ticket ${ticketId} to "open"`,
+        timeout: 30_000,
+      }
+    )
+    .toBe("open");
 }
 
 /**
@@ -84,9 +126,10 @@ test.describe("Ticket Detail Page", () => {
     );
 
     await loginAsAdmin(page);
-    await page.request.patch(`${API_BASE_URL}/api/tickets/${ticket.id}`, {
-      data: { status: "open" },
-    });
+
+    // The auto-resolve job also drives this ticket to "open"; wait for its write
+    // instead of racing it with a PATCH of our own.
+    await waitForAutoResolveToSettle(page, ticket.id);
     await page.goto(`/tickets/${ticket.id}`);
 
     // Update status
@@ -178,9 +221,10 @@ test.describe("Ticket Detail Page", () => {
     const ticket = await createTicketViaWebhook(request, payload);
 
     await loginAsAdmin(page);
-    await page.request.patch(`${API_BASE_URL}/api/tickets/${ticket.id}`, {
-      data: { status: "open" },
-    });
+
+    // The auto-resolve job also drives this ticket to "open"; wait for its write
+    // instead of racing it with a PATCH of our own.
+    await waitForAutoResolveToSettle(page, ticket.id);
 
     // Navigate from list to detail
     await page.goto("/tickets");

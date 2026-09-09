@@ -29,5 +29,19 @@ export default function globalSetup() {
     env: execEnv,
   });
 
+  // The reset above only clears `public`. pg-boss owns a separate `pgboss`
+  // schema, so without this every run inherits the previous run's job backlog —
+  // see the comment block in clear-job-queue.sql for why that makes the suite
+  // progressively flakier.
+  console.log("Clearing the pg-boss job queue...");
+
+  execSync(
+    `bunx prisma db execute --file "${path.resolve(
+      __dirname,
+      "clear-job-queue.sql"
+    )}"`,
+    { cwd: serverDir, stdio: "inherit", env: execEnv }
+  );
+
   console.log("Test database ready.");
 }
