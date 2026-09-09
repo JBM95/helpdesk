@@ -59,7 +59,7 @@ Full detail with citations in [[05-api-surface]].
 | GET | `/api/users` | `UsersTable.tsx:39` | — | `{ users: { id, name, email, role, createdAt }[] }` |
 | POST | `/api/users` | `UserForm.tsx:64` | `{ name, email, password }` | `{ user: { id, name, email, role, createdAt } }` |
 | PUT | `/api/users/:id` | `UserForm.tsx:59` | `{ name, email, password, role }` — all four required | `{ user: { id, name, email, role, createdAt } }` |
-| DELETE | `/api/users/:id` | `UsersPage.tsx:47` | — | `{ message: "User deleted" }` |
+| DELETE | `/api/users/:id` | `UsersPage.tsx:49` | — | `{ message: "User deleted" }` |
 
 All four invalidate the `["users"]` query key on success.
 
@@ -103,13 +103,23 @@ The handler now loads the target user before writing, which it previously never 
 
 ## Delete protection
 
-**Client** (`UsersTable.tsx:103`):
+**Client** (`UsersTable.tsx:103-112`):
 
-```typescript
+```tsx
 {user.role !== Role.admin && (
-  <Button variant="ghost" size="sm" ...>Delete</Button>
+  <Button
+    variant="ghost"
+    size="icon"
+    onClick={() => onDelete(user)}
+    aria-label={`Delete ${user.name}`}
+  >
+    <Trash2 className="h-4 w-4" />
+  </Button>
 )}
 ```
+
+It is an icon-only button — the accessible name comes from `aria-label`, which is what the tests
+select on, not visible text.
 
 A display condition only — it does not stop a direct `DELETE` call.
 

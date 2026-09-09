@@ -183,6 +183,20 @@ AC7's row is a genuine coverage gain: [[11-testing]] §Authorization coverage to
 **no test anywhere asserts authorization at the API level** — every current authorization assertion
 is a UI observation. This story adds the first ones.
 
+### Failure modes — enumerated and deliberately not covered
+
+Recorded rather than left blank, so the absence is a decision and not an oversight.
+
+| Failure | Behaviour | Why no test |
+|---------|-----------|-------------|
+| `prisma.$transaction` throws (`users.ts:112`) | Express 5's default handler returns 500; the role write and the session drop both roll back, so role and sessions stay consistent. | The atomicity is the point of using `$transaction`, and asserting it needs an injected DB fault. No fault-injection harness exists in this repo and introducing one is out of scope. |
+| `hashPassword` throws (`users.ts:123`) | 500, with the role write **already committed** and the password unchanged. | This is exactly the divergence [[tech-debt|TD-10]] describes. Pre-existing for `name`/`email`; this story adds `role` to the set of fields that can commit while the password does not, and narrows TD-10 rather than closing it. Same fault-injection blocker. |
+| Two admins demote each other concurrently | Both writes commit, roster reaches zero admins, no in-product recovery. | Accepted, not fixed — see Resolved ambiguities above. A test would encode a behaviour we do not want to lock in. |
+
+None of the three is reachable through the API by an ordinary caller, which is why the E2E suite
+covers request-shaped failures (400/401/403/404/409) exhaustively and infrastructure failures not at
+all.
+
 ## Anti-regression plan
 
 Existing tests that must stay green, and why each is at risk:
@@ -195,7 +209,7 @@ Existing tests that must stay green, and why each is at risk:
 | `UsersPage.test.tsx:190` — delete button absent on admin rows | The only existing test of role-conditional UI. Must stay green. |
 | `users.spec.ts` — Edit User (2 tests) | Editing name+email now also submits a role; must still update the table. |
 | `users.spec.ts` — Create User (2) / Delete User (2) | Must be unaffected. |
-| `auth.spec.ts` (63 tests) | Should be untouched — nothing here changes login or the guards. Any failure here means the middleware was modified, which this spec says not to do. |
+| `auth.spec.ts` (31 tests) | Should be untouched — nothing here changes login or the guards. Any failure here means the middleware was modified, which this spec says not to do. |
 
 Command gates: `cd client && bun run test` and `bun run test:e2e` both green before self-review,
 per `solvo.json → quality.tests`. A pre-existing failure is a full stop, not a baseline.

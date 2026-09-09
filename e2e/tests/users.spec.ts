@@ -485,6 +485,46 @@ test.describe('Role management', () => {
       expect(await storedRole(page, target.id)).toBe(Role.admin);
     });
 
+    // The promotion case above only proves one direction. AC1 is explicit that an
+    // admin can move a user *between* the two roles, so the demotion direction
+    // needs its own UI scenario rather than resting on the API-level cases.
+    test('should change an admin back to an agent and show the new role in the table', async ({
+      page,
+    }) => {
+      await loginAsAdmin(page);
+      const target = await createAgent(page, 'Demote UI');
+      expect((await setRole(page, target, Role.admin)).status()).toBe(200);
+
+      await page.goto('/users');
+      const row = page.getByRole('row').filter({ hasText: target.email });
+      await expect(row).toContainText(Role.admin);
+
+      // UsersTable hides Delete for admins, so it must be absent here...
+      await expect(
+        row.getByRole('button', { name: new RegExp(`delete ${target.name}`, 'i') }),
+      ).toBeHidden();
+
+      await row
+        .getByRole('button', { name: new RegExp(`edit ${target.name}`, 'i') })
+        .click();
+
+      const roleSelect = page.getByRole('combobox', { name: 'Role' });
+      await expect(roleSelect).toContainText('Admin');
+
+      await roleSelect.click();
+      await page.getByRole('option', { name: 'Agent' }).click();
+      await page.getByRole('button', { name: /save changes/i }).click();
+
+      // AC8 — the badge repaints on the ["users"] invalidation, no manual refresh
+      await expect(row).toContainText(Role.agent);
+      expect(await storedRole(page, target.id)).toBe(Role.agent);
+
+      // ...and the role-conditional Delete button comes back with the demotion
+      await expect(
+        row.getByRole('button', { name: new RegExp(`delete ${target.name}`, 'i') }),
+      ).toBeVisible();
+    });
+
     test('should not offer a role control when creating a user', async ({
       page,
     }) => {

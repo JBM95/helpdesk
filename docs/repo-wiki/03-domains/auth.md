@@ -92,7 +92,7 @@ export const auth = betterAuth({
 ## Enforcement vs display
 
 **Enforced by the client**
-- `ProtectedRoute` redirects an unauthenticated session to `/login` (`ProtectedRoute.tsx:17-19`)
+- `ProtectedRoute` redirects an unauthenticated session to `/login` (`ProtectedRoute.tsx:15-17`)
 - `AdminRoute` redirects an authenticated non-admin to `/` (`AdminRoute.tsx:16-21`)
 
 **Only hidden by the client — not enforced**

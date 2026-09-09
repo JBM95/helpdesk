@@ -21,7 +21,7 @@ Users page, delete icon per row (`UsersTable.tsx:104-111`) — rendered only whe
 
 ## API
 
-`DELETE /api/users/:id` at `UsersPage.tsx:47`. Invalidates `["users"]` (`:49`) and clears the pending target (`:50`).
+`DELETE /api/users/:id` at `UsersPage.tsx:49`. Invalidates `["users"]` (`:51`) and clears the pending target (`:52`).
 
 ### Server trace
 

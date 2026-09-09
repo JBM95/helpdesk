@@ -13,7 +13,7 @@ An admin clicks "New User", fills in name, email and password in a modal, and su
 
 ## Entry
 
-Users page, "New User" button (`UsersPage.tsx:58-61`).
+Users page, "New User" button (`UsersPage.tsx:60-63`).
 
 ## Components
 

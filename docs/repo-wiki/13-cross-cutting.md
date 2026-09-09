@@ -128,6 +128,8 @@ declare global {
 **Yes. Immediately, on the next request. No code change is needed to make that true.**
 
 > **Correction recorded.** The mapping agent for this document concluded the opposite — that `getSession()` returns user data snapshotted at sign-in, that a demoted admin would keep `role: "admin"` until expiry, and that the fix was to delete the user's sessions on role change. That conclusion was **checked against Better Auth's own source and does not hold.** It is recorded here because a wrong answer in this direction is expensive in both directions: it invents session-invalidation work that is not needed, and it makes a *promotion* force an unnecessary re-login.
+>
+> **GH-8 nevertheless drops sessions on demotion — read that as defence in depth, not as a contradiction.** The fresh read makes the drop *unnecessary*, not *wrong*: the property it rests on is a configuration absence (no `session` block), which any later config change can reverse silently. So privilege **loss** is made not to depend on it, while privilege **gain** still does — and the promotion test below is what guards that remaining dependency. A promotion deliberately does **not** force a re-login, which is the half of the agent's proposal that was genuinely wrong.
 
 The evidence, from `better-auth@1.4.18` in `node_modules`:
 
@@ -407,7 +409,7 @@ Note `send-email.ts:35` logs the recipient address, so email addresses reach the
 
 | Mutation | Invalidates | Location |
 |----------|-------------|----------|
-| Delete user | `["users"]` | `UsersPage.tsx:49` |
+| Delete user | `["users"]` | `UsersPage.tsx:51` |
 | Create/update user | `["users"]` | `UserForm.tsx:68` |
 | Update ticket | `["ticket", id]` | `UpdateTicket.tsx:41` |
 | Create reply | `["replies", ticketId]` | `ReplyForm.tsx:43` |
