@@ -49,18 +49,18 @@
     }
   },
   "review": {
-    "verdict": "REQUEST_CHANGES",
+    "verdict": "APPROVE",
     "blockersOpen": 0,
     "by": "fresh-reviewer",
-    "at": "2026-09-09T07:20:00Z",
+    "at": "2026-09-09T08:20:00Z",
     "lenses": {
       "blind": 2,
       "edge": 1,
-      "acceptance": 8
+      "acceptance": 4
     },
-    "round": 4,
+    "round": 5,
     "roundsCap": 3,
-    "notes": "Round 4 returned 3 blockers, all documentation fidelity, none in product code; it also re-verified the revert byte-identical, all 32 round-3 citations correct, and every guard load-bearing under 4 mutation tests. B1: ten wiki claims falsified by this branch's own code across five documents (written by the recon commit pre-change; the refresh commits updated surrounding prose only). B2: ten stale bare ':NN' citations in two feature cards' UI-states tables — they carry no filename, so every earlier sweep missed them. B3: test counts in 11-testing.md and edit-user.md contradicted the state file and memory. All fixed in 696d2d8, with counts now derived from tooling. N1 was the substantive one: three documents assert the self-role 403 is ordered before the email 409, and the reviewer showed swapping them passed all 29 tests — a scenario tripping both guards at once is now added and verified to be the only test that fails under that exact swap. N2-N5 also fixed.",
+    "notes": "Round 5 returned APPROVE with 0 blockers — the first clean verdict, and the second independent review of the post-revert tree. It verified all four claims of the post-round-4 self audit rather than taking them on trust: re-ran the citation sweep with a wider net than mine (129 filename-qualified citations across 63 documents resolved by script, zero out of range, plus 8 hand-resolved where a basename map collided), re-derived every count from playwright --list / grep / wc, swept for surviving claims that role is immutable (12 hits, all correctly past-tensed), and confirmed the three pre-existing off-by-ones sit in files this branch never touched. It re-ran the round-4 guard-order mutation itself and reproduced the single expected failure, and added live adversarial probes against a clean server: role type confusion (array, object, int, bool, padded string) all 400; mass assignment of id/deletedAt/emailVerified/createdAt all ignored; __proto__ no effect; 10 parallel alternating role writes all 200 with no deadlock. Findings: one decision item and two nits, no blockers. The decision item was this pack's own section 7, which still claimed the 3-round cap was exhausted with the post-revert tree unreviewed — false since round 4. Nit B1: section 6 attributed a 92-test run to 1992a41, where the suite was 91. Nit B2 was the substantive one and is a genuine coverage gap in this story's own code: broadening `demoted` from `admin -> agent` to `role === Role.agent` passed all 30 scenarios, because nothing pinned the narrow side — in production that signs an agent out of every device whenever an admin edits their name. Fixed rather than deferred in c50c4f3, asserting 403 (session alive, not admin) rather than 401 (session destroyed) on a live session after a non-demoting save; re-applying the mutation now fails exactly that one test. All three fixed in c50c4f3 and eb6af3c. Refreshing the pack also surfaced a fourth error no round had caught: section 3 said three scope decisions and listed three, where the state file records four.",
     "roundHistory": [
       {
         "round": 1,
@@ -85,9 +85,15 @@
         "verdict": "REQUEST_CHANGES",
         "blockers": 3,
         "resolvedIn": "696d2d8"
+      },
+      {
+        "round": 5,
+        "verdict": "APPROVE",
+        "blockers": 0,
+        "resolvedIn": "c50c4f3 + eb6af3c (nits and the decision item; no blockers to resolve)"
       }
     ],
-    "capExceeded": "Round 4 ran beyond the 3-round cap because the gate-guard hook refuses a PR while the recorded verdict is REQUEST_CHANGES, and the alternative — recording a human-resolved APPROVE — would have misrepresented JB, who approved proceeding to a PR at GATE 2 but had not reviewed the diff. Reported to JB rather than decided silently."
+    "capExceeded": "Rounds 4 and 5 ran beyond the 3-round cap. The reason is the same for both and is recorded rather than glossed: the gate-guard hook refuses a PR while the recorded verdict is REQUEST_CHANGES, and the alternatives were to record a human-resolved APPROVE that JB had not given — he approved proceeding to a PR at GATE 2 without having reviewed the diff — or to fabricate one. Both were refused. The overrun was reported to JB, who chose to run round 5, and round 5 returned a genuine APPROVE. Four rounds found zero product-code defects; every blocker across all five rounds was documentation fidelity, and the one substantive product finding (round 5's nit B2) was a missing test rather than a defect."
   },
   "scopeDecisions": [
     {
@@ -120,25 +126,26 @@
   ],
   "checks": {
     "green": true,
-    "at": "2026-09-09T07:41:35Z",
-    "command": "cd client && bun run test (142 passed, 8 files) && bun run test:e2e (92 passed, 5 files)",
-    "commit": "bf4ee7b5df727cbec31fc740e0af4cc9c470e044",
+    "at": "2026-09-09T08:36:06Z",
+    "command": "cd client && bun run test (142 passed, 8 files) && bun run test:e2e (93 passed, 5 files)",
+    "commit": "eb6af3cf83af479d76bb5b31036709636eb78a72",
     "ambiguityScan": {
       "cleared": true
     },
     "coverage": "n/a: no coverage tooling is configured anywhere in this repo — see solvo.json quality.coverageWaiver",
     "e2e": {
       "obligation": "covered",
-      "scenarios": 92,
-      "passed": 92,
-      "storyScenarios": 23,
-      "storyScenariosNote": "23 new scenarios in the Role management describe of e2e/tests/users.spec.ts (main had 7 in that file, HEAD has 30), plus 2 pre-existing ticket-detail scenarios modified to use the settle barrier. 69 baseline + 23 = 92, which matches the run.",
+      "scenarios": 93,
+      "passed": 93,
+      "storyScenarios": 24,
+      "storyScenariosNote": "24 new scenarios in the Role management describe of e2e/tests/users.spec.ts (main had 7 in that file, HEAD has 31), plus 2 pre-existing ticket-detail scenarios modified to use the settle barrier. 69 baseline + 24 = 93, which matches the run. Every count derived from `bunx playwright test --list` and grep, not by hand.",
       "attribution": ".solvo/stories/GH-8-spec.md §AC → scenario index — per-AC scenario identifiers, per issue #8's requirement that AC evidence not rest on a suite-level pass",
-      "stability": "full suite 92 passed x2; the previously-red pair (ticket-detail + webhook-inbound-email) 26 passed x4 earlier; users.spec.ts alone 30 passed"
+      "stability": "full suite 93 passed x2 (at c50c4f3 and again at eb6af3c); the previously-red pair (ticket-detail + webhook-inbound-email) 26 passed x4 earlier; users.spec.ts alone 31 passed. Residual flake NOT claimed absent: round 5 saw 2 failures in its first 11 runs of users.spec.ts, then 9 consecutive clean, and could not attribute them (log overwritten, preceding batch was a mutated tree); neither reproduced in the 12 runs after. The two tests named in that window (:25 columns, :461 promote-via-dialog) both fail the way a transient GET /api/users failure would, since UsersTable swaps the table for ErrorAlert on query error. What is proven fixed is the pg-boss backlog, which was reproducible and measured; the suite is not being called flake-free."
     },
     "typecheck": "client tsc -b: 3 errors, all pre-existing and identical on main (ReplyForm.test.tsx:19, TicketSummary.test.tsx:19, vite.config.ts:41). server: 1 pre-existing (prisma/seed-replies.ts:377). None in files this branch touches.",
-    "rerunAtPrPhase": "Checks last ran at 696d2d8 (client 142/142, E2E 92/92 x2). bf4ee7b is a prose-only follow-up touching one sentence of the story spec and no code or test, so the recorded result carries forward; this state file is the trailing commit.",
-    "selfAudit": "Post-round-4 self audit of the finding class the rounds kept hitting. (1) All 70 qualified file:line citations into the 9 files this branch changed re-resolved against the source: 67 point at exactly the claimed construct, 3 are the spec's deliberately-marked as-is (main-frame) references. Zero out of range. (2) All test counts re-derived from `playwright test --list` and `wc -l` rather than by hand: 92 total, 30 in users.spec.ts, 23 story scenarios, 14 describes, 2,642 E2E LOC. (3) Grep sweep for claims contradicting role writability: none remaining. Three pre-existing off-by-one citations survive in 07-data-model.md (ticket-status.ts:1-24, a migration.sql:1-32, seed.ts:11-86) — all in files this branch never touched, left alone as out of scope."
+    "rerunAtPrPhase": "Both suites re-run in full at eb6af3c, the commit immediately before this one: client 142/142, E2E 93/93. Not carried forward from an earlier commit — the run is at the tree being shipped. This state file is the trailing commit and its entire diff is this file, per the gated-cycle PR-phase order and the gate-guard freshness arm.",
+    "selfAudit": "Post-round-4 self audit of the finding class the rounds kept hitting, all four claims independently re-verified by round 5 and confirmed. (1) All 70 qualified file:line citations into the 9 files this branch changed re-resolved against the source: 67 point at exactly the claimed construct, 3 are the spec's deliberately-marked as-is (main-frame) references. Zero out of range. Round 5 re-ran this with a wider net — 129 filename-qualified citations across 63 documents, script-resolved, zero out of range. (2) All test counts re-derived from tooling rather than by hand. Post-c50c4f3 values: 93 total, 31 in users.spec.ts, 24 story scenarios, 14 describes, 2,677 E2E LOC. (3) Grep sweep for claims contradicting role writability: none remaining. (4) Three pre-existing off-by-one citations survive in 07-data-model.md (ticket-status.ts:1-24, a migration.sql:1-32, seed.ts:11-86) — all in files this branch never touched, left alone as out of scope.",
+    "citationDriftNote": "Adding the c50c4f3 scenario shifted the nine AC-to-scenario citations after users.spec.ts:800 by exactly +35, re-creating the drift class that caused blockers in rounds 1, 3 and 4. All nine were re-derived from `playwright test --list` and fixed in the same commit, along with the E2E counts in 11-testing.md and edit-user.md. Recorded because the lesson is the recurring one on this story: any insert into a test file invalidates every line citation below it, and no round found that by inspection — only by re-resolving mechanically."
   },
   "attempts": {
     "recon": 2,
@@ -155,5 +162,5 @@
     "server",
     "e2e"
   ],
-  "evidencePackStatus": "INCOMPLETE — section 7 (Reviews) is unfillable: no qa block, no canonical QaRun, and none of the three exploratory charter areas issue #8 asks for. quality.qa mode is 'warn' so it does not block. Every other section is complete."
+  "evidencePackStatus": "INCOMPLETE — section 7 (Reviews) is unfillable: no qa block, no canonical QaRun, and none of the three exploratory charter areas issue #8 asks for, and no authority decision recorded for waiving them. quality.qa mode is 'warn' so it does not block, but the omission is unresolved and is the one thing on this story a human still has to decide. Every other section is complete, and the pack was refreshed at eb6af3c to cover rounds 4-5, the corrected commit and check attributions, the full 24-commit list, and the fourth scope decision."
 }
