@@ -1,4 +1,0 @@
-Listing tests:
-  [chromium] › users.spec.ts:755:9 › Role management › AC4, AC5 — a role change binds an existing session › should stop authorizing admin APIs on a demoted admin existing session
-  [chromium] › users.spec.ts:801:9 › Role management › AC4, AC5 — a role change binds an existing session › should leave an agent existing session alone when a save does not demote them
-Total: 2 tests in 1 file

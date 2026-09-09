@@ -1,4 +1,0 @@
-Listing tests:
-  [chromium] › users.spec.ts:871:9 › Role management › AC7 — admin deletion protection survives › should refuse to delete a user whose stored role is admin
-  [chromium] › users.spec.ts:887:9 › Role management › AC7 — admin deletion protection survives › should allow deletion once an admin has been demoted
-Total: 2 tests in 1 file

@@ -1,4 +1,0 @@
-Listing tests:
-  [chromium] › users.spec.ts:838:9 › Role management › AC6 — creation policy is unchanged › should still create an agent through POST /api/users
-  [chromium] › users.spec.ts:848:9 › Role management › AC6 — creation policy is unchanged › should ignore a role supplied to POST /api/users
-Total: 2 tests in 1 file

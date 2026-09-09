@@ -1,5 +1,0 @@
-Listing tests:
-  [chromium] › users.spec.ts:546:9 › Role management › AC2 — only the admin-protected API may mutate a role › should reject a role change from an authenticated non-admin
-  [chromium] › users.spec.ts:581:9 › Role management › AC2 — only the admin-protected API may mutate a role › should reject a role change from an unauthenticated caller
-  [chromium] › users.spec.ts:601:9 › Role management › AC2 — only the admin-protected API may mutate a role › should reject an agent promoting themselves
-Total: 3 tests in 1 file
