@@ -41,7 +41,7 @@ for the same reason, because the file is committed before the PR opens.
   → transactional write.
 - `client/src/pages/UserForm.tsx` — the role `Select`, rendered in **edit mode only**.
 - `client/src/pages/UsersPage.tsx` — `EditingUser` must carry `role` for it to reach the form.
-- `e2e/tests/users.spec.ts` — the `Role management` describe, 23 scenarios, organised by AC.
+- `e2e/tests/users.spec.ts` — the `Role management` describe, 24 scenarios, organised by AC.
 - `e2e/clear-job-queue.sql` + `e2e/global-setup.ts` — the job-queue reset.
 
 ## Patterns established
@@ -57,6 +57,14 @@ for the same reason, because the file is committed before the PR opens.
   status when several rules return the same code, or the test cannot tell which one fired.
 - **Pair every negative case with a follow-up read** proving nothing was persisted. A status
   assertion alone does not prove the write was skipped.
+- **A destructive side effect needs a test on both sides of its condition.** `demoted` is
+  `target.role === Role.admin && role === Role.agent` — narrow on purpose. Broadening it to
+  `role === Role.agent` still passes every transition test, because dropping sessions on a
+  *non*-demotion is invisible to a test that only ever checks demotions; the real cost is that
+  renaming an agent signs them out everywhere. The scenario that pins it asserts **403, not 401**,
+  on the target's live session after a non-demoting save: 403 means the session still
+  authenticates and merely lacks admin, 401 means the save destroyed it. Verified by mutation —
+  broadening the condition fails exactly that one test.
 - **`prisma migrate reset` does not clear pg-boss.** It recreates `public`; pg-boss owns a separate
   `pgboss` schema. Global setup now truncates `pgboss.job` — never `pgboss.queue`, which holds the
   registrations a reused worker depends on.
@@ -70,8 +78,8 @@ for the same reason, because the file is committed before the PR opens.
 
 ## Tests (regression baseline)
 
-- **E2E**: `e2e/tests/users.spec.ts` — 30 scenarios (23 new). `e2e/tests/ticket-detail.spec.ts` — 4
-  (2 modified). Full suite **92 passed / 5 files**.
+- **E2E**: `e2e/tests/users.spec.ts` — 31 scenarios (24 new). `e2e/tests/ticket-detail.spec.ts` — 4
+  (2 modified). Full suite **93 passed / 5 files**.
 - **Component**: `client/src/pages/UserForm.test.tsx` — 28 tests. Suite **142 passed / 8 files**.
 - **No server suite exists** and none was introduced (`solvo.json → quality.tests.backend` is
   `n/a`). Every server-side claim above is proven through Playwright.
