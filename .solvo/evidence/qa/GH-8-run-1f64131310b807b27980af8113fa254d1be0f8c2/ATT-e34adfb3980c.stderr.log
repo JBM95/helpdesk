@@ -1,0 +1,3 @@
+$ playwright test "e2e/tests/users.spec.ts" --list "--reporter=list" -g "AC2 — only the admin-protected API may mutate a role"
+(node:27568) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)

@@ -248,30 +248,121 @@ review is still required: five AI rounds are not a substitute for it. What the m
 has to cover is the post-revert tree's *first* independent look, which rounds 4 and 5 have now
 done.
 
-### QA verification — **MISSING, and this is what makes the pack INCOMPLETE**
+### QA verification — **RAN, verdict `fail`; the pack stays INCOMPLETE**
 
-No `qa` block exists in `.solvo/state/GH-8.json`. The QA pack (`/qa-plan` → `/qa-cases` →
-`/qa-verify`) has not run for this story.
+The QA pack has now run: `/qa-plan` (plan revision 3, approved by JB), `/qa-cases` (case set
+revision 2, approved by JB, 68 curated cases, all six class dispositions recorded), `/qa-execute`
+(canonical run) and `/qa-verify`. The `qa` block now exists in `.solvo/state/GH-8.json`, written by
+the `qa-verify` fold inside the same transaction as the findings record — not transcribed.
 
-`solvo.json → quality.qa` sets `requiredFromTier: "T2"` with `mode: "warn"`, so this warns rather
-than blocks. But the issue asks for QA work explicitly, and none of it is recorded:
+| Field | Value |
+|---|---|
+| **Verdict** | **`fail`** |
+| Recorded by | `claude-code haiku-4.5 / solvo qa-verify (dispatched by JB)` |
+| At | 2026-09-09T13:52:11Z |
+| Tier | T3 |
+| Canonical run | `RUN-3772b2b90d0e` @ `1f64131310b807b27980af8113fa254d1be0f8c2` |
+| Record path | `.solvo/evidence/qa/GH-8-run-1f64131310b807b27980af8113fa254d1be0f8c2.json` |
+| Snapshot | `vs-25179bb8d85ff968814fbb10c51e1188` |
+| Test plan | `.solvo/testplans/GH-8-plan.md` · cases `.solvo/testplans/GH-8-cases.md` |
+| Scope basis | `approved-fresh` — plan and case set approved at their current revisions |
+| Execution source | none — no carry-forward; the run is bound to the candidate itself |
 
-- **`charterFindings`: unfilled.** The issue asks for "at least three distinct exploratory charter
-  areas, for example: authorization/session transitions, user-management regression, and
-  privilege-boundary abuse cases." No charter was planned, run, waived or deferred, so this
-  subsection is open rather than answerable — which is a different fact from a story that ran
-  charters and found nothing.
-- **No canonical `QaRun`.** There is no `.solvo/evidence/qa/GH-8-run-<commit>.json`, so there is no
-  candidate-bound execution record and no `runId`/`testedCommit`/`recordPath` to cite.
-- **No authority decision recorded for the omission.** The issue asks that "if a manual QA
-  obligation is waived or deferred during the Solvo validation, record a real authority decision so
-  the provenance/readiness path is exercised." That decision has not been taken, so it is not
-  recorded here either.
+**Per-AC results** (from `state.qa.acResults`):
 
-What this section does **not** claim: the dev-side test evidence in section 6 is real and green,
-and it is mechanically attributable per AC. What is absent is independent QA verification and the
-exploratory charters — neither of which the dev cycle can substitute for, and neither of which any
-green suite implies.
+| AC | Verdict | Detail |
+|----|---------|--------|
+| AC1 | verified | Both directions end to end at `users.spec.ts:461`/`:491`; pre-selection for both roles and exactly-two-options at the component layer. Three enumerated instances carry no obligation. |
+| AC2 | verified | All three refusals assert status **and** the `"Forbidden"` body **and** a persistence read — the body assertion is what pins `requireAdmin` rather than any later 403. |
+| AC3 | **gap** | See `FIND-527a2fe1941a` below. |
+| AC4 | verified | Demoted session → 401 at `:755`; the **narrow** side genuinely pinned at `:801`/`:828` (403, not 401, after a non-demoting save). |
+| AC5 | verified | `:777` asserts 403 before, 200 on the promotion, 200 on the *same* pre-promotion session, and `/api/me` role `admin`. Not diluted. |
+| AC6 | verified | Sealed at three layers — no `role` in `createUserSchema`, hardcoded `Role.agent` at `users.ts:45`, and the client never sends it. |
+| AC7 | **ambiguous** | See `FIND-b3ccb9535cd7` below. |
+| AC8 | verified | Row text asserted with **no `page.reload()`** between save and assertion, each paired with an independent `storedRole` read — which is what makes "without a separate manual correction" a real assertion. |
+| AC9 | verified | All seven named behaviours exist, assert the observable outcome, and pass in the complete 93/93 capture (`ATT-a49d0e7e45db`). |
+
+**Two canonical findings, both `open` and both untriaged.** A verifier reading is not a disposition;
+the cause is `/qa-triage`'s to establish with a named human. Recorded in
+`.solvo/evidence/qa/GH-8-findings.json`:
+
+- **`FIND-527a2fe1941a` — AC3, assertion gap.** 6 of 10 enumerated instances are proven. Untested:
+  wrong JSON type, padded string and unknown-keys-stripped. The substantive one is an instance
+  nobody enumerated: AC3 requires rejection *"without changing the stored user"*, yet every test
+  asserts only `storedRole` — none asserts that `name` or `email` survived a rejected payload that
+  also changed them. Traced correct by reading (`users.ts:74-75` returns 400 before the update at
+  `:113`), so this is coverage, not a defect. Also `:669` and `:686` omit the error-body assertion
+  their four AC3 siblings carry, so a wrong-field 400 would pass either.
+- **`FIND-b3ccb9535cd7` — AC7, AC-ambiguity.** AC7's first sentence protects the *currently stored*
+  role, which is what is implemented and what `:887` asserts. Its second sentence says a role change
+  "must not weaken or bypass that server-side protection" — and before this story an `admin` row was
+  permanently undeletable, where now any admin can delete any other admin in two requests. Under
+  that reading `:887-905` asserts the weakening rather than the AC. This routes to the **author as a
+  refinement item, not to Dev as a bug.** It also contradicts `ambiguityScan: cleared` in
+  `[[GH-8-spec]]`, which claims every AC has exactly one honest reading; the spec's
+  Resolved-ambiguities table settles D1–D3 and never put this question to the author.
+
+**Derived `fail` versus the verifier's own `incomplete`.** The independent `qa-verifier` recommended
+`incomplete`; the bundle derived `fail`. Both are recorded because they answer different questions.
+`fail` is correct on the precedence rule — a *supported* assertion gap outranks missing proof — and
+AC3 is exactly that. The verifier's `incomplete` reflects something the derivation does not weigh:
+the proof basis is short by more than the five charters, and that reading is worth keeping. It found
+**no product defect** in four adversarial traces, agreeing with the fresh reviewer's APPROVE on the
+code while disagreeing on what has been *proven*.
+
+### `charterFindings` — still unfilled, all five charters at "not yet run"
+
+The plan names five charter areas, exceeding the issue's "at least three". `/qa-execute` snapshotted
+all five onto the run as `manual`/`exploratory` obligations. **None has an attempt, a waiver or a
+deferral**, so each proved `not-proven — no current attempt` and each hand-off row names
+`qa-result perform`, not `/qa-execute` — another execution cannot produce a human's performance.
+
+| Charter | Area | Obligation | AC | Disposition |
+|---|---|---|---|---|
+| `CH-5089a9bf18a8` | authorization and session transitions | `OBL-ff2fff8a503a` | AC4 | not yet run |
+| `CH-2cc508760831` | user-management regression | `OBL-b8a2a27b1c00` | AC9 | not yet run |
+| `CH-e0ea51e09abb` | privilege-boundary abuse | `OBL-23ed9be84e8c` | AC2 | not yet run |
+| `CH-3590ccb0991e` | role writes on principals that cannot sign in | `OBL-08b5819c8678` | — | not yet run |
+| `CH-de866031b70f` | concurrent role writes and the admin floor | `OBL-5121167deef2` | — | not yet run |
+
+"Not yet run" is a placeholder, not a closing value, so **this subsection is open and the pack stays
+`INCOMPLETE`**. Each row closes one of two ways: a human `qa-result perform` with a named performer
+and a hashed note, or a `qa-result waive` / `qa-result defer` by named authority. The issue asks for
+the second path explicitly if it is taken — *"record a real authority decision so the
+provenance/readiness path is exercised"* — so waiving them **with** that decision satisfies the
+issue, and leaving them blank does not.
+
+`solvo.json → quality.qa` is `mode: "warn"`, `requiredFromTier: "T2"`, so this does not block the
+merge gate mechanically. `finalize-gate` does read `status` as authoritative and blocks on
+`INCOMPLETE`. Nothing checks the prose behind a `status: complete` flipped early, which is why it has
+not been flipped here.
+
+### Coverage shortfalls the verifier named beyond the charters
+
+Recorded because they are the substance of its `incomplete` reading, and none of them is closed:
+
+- **22 of the 68 approved cases have no obligation in the run.** 21 are manual, blocked or
+  unexecutable; the 22nd, `CASE-2c479a856aea`, is marked `automated` in the approved set and still
+  became no obligation. The verifier confirmed its claim (negative scenarios paired with a
+  persistence read) by hand across all 12 negative scenarios.
+- **The `concurrency` (7 cases) and `failure` (4 cases) classes have zero obligations between them**,
+  while both are recorded `covered` at the cases gate. The gate's own reason text is careful that
+  `covered` means the set represents the class rather than that anything executed — the two readings
+  now visibly diverge.
+- **The client component suite is executed by nothing in the run.** `checks.green` claims 142 tests
+  across 8 files; every Vitest attempt is `-t`-filtered, 16 of 17 `UsersPage.test.tsx` tests and
+  three `UserForm.test.tsx` role-control tests never ran at the candidate.
+- **The T3 mutation target** (`solvo.json → quality.mutation: 60`) has neither an obligation nor a
+  `qa-result waive`. The approved plan declines it on the grounds that no mutation tooling exists in
+  this repo, but that declination is not recorded as an authority decision on the run.
+- **Provenance limits, stated rather than glossed.** Every attempt is `provenance.kind: local`,
+  `sourceUrl: null`, `trusted: false` — there is no CI in this repo. And the server process behind
+  every AC2–AC7 pass was launched from a checkout at `81d58d7`; byte-identity to the candidate is
+  asserted in the run's `environmentProfile` prose, not shown by a hash.
+
+What this section does **not** claim: the dev-side test evidence in section 6 is real and green, and
+it is mechanically attributable per AC. What is now recorded is an independent QA read of it, which
+found no product defect and did not find the coverage basis discharged.
 
 ## 8. Wikilinks
 

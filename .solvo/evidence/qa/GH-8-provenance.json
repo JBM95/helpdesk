@@ -1,0 +1,167 @@
+{
+  "schemaVersion": "1.0.0",
+  "workItem": "GH-8",
+  "entries": [
+    {
+      "provenanceId": "prov-81a9099618e7c9dfcfe938c443346769",
+      "kind": "scope-approval",
+      "subject": "plan v3",
+      "namedHuman": "JB",
+      "actor": null,
+      "actorSource": "unresolved",
+      "committedBy": {
+        "provider": "github",
+        "principalId": "95342114",
+        "handle": "JBM95",
+        "displayName": "JB"
+      },
+      "claimedMode": "undetermined",
+      "recordedAt": "2026-09-09T11:59:50.795Z",
+      "resolvedAt": "2026-09-09T11:59:50.086Z",
+      "source": "gh api /user; the canonical record names \"JB\" and the authenticated handle is \"JBM95\", so the proven identity is not attached to this action. No account is looked up from the name and no display name is compared — a mismatch fails to null rather than borrowing an identity",
+      "boundTo": {
+        "recordPath": ".solvo/evidence/qa/GH-8-scope.json",
+        "identity": "scopeApproval@v3",
+        "digest": "70e1ce0025d42eba4800899e6409ebc7c421fd35790475ab338e0abc2a8d4f43"
+      }
+    },
+    {
+      "provenanceId": "prov-3642dd33f22281cbd5f8f8118bc7f751",
+      "kind": "case-set-approval",
+      "subject": "case set v2",
+      "namedHuman": "JB",
+      "actor": null,
+      "actorSource": "unresolved",
+      "committedBy": {
+        "provider": "github",
+        "principalId": "95342114",
+        "handle": "JBM95",
+        "displayName": "JB"
+      },
+      "claimedMode": "undetermined",
+      "recordedAt": "2026-09-09T12:17:52.026Z",
+      "resolvedAt": "2026-09-09T12:17:51.267Z",
+      "source": "gh api /user; the canonical record names \"JB\" and the authenticated handle is \"JBM95\", so the proven identity is not attached to this action. No account is looked up from the name and no display name is compared — a mismatch fails to null rather than borrowing an identity",
+      "boundTo": {
+        "recordPath": ".solvo/evidence/qa/GH-8-scope.json",
+        "identity": "caseSetApproval@v2",
+        "digest": "c6c13bf8737018ae58bccb2229be96ae5399e3a9872b4a161c5bde382809d0e0"
+      }
+    },
+    {
+      "provenanceId": "prov-4edfbc63f644d6c7d4a4f8bd388b20cd",
+      "kind": "exploratory-result",
+      "subject": "OBL-08b5819c8678",
+      "namedHuman": "JB",
+      "actor": null,
+      "actorSource": "unresolved",
+      "committedBy": {
+        "provider": "github",
+        "principalId": "95342114",
+        "handle": "JBM95",
+        "displayName": "JB"
+      },
+      "claimedMode": "undetermined",
+      "recordedAt": "2026-09-09T14:30:36.982Z",
+      "resolvedAt": "2026-09-09T14:30:36.156Z",
+      "source": "gh api /user; the canonical record names \"JB\" and the authenticated handle is \"JBM95\", so the proven identity is not attached to this action. No account is looked up from the name and no display name is compared — a mismatch fails to null rather than borrowing an identity",
+      "boundTo": {
+        "recordPath": ".solvo/evidence/qa/GH-8-run-1f64131310b807b27980af8113fa254d1be0f8c2.json",
+        "identity": "attempt@ATT-0fa25dd59654",
+        "digest": "cd0be5119ec205f46d0000db5e8d8e1e02dfaaa825c932229e8c2837cec5f486"
+      }
+    },
+    {
+      "provenanceId": "prov-04a617c9ab58e7c84601a96dc857057f",
+      "kind": "exploratory-result",
+      "subject": "OBL-5121167deef2",
+      "namedHuman": "JB",
+      "actor": null,
+      "actorSource": "unresolved",
+      "committedBy": {
+        "provider": "github",
+        "principalId": "95342114",
+        "handle": "JBM95",
+        "displayName": "JB"
+      },
+      "claimedMode": "undetermined",
+      "recordedAt": "2026-09-09T15:08:38.227Z",
+      "resolvedAt": "2026-09-09T15:08:37.383Z",
+      "source": "gh api /user; the canonical record names \"JB\" and the authenticated handle is \"JBM95\", so the proven identity is not attached to this action. No account is looked up from the name and no display name is compared — a mismatch fails to null rather than borrowing an identity",
+      "boundTo": {
+        "recordPath": ".solvo/evidence/qa/GH-8-run-1f64131310b807b27980af8113fa254d1be0f8c2.json",
+        "identity": "attempt@ATT-6de01122d02b",
+        "digest": "afacc39fd8fe1c36b69450e843db260c8ea884a9f2f19e5a4dd971d013dce472"
+      }
+    },
+    {
+      "provenanceId": "prov-1de9e35e3d2e4688466854ec020afddf",
+      "kind": "exploratory-result",
+      "subject": "OBL-23ed9be84e8c",
+      "namedHuman": "JB",
+      "actor": null,
+      "actorSource": "unresolved",
+      "committedBy": {
+        "provider": "github",
+        "principalId": "95342114",
+        "handle": "JBM95",
+        "displayName": "JB"
+      },
+      "claimedMode": "undetermined",
+      "recordedAt": "2026-09-09T15:19:12.612Z",
+      "resolvedAt": "2026-09-09T15:19:11.950Z",
+      "source": "gh api /user; the canonical record names \"JB\" and the authenticated handle is \"JBM95\", so the proven identity is not attached to this action. No account is looked up from the name and no display name is compared — a mismatch fails to null rather than borrowing an identity",
+      "boundTo": {
+        "recordPath": ".solvo/evidence/qa/GH-8-run-1f64131310b807b27980af8113fa254d1be0f8c2.json",
+        "identity": "attempt@ATT-18fc2f14440d",
+        "digest": "e37fdae008d9cfb1aebb451acc2c7a68c4e51f1cb9613903bea627b081f8b9eb"
+      }
+    },
+    {
+      "provenanceId": "prov-a72627d61cbdb10b292c9850904e07e6",
+      "kind": "exploratory-result",
+      "subject": "OBL-ff2fff8a503a",
+      "namedHuman": "JB",
+      "actor": null,
+      "actorSource": "unresolved",
+      "committedBy": {
+        "provider": "github",
+        "principalId": "95342114",
+        "handle": "JBM95",
+        "displayName": "JB"
+      },
+      "claimedMode": "undetermined",
+      "recordedAt": "2026-09-09T15:21:55.356Z",
+      "resolvedAt": "2026-09-09T15:21:54.586Z",
+      "source": "gh api /user; the canonical record names \"JB\" and the authenticated handle is \"JBM95\", so the proven identity is not attached to this action. No account is looked up from the name and no display name is compared — a mismatch fails to null rather than borrowing an identity",
+      "boundTo": {
+        "recordPath": ".solvo/evidence/qa/GH-8-run-1f64131310b807b27980af8113fa254d1be0f8c2.json",
+        "identity": "attempt@ATT-d43c38cd57d7",
+        "digest": "8982a361b7e1d0a5028216a1e9f9121a4bdebb55a288572814861f46f3c78056"
+      }
+    },
+    {
+      "provenanceId": "prov-189217865461a802b7a94b8ae682b756",
+      "kind": "exploratory-result",
+      "subject": "OBL-b8a2a27b1c00",
+      "namedHuman": "JB",
+      "actor": null,
+      "actorSource": "unresolved",
+      "committedBy": {
+        "provider": "github",
+        "principalId": "95342114",
+        "handle": "JBM95",
+        "displayName": "JB"
+      },
+      "claimedMode": "undetermined",
+      "recordedAt": "2026-09-09T15:29:58.696Z",
+      "resolvedAt": "2026-09-09T15:29:58.029Z",
+      "source": "gh api /user; the canonical record names \"JB\" and the authenticated handle is \"JBM95\", so the proven identity is not attached to this action. No account is looked up from the name and no display name is compared — a mismatch fails to null rather than borrowing an identity",
+      "boundTo": {
+        "recordPath": ".solvo/evidence/qa/GH-8-run-1f64131310b807b27980af8113fa254d1be0f8c2.json",
+        "identity": "attempt@ATT-0e92586f70d1",
+        "digest": "3345d69121651b3d9e8f7d518ca95af20899a4d92b32f116912c0584e5ea7bd7"
+      }
+    }
+  ]
+}

@@ -1,0 +1,227 @@
+{
+  "schemaVersion": "1.0.0",
+  "producerVersion": "6.40.4",
+  "workItem": "GH-8",
+  "findings": [
+    {
+      "findingId": "FIND-527a2fe1941a",
+      "workItem": "GH-8",
+      "ac": "AC3",
+      "obligationId": null,
+      "signature": "e2e/tests/users.spec.ts::Role management > AC3 — strict role validation",
+      "origin": "verifier",
+      "charterProvenance": null,
+      "state": "open",
+      "observations": [
+        {
+          "observationId": "OBS-507946ffcce8",
+          "at": "2026-09-09T13:52:11.025Z",
+          "producer": "qa-verify",
+          "outcome": "observed",
+          "candidateCommit": "1f64131310b807b27980af8113fa254d1be0f8c2",
+          "runId": "RUN-3772b2b90d0e",
+          "recordPath": ".solvo/evidence/qa/GH-8-run-1f64131310b807b27980af8113fa254d1be0f8c2.json",
+          "executionSource": null,
+          "evidenceRefs": [],
+          "assertionIdentity": "all six scenarios assert expect(response.status()).toBe(400|409) plus expect(await storedRole(...)).toBe(Role.agent); none asserts that name or email survived a rejected payload that also changed them; :669 and :686 omit the error-body assertion their four siblings carry",
+          "detail": "6 of 10 enumerated instances proven with status + persistence read (:629 unsupported, :651 omitted key, :669 wrong case, :686 null, :705 rejected-on-another-field, :732 email conflict 409). Untested with no obligation: CASE-bd320a8da365 wrong JSON type and CASE-4c5cbc978ea4 padded string (both manual; the round-5 review probes are prior evidence and discharge nothing), and CASE-dec13d846e40 unknown-keys-stripped. Plus one instance nobody enumerated: AC3 requires rejection 'without changing the stored user', yet every test asserts only storedRole - none asserts that name or email survived a rejected payload that also changed them. Traced correct by reading (server/src/routes/users.ts:74-75 returns 400 before the update at :113), so this is a coverage gap rather than a defect. Also assertion-light relative to siblings: :669 and :686 omit the error-body assertion their four AC3 siblings carry, so a wrong-field 400 would pass either.",
+          "clearedBehaviour": null,
+          "humanAttestation": null
+        },
+        {
+          "observationId": "OBS-5b19486a6ab6",
+          "at": "2026-09-09T15:46:00.755Z",
+          "producer": "qa-verify",
+          "outcome": "observed",
+          "candidateCommit": "1f64131310b807b27980af8113fa254d1be0f8c2",
+          "runId": "RUN-3772b2b90d0e",
+          "recordPath": ".solvo/evidence/qa/GH-8-run-1f64131310b807b27980af8113fa254d1be0f8c2.json",
+          "executionSource": null,
+          "evidenceRefs": [],
+          "assertionIdentity": "six scenarios assert status plus storedRole only; wrong-JSON-type and whitespace-padded role values have no test; whole-stored-user claim carried by charter attempt ATT-18fc2f14440d rather than by the suite",
+          "detail": "The whole-stored-user clause is now ESTABLISHED, but by the hand-performed charter rather than by the suite, and two invalid-input instances remain untested. On the clause: all six automated AC3 scenarios send the target's own current name and email (:636-641, :658, :674-679, :693-698) and assert one field via storedRole (:443-448 returns .role), so they cannot distinguish 'nothing was written' from 'role was not written but name and email were'; the two that do send mutated fields (:705 name 'ab', :732 a taken email) never read them back. The claim is carried entirely by ATT-18fc2f14440d (OBL-23ed9be84e8c, performedBy JB), whose arm 2 sent MUTATED NAME + a mutated email with role 'superuser', then the same with the role key omitted, and read back by psql: name, email and role all at baseline with updatedAt unmoved from creation at 15:16:26.005, plus a count of rows matching the mutated email of 0. Consistent with users.ts:74-75 where validate runs before the target is loaded. Two caveats: it rests on a single human attempt rather than a repeatable test, and it is filed against an AC2-tagged obligation, so AC3 has no obligation carrying its own clause. REMAINING GAP: CASE-bd320a8da365 (role as array, object, integer, boolean) and CASE-4c5cbc978ea4 (whitespace-padded ' admin ') are marked manual with no obligation, no attempt and no waiver, and both are 'unsupported role values' by the AC's own wording. core/schemas/users.ts:19 is z.enum with no coercion or trim, so the implementation is right by inspection and the instances are untested rather than broken. Also assertion-light relative to siblings: :669 and :686 assert status and storedRole but omit the error-body assertion their four siblings carry.",
+          "clearedBehaviour": null,
+          "humanAttestation": null
+        }
+      ],
+      "evidence": [],
+      "triageHistory": [],
+      "nextAction": null,
+      "resultingBug": null,
+      "refinementRef": null,
+      "duplicates": [],
+      "updatedAt": "2026-09-09T15:46:00.755Z"
+    },
+    {
+      "findingId": "FIND-b3ccb9535cd7",
+      "workItem": "GH-8",
+      "ac": "AC7",
+      "obligationId": null,
+      "signature": "e2e/tests/users.spec.ts::Role management > AC7 — admin deletion protection survives > should allow deletion once an admin has been demoted",
+      "origin": "verifier",
+      "charterProvenance": null,
+      "state": "open",
+      "observations": [
+        {
+          "observationId": "OBS-3645a29d1d2a",
+          "at": "2026-09-09T13:52:11.025Z",
+          "producer": "qa-verify",
+          "outcome": "observed",
+          "candidateCommit": "1f64131310b807b27980af8113fa254d1be0f8c2",
+          "runId": "RUN-3772b2b90d0e",
+          "recordPath": ".solvo/evidence/qa/GH-8-run-1f64131310b807b27980af8113fa254d1be0f8c2.json",
+          "executionSource": null,
+          "evidenceRefs": [],
+          "assertionIdentity": null,
+          "detail": "Two honest readings, and the implementation follows one while a test asserts it. Reading A (implemented and tested): AC7 protects a user whose CURRENT STORED role is admin, so a demotion legitimately moves the stored role and the subsequent DELETE is two individually-legal steps - users.ts:147 re-reads the row, and users.spec.ts:887 states this reading in a comment at :899-900 and asserts the 200 at :901-904. Reading B (from AC7's own second sentence, 'A role change must not weaken or bypass that server-side protection'): before GH-8 User.role was immutable, so an admin row was permanently undeletable by anyone; after GH-8 any admin can delete any other admin in two requests, and :887-905 is a demonstration of exactly that sequence succeeding - the test asserts the weakening rather than the AC. The spec's Resolved-ambiguities table (GH-8-spec.md:30-34) settles D1, D2 and D3 and never puts this question to the issue author, yet GH-8-spec.md:53 records ambiguityScan cleared with 'each AC has exactly one honest reading'. That claim does not hold for AC7. Routes to the author as a refinement item, not to Dev. The 403-while-admin half is proven at :871 (403 + error body + storedRole admin at :884, which also proves the row was not soft-deleted since storedRole reads GET /api/users and users.ts:15 filters deletedAt null). Untested: CASE-35c1cf8f35d6 promotion conferring protection, DELETE racing a promotion.",
+          "clearedBehaviour": null,
+          "humanAttestation": null
+        },
+        {
+          "observationId": "OBS-e2232f3cff44",
+          "at": "2026-09-09T15:46:00.755Z",
+          "producer": "qa-verify",
+          "outcome": "observed",
+          "candidateCommit": "1f64131310b807b27980af8113fa254d1be0f8c2",
+          "runId": "RUN-3772b2b90d0e",
+          "recordPath": ".solvo/evidence/qa/GH-8-run-1f64131310b807b27980af8113fa254d1be0f8c2.json",
+          "executionSource": null,
+          "evidenceRefs": [],
+          "assertionIdentity": null,
+          "detail": "AC7 is two sentences that pull in opposite directions, and the tests encode only one reading. Reading A, which the code and tests adopt: sentence 1 protects a user whose CURRENT STORED role is admin, the guard reads the row fresh at users.ts:141 and tests user.role === Role.admin at :147, so demote-then-delete is two individually-authorized steps rather than a bypass — users.spec.ts:887 encodes this as intended and says so in a comment at :899-900. Reading B, equally honest and unencoded: sentence 2 says a role change must not weaken or bypass that protection, which reads most naturally as forbidding exactly the sequence Reading A permits; an admin who cannot be deleted at 10:00 and can be deleted at 10:01 solely because another admin changed one field has had the protection bypassed by a role change, the literal thing sentence 2 names. Nothing in AC7's own text says the protection attaches to the current role rather than to being an admin — that qualifier comes from the spec and the test comment, not from issue #8. Under Reading B, users.spec.ts:887 is a test pinning a bypass rather than proving protection. Routes to the issue author for a ruling, not to Dev and not to another test run. The covered half is solid: :871 asserts 403, the exact body, and storedRole admin at :884, which also proves no soft delete since storedRole reads the deletedAt-filtered list. Second-order observation on the same clause from ATT-0fa25dd59654: a role change also STRENGTHENS the protection onto rows the Users page cannot reach, since PUT reaches soft-deleted rows and the AI pseudo-user and promoting either makes it permanently undeletable through the API. Out of story scope (TD-22, guard reverted at 71ad3af).",
+          "clearedBehaviour": null,
+          "humanAttestation": null
+        }
+      ],
+      "evidence": [],
+      "triageHistory": [],
+      "nextAction": null,
+      "resultingBug": null,
+      "refinementRef": null,
+      "duplicates": [],
+      "updatedAt": "2026-09-09T15:46:00.755Z"
+    },
+    {
+      "findingId": "FIND-be4df23b060f",
+      "workItem": "GH-8",
+      "ac": null,
+      "obligationId": "OBL-08b5819c8678",
+      "signature": "server/src/routes/users.ts::PUT /api/users/:id — excluded-principal role write",
+      "origin": "exploratory-charter",
+      "charterProvenance": {
+        "charterId": "CH-3590ccb0991e",
+        "area": "role writes on principals that cannot sign in",
+        "verifierVerdictAtTime": "fail",
+        "whatFound": "PUT /api/users/:id reaches both principal kinds the normal listing filters exclude, so a soft-deleted row and the ai-agent pseudo-user can each be promoted to admin; the stored-role delete guard then refuses deletion, leaving both in a protected state the ordinary management flow cannot recover from."
+      },
+      "state": "open",
+      "observations": [
+        {
+          "observationId": "OBS-23d778aa65e5",
+          "at": "2026-09-09T14:31:16.934Z",
+          "producer": "exploratory-charter",
+          "outcome": "observed",
+          "candidateCommit": "1f64131310b807b27980af8113fa254d1be0f8c2",
+          "runId": "RUN-3772b2b90d0e",
+          "recordPath": ".solvo/evidence/qa/GH-8-run-1f64131310b807b27980af8113fa254d1be0f8c2.json",
+          "executionSource": null,
+          "evidenceRefs": [
+            {
+              "owningRecordPath": ".solvo/evidence/qa/GH-8-run-1f64131310b807b27980af8113fa254d1be0f8c2.json",
+              "evidenceId": "EV-0d7839b38f0b"
+            }
+          ],
+          "assertionIdentity": null,
+          "detail": "Excluded principals can be promoted to protected admin state through PUT /api/users/:id\n\nObservation: The normal user-management surface excludes soft-deleted users and ai-agent, but PUT /api/users/:id does not apply those exclusions. An authenticated admin can therefore promote either excluded principal to admin. The role persists while the principal remains outside the normal management surface. DELETE /api/users/:id subsequently refuses deletion because it trusts the stored admin role, leaving the principal in a protected state that the ordinary management flow cannot recover from.\n\nSoft-deleted variant: hidden row remains deletedAt != null, becomes admin, and then DELETE returns 403.\n\nAI pseudo-user variant: ai-agent can be promoted once a schema-valid name is supplied; it remains excluded from normal listings, and DELETE returns 403 while admin.\n\nImpact observed: invalid/unmanageable persisted authorization state and loss of normal API recovery/deletion path. No authentication privilege escalation was demonstrated for either excluded principal.\n\nEvidence limitation: downstream ticket/stat endpoints did not error after AI promotion, but the test database had no tickets, so this does not establish absence of all functional impact.\n\nObserved behaviour only. GET /api/users applies where deletedAt is null and id is not AI_AGENT_ID (server/src/routes/users.ts:15); the PUT handler's target load applies neither (users.ts:79), and the DELETE guard reads only the stored role (users.ts:147). No cause is assigned and no remedy is proposed here — that is /qa-triage's with a named human. Related pre-existing debt item TD-22 was reasoned from the code when a guard was reverted at 71ad3af; this record is the observed behaviour on candidate 1f64131310b807b27980af8113fa254d1be0f8c2, and it additionally establishes that the ai-agent row's earlier refusal came from ordinary name validation on its seeded two-character name rather than from any protected-principal rule.",
+          "clearedBehaviour": null,
+          "humanAttestation": {
+            "by": "JB",
+            "rationale": "JB performed CH-3590ccb0991e with Claude operating the terminal under JB's direction, observed every raw result, and stated this observation. Recorded as an observation only — no cause is assigned here."
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "owningRecordPath": ".solvo/evidence/qa/GH-8-run-1f64131310b807b27980af8113fa254d1be0f8c2.json",
+          "evidenceId": "EV-0d7839b38f0b",
+          "sha256": "e3eca030087e433d4a01d2daf6c1c14ff478523945057b2c040f91cd605ddcb4",
+          "note": "JB's performance note for CH-3590ccb0991e, recorded through qa-result perform as attempt ATT-0fa25dd59654 — carries the full raw sequence for both excluded-principal variants."
+        }
+      ],
+      "triageHistory": [],
+      "nextAction": null,
+      "resultingBug": null,
+      "refinementRef": null,
+      "duplicates": [],
+      "updatedAt": "2026-09-09T14:31:16.934Z"
+    },
+    {
+      "findingId": "FIND-ca2275f71b49",
+      "workItem": "GH-8",
+      "ac": "AC2",
+      "obligationId": null,
+      "signature": "e2e/tests/users.spec.ts::Role management > AC2 — only the admin-protected API may mutate a role",
+      "origin": "verifier",
+      "charterProvenance": null,
+      "state": "open",
+      "observations": [
+        {
+          "observationId": "OBS-78002ea3645b",
+          "at": "2026-09-09T15:46:00.755Z",
+          "producer": "qa-verify",
+          "outcome": "observed",
+          "candidateCommit": "1f64131310b807b27980af8113fa254d1be0f8c2",
+          "runId": "RUN-3772b2b90d0e",
+          "recordPath": ".solvo/evidence/qa/GH-8-run-1f64131310b807b27980af8113fa254d1be0f8c2.json",
+          "executionSource": null,
+          "evidenceRefs": [],
+          "assertionIdentity": "three scenarios assert status plus error body plus storedRole; no scenario anywhere exercises the exclusivity clause via /api/auth/update-user carrying a role field",
+          "detail": "4 of 5 enumerated instances covered, and the uncovered one is the AC's own exclusivity clause. Covered: users.spec.ts :546 authenticated non-admin (403 at :572, body error==='Forbidden' at :575, storedRole at :576), :581 unauthenticated (401 at :597 + read :598), :601 agent self-promotion (403 + 'Forbidden' :621 + read :622). GAP: AC2 sentence 1 says role mutation is accepted ONLY through the existing admin-protected user-management API, and nothing tests that exclusivity. Better Auth is mounted at /api/auth/{*any} and exposes update-user to any authenticated principal; the only thing preventing a role write through it is `input: false` on the role additionalField at server/src/lib/auth.ts:22. A grep of e2e/ for 'update-user' returns nothing. No case in the approved 68 enumerates it and no charter probed it. Implementation is sound by inspection — the only two writes to role in server/src are users.ts:45 (hardcoded Role.agent) and users.ts:115 (behind requireAuth + requireAdmin) — so this is load-bearing authorization with zero coverage, not a defect.",
+          "clearedBehaviour": null,
+          "humanAttestation": null
+        }
+      ],
+      "evidence": [],
+      "triageHistory": [],
+      "nextAction": null,
+      "resultingBug": null,
+      "refinementRef": null,
+      "duplicates": [],
+      "updatedAt": "2026-09-09T15:46:00.755Z"
+    },
+    {
+      "findingId": "FIND-bf1b280e9547",
+      "workItem": "GH-8",
+      "ac": "AC9",
+      "obligationId": null,
+      "signature": "e2e/tests/users.spec.ts::Role management (helper) > storedRole",
+      "origin": "verifier",
+      "charterProvenance": null,
+      "state": "open",
+      "observations": [
+        {
+          "observationId": "OBS-c6c2be59f415",
+          "at": "2026-09-09T15:46:00.755Z",
+          "producer": "qa-verify",
+          "outcome": "observed",
+          "candidateCommit": "1f64131310b807b27980af8113fa254d1be0f8c2",
+          "runId": "RUN-3772b2b90d0e",
+          "recordPath": ".solvo/evidence/qa/GH-8-run-1f64131310b807b27980af8113fa254d1be0f8c2.json",
+          "executionSource": null,
+          "evidenceRefs": [],
+          "assertionIdentity": "expect(response.status()).toBe(200); return users.find((u) => u.id === id)?.role — returns one field, used as the nothing-was-persisted proof in 13 negative scenarios",
+          "detail": "All seven behaviours AC9 names have asserting scenarios and all passed in one full-suite run (ATT-a49d0e7e45db.stdout.log:146, '93 passed (32.3s)', with each Role management scenario named ok at :95-143). Three gaps against AC9's own terms. First, 'invalid role input' coverage is incomplete: the two AC3 instances above have no automated test at all. Second, CASE-2c479a856aea — the case whose entire job is auditing that every negative scenario pairs with a persistence read — has no obligation; performed by hand the pairing holds 13 of 14 (users.spec.ts:1025 asserts only 404 with no follow-up read), but every pairing calls storedRole (:443-448) which returns exactly one field, so the recorded claim is broader than the assertion. Third, seven AC9 obligations were discharged with 'playwright test --list' captures (OBL-afa4a3005597, OBL-e5a9e201f59f, OBL-5ed1c1a42331, OBL-4764df24a602, OBL-ce6f1973480d, OBL-7baece1881f8, OBL-971cfeba952a); a listing is the test names, while those cases' own steps say to read the assertions, so they become proven only in combination with a source read and with a different obligation's full-suite log. Separately, OBL-9556cad8acce records pass/complete against CASE-23c59ddcf0fa, whose expected result requires more than one cold-database run and whose evidence is one run — the plan states that requirement itself at plan.md:368.",
+          "clearedBehaviour": null,
+          "humanAttestation": null
+        }
+      ],
+      "evidence": [],
+      "triageHistory": [],
+      "nextAction": null,
+      "resultingBug": null,
+      "refinementRef": null,
+      "duplicates": [],
+      "updatedAt": "2026-09-09T15:46:00.755Z"
+    }
+  ]
+}
