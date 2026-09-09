@@ -179,9 +179,10 @@ needs no fixture changes for this ([[11-testing]] §Can the suite express a two-
 | AC9 | Regression coverage | satisfied by the seven rows above; the negative and transition cases are the point |  |
 | — | Self-change guard (decision 2) | admin `PUT`s their own id with the other role → **403**, own role unchanged; the same refusal driven **through the dialog**, asserting the server's message reaches the user rather than being swallowed; and a payload that trips the self-role guard *and* the email-uniqueness check at once → **403, not 409**, which is the only scenario that fails if the two guards are ever reordered | E2E (`request` + UI) |
 
-AC7's row is a genuine coverage gain: [[11-testing]] §Authorization coverage today records that
-**no test anywhere asserts authorization at the API level** — every current authorization assertion
-is a UI observation. This story adds the first ones.
+AC7's row is a genuine coverage gain: before this story [[11-testing]] §Authorization coverage today
+recorded that **no test anywhere asserted authorization at the API level** — every authorization
+assertion was a UI observation. This story adds the first ones, and that section plus
+[[tech-debt|TD-21]] are updated to say so.
 
 ### AC → scenario index (mechanically attributable)
 
