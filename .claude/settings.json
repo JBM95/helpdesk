@@ -1,22 +1,26 @@
 {
   "permissions": {
     "deny": [
-      "Bash(git push --force*)",
+      "Bash(git push --force)",
+      "Bash(git push --force *)",
       "Bash(git push -f*)",
       "Bash(git merge*)",
       "Bash(git rebase -i*)",
       "Bash(git reset --hard origin*)"
+    ],
+    "allow": [
+      "Bash(git push --force-with-lease*)"
     ]
+  },
+  "enabledPlugins": {
+    "solvo@solvd": true
   },
   "extraKnownMarketplaces": {
     "solvd": {
       "source": {
-        "source": "url",
+        "source": "git",
         "url": "git@gitlab.com:solvd1/ai-first-sdlc/plugin-marketplace.git"
       }
     }
-  },
-  "enabledPlugins": {
-    "solvo@solvd": true
   }
 }

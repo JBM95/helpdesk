@@ -10,7 +10,6 @@ e2e/playwright-report/
 
 # solvo (managed) — cycle artifacts are committed; telemetry is not
 .solvo/*
-!.solvo/state/
 !.solvo/evidence/
 !.solvo/analysis/
 !.solvo/stories/
