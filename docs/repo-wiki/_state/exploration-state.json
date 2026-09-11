@@ -15,29 +15,29 @@
     "core": {
       "path": "core",
       "loc": 139,
-      "locAtLastExploration": 0,
+      "locAtLastExploration": 139,
       "files": 9,
-      "filesAtLastExploration": 0,
-      "status": "pending",
-      "staleness": "new",
+      "filesAtLastExploration": 9,
+      "status": "partial",
+      "staleness": "fresh",
       "churn": {
-        "tier": "warm",
-        "source": "unavailable",
-        "measuredAt": null,
-        "windowDays": 90,
-        "commits": null,
-        "linesChanged": null,
-        "filesTouched": null
+        "source": "git",
+        "measuredAt": "2026-09-08T17:07:43.656Z",
+        "windowDays": 4,
+        "commits": 1,
+        "linesChanged": 151,
+        "filesTouched": 10,
+        "tier": "hot"
       },
       "agentsRun": {
-        "explore-05-domain-mapper": null,
+        "explore-05-domain-mapper": "2026-09-08T17:07:27.000Z",
         "explore-06-api-surface-mapper": null,
         "explore-07-frontend-explorer": null,
-        "explore-08-data-model-mapper": null,
-        "explore-13-legacy-detective": null,
+        "explore-08-data-model-mapper": "2026-09-08T17:07:27.000Z",
+        "explore-13-legacy-detective": "2026-09-08T17:25:20.000Z",
         "explore-10-integration-mapper": null,
-        "explore-12-test-coverage-mapper": null,
-        "explore-11-cross-cutting-mapper": null,
+        "explore-12-test-coverage-mapper": "2026-09-08T17:17:44.000Z",
+        "explore-11-cross-cutting-mapper": "2026-09-08T17:17:44.000Z",
         "explore-09-feature-cataloger": null
       },
       "notes": "Shared schemas and constants package. Foundation layer consumed by client and server."
@@ -51,13 +51,13 @@
       "status": "partial",
       "staleness": "fresh",
       "churn": {
-        "tier": "warm",
-        "source": "unavailable",
-        "measuredAt": null,
-        "windowDays": 90,
-        "commits": null,
-        "linesChanged": null,
-        "filesTouched": null
+        "source": "git",
+        "measuredAt": "2026-09-08T17:07:43.656Z",
+        "windowDays": 4,
+        "commits": 3,
+        "linesChanged": 8013,
+        "filesTouched": 65,
+        "tier": "hot"
       },
       "agentsRun": {
         "explore-05-domain-mapper": "2026-09-07T12:20:00.000Z",
@@ -75,58 +75,58 @@
     "server": {
       "path": "server",
       "loc": 2526,
-      "locAtLastExploration": 0,
+      "locAtLastExploration": 2526,
       "files": 23,
-      "filesAtLastExploration": 0,
-      "status": "pending",
-      "staleness": "new",
+      "filesAtLastExploration": 23,
+      "status": "partial",
+      "staleness": "fresh",
       "churn": {
-        "tier": "warm",
-        "source": "unavailable",
-        "measuredAt": null,
-        "windowDays": 90,
-        "commits": null,
-        "linesChanged": null,
-        "filesTouched": null
+        "source": "git",
+        "measuredAt": "2026-09-08T17:07:43.656Z",
+        "windowDays": 4,
+        "commits": 1,
+        "linesChanged": 3554,
+        "filesTouched": 41,
+        "tier": "hot"
       },
       "agentsRun": {
-        "explore-05-domain-mapper": null,
-        "explore-06-api-surface-mapper": null,
+        "explore-05-domain-mapper": "2026-09-08T17:07:27.000Z",
+        "explore-06-api-surface-mapper": "2026-09-08T17:07:27.000Z",
         "explore-07-frontend-explorer": null,
-        "explore-08-data-model-mapper": null,
-        "explore-13-legacy-detective": null,
-        "explore-10-integration-mapper": null,
-        "explore-12-test-coverage-mapper": null,
-        "explore-11-cross-cutting-mapper": null,
-        "explore-09-feature-cataloger": null
+        "explore-08-data-model-mapper": "2026-09-08T17:07:27.000Z",
+        "explore-13-legacy-detective": "2026-09-08T17:25:20.000Z",
+        "explore-10-integration-mapper": "2026-09-08T17:17:44.000Z",
+        "explore-12-test-coverage-mapper": "2026-09-08T17:17:44.000Z",
+        "explore-11-cross-cutting-mapper": "2026-09-08T17:17:44.000Z",
+        "explore-09-feature-cataloger": "2026-09-08T17:17:44.000Z"
       },
       "notes": "Express + Bun backend. 5 route modules, Prisma ORM, Better Auth, 3 pg-boss queues (classify-ticket, auto-resolve-ticket, send-email). LOC excludes gitignored src/generated/prisma (~11,930 LOC); of the 2,526 counted, 1,435 is seed fixtures, leaving ~1,091 LOC of logic."
     },
     "e2e": {
       "path": "e2e",
       "loc": 2051,
-      "locAtLastExploration": 0,
+      "locAtLastExploration": 2051,
       "files": 8,
-      "filesAtLastExploration": 0,
-      "status": "pending",
-      "staleness": "new",
+      "filesAtLastExploration": 8,
+      "status": "partial",
+      "staleness": "fresh",
       "churn": {
-        "tier": "warm",
-        "source": "unavailable",
-        "measuredAt": null,
-        "windowDays": 90,
-        "commits": null,
-        "linesChanged": null,
-        "filesTouched": null
+        "source": "git",
+        "measuredAt": "2026-09-08T17:07:43.656Z",
+        "windowDays": 4,
+        "commits": 1,
+        "linesChanged": 2051,
+        "filesTouched": 9,
+        "tier": "hot"
       },
       "agentsRun": {
-        "explore-05-domain-mapper": null,
+        "explore-05-domain-mapper": "2026-09-08T17:07:27.000Z",
         "explore-06-api-surface-mapper": null,
         "explore-07-frontend-explorer": null,
         "explore-08-data-model-mapper": null,
-        "explore-13-legacy-detective": null,
+        "explore-13-legacy-detective": "2026-09-08T17:25:20.000Z",
         "explore-10-integration-mapper": null,
-        "explore-12-test-coverage-mapper": null,
+        "explore-12-test-coverage-mapper": "2026-09-08T17:17:44.000Z",
         "explore-11-cross-cutting-mapper": null,
         "explore-09-feature-cataloger": null
       },
@@ -158,6 +158,18 @@
       "at": "2026-09-07T12:20:00.000Z",
       "command": "/setup-05-explore client",
       "summary": "Client pass complete at client scope. Ran explore-05, 07, 09, 11, 12, 13. Wrote 03-domains/ (_index + 4), 04-features/ (_index + 15), 06-frontend-map.md, 13-cross-cutting.md, 11-testing.md, 09-legacy/{legacy-map,tech-debt}.md. Skipped explore-06/08/10 (server-side surface, out of scope) so client status is partial, not complete. Calibration ran with operator approval: tiers.t3Domains = [auth, user-management]; coverage kept at shipped 80/75 with quality.coverageWaiver added (no coverage tooling exists). solvo churn NOT recorded - global solvo shim broken (MODULE_NOT_FOUND on @solvd1/solvo/dist/solvo.js); churn fields remain as the recon scout left them."
+    },
+    {
+      "at": "2026-09-08T17:07:27.000Z",
+      "entry": "GH-8 recon auto-continue: /setup-05-explore init for core, server, e2e. Phase B/C complete \u2014 explore-05-domain-mapper (core+server+e2e), explore-06-api-surface-mapper (server), explore-08-data-model-mapper (server+core). Wrote 05-api-surface.md and 07-data-model.md (new), extended all four 03-domains/ docs from client-only to full-stack. Phase D/E in flight."
+    },
+    {
+      "at": "2026-09-08T17:17:44.000Z",
+      "entry": "GH-8 Phase D complete \u2014 explore-09 (server features), explore-10 (server integrations), explore-11 (server+core cross-cutting), explore-12 (server+core+e2e test coverage). Wrote 10-integrations.md (new), rewrote 11-testing.md and 13-cross-cutting.md as full-stack, extended the four user-management feature cards with server traces. NOTE: explore-11 reported that Better Auth caches role in the session and that role changes need session invalidation; verified against better-auth@1.4.18 source (internal-adapter.mjs findSession joins user per call; api/routes/session.mjs:93 gates the cookie-cache short-circuit on session.cookieCache.enabled, which is unset here) and the claim is FALSE. 13-cross-cutting.md records the correction in place. Phase E (explore-13) in flight."
+    },
+    {
+      "at": "2026-09-08T17:25:20.000Z",
+      "entry": "GH-8 Phase E complete \u2014 explore-13-legacy-detective over core+server+e2e. Extended 09-legacy/legacy-map.md and tech-debt.md from client-only to full-stack; TD register now TD-01..TD-21 (agent summary said 18, reconciled to 21 on write). core/server/e2e status: partial (agents not applicable to each area left null, matching how client was recorded). Staleness gate verified clear for all four blast-radius files by running staleness-gate.mjs directly."
     }
   ],
   "docTrust": {}

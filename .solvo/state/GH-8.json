@@ -1,0 +1,228 @@
+{
+  "id": "GH-8",
+  "tier": "T3",
+  "tierConfirmedBy": "JB",
+  "phase": "merge-gate",
+  "pr": {
+    "number": 9,
+    "url": "https://github.com/JBM95/helpdesk/pull/9",
+    "openedAt": "2026-09-09T08:40:00Z",
+    "headCommit": "9bc32bb",
+    "note": "Opened after round 5's APPROVE cleared the gate-guard arm that refuses a PR while the recorded verdict is REQUEST_CHANGES. GATE 2 had approved opening it; the APPROVE was the outstanding precondition."
+  },
+  "run": {
+    "id": "3f0c9a41-7d52-4e88-9b31-6a2f5c1d8e40",
+    "agent": "claude-code",
+    "model": "opus"
+  },
+  "blastRadius": {
+    "files": 6,
+    "callers": 10
+  },
+  "readyBarGaps": [
+    "Grounding",
+    "Open questions"
+  ],
+  "grounding": [
+    {
+      "path": "docs/repo-wiki/03-domains/user-management.md",
+      "band": "unrated"
+    },
+    {
+      "path": "docs/repo-wiki/03-domains/auth.md",
+      "band": "unrated"
+    },
+    {
+      "path": "docs/repo-wiki/04-features/edit-user.md",
+      "band": "unrated"
+    },
+    {
+      "path": "docs/repo-wiki/11-testing.md",
+      "band": "unrated"
+    }
+  ],
+  "gates": {
+    "gate1": {
+      "approved": true,
+      "by": "JB",
+      "at": "2026-09-08T18:11:31Z"
+    },
+    "gate2": {
+      "approved": true,
+      "by": "JB",
+      "at": "2026-09-09T06:55:00Z",
+      "decision": "Approve — write artifacts and open the PR",
+      "presentedWith": "diff + results + explicit notice that the 3-round fresh-review cap was exhausted and the post-revert tree has had no independent review"
+    }
+  },
+  "review": {
+    "verdict": "APPROVE",
+    "blockersOpen": 0,
+    "by": "fresh-reviewer",
+    "at": "2026-09-09T08:20:00Z",
+    "lenses": {
+      "blind": 2,
+      "edge": 1,
+      "acceptance": 4
+    },
+    "round": 5,
+    "roundsCap": 3,
+    "notes": "Round 5 returned APPROVE with 0 blockers — the first clean verdict, and the second independent review of the post-revert tree. It verified all four claims of the post-round-4 self audit rather than taking them on trust: re-ran the citation sweep with a wider net than mine (129 filename-qualified citations across 63 documents resolved by script, zero out of range, plus 8 hand-resolved where a basename map collided), re-derived every count from playwright --list / grep / wc, swept for surviving claims that role is immutable (12 hits, all correctly past-tensed), and confirmed the three pre-existing off-by-ones sit in files this branch never touched. It re-ran the round-4 guard-order mutation itself and reproduced the single expected failure, and added live adversarial probes against a clean server: role type confusion (array, object, int, bool, padded string) all 400; mass assignment of id/deletedAt/emailVerified/createdAt all ignored; __proto__ no effect; 10 parallel alternating role writes all 200 with no deadlock. Findings: one decision item and two nits, no blockers. The decision item was this pack's own section 7, which still claimed the 3-round cap was exhausted with the post-revert tree unreviewed — false since round 4. Nit B1: section 6 attributed a 92-test run to 1992a41, where the suite was 91. Nit B2 was the substantive one and is a genuine coverage gap in this story's own code: broadening `demoted` from `admin -> agent` to `role === Role.agent` passed all 30 scenarios, because nothing pinned the narrow side — in production that signs an agent out of every device whenever an admin edits their name. Fixed rather than deferred in c50c4f3, asserting 403 (session alive, not admin) rather than 401 (session destroyed) on a live session after a non-demoting save; re-applying the mutation now fails exactly that one test. All three fixed in c50c4f3 and eb6af3c. Refreshing the pack also surfaced a fourth error no round had caught: section 3 said three scope decisions and listed three, where the state file records four.",
+    "roundHistory": [
+      {
+        "round": 1,
+        "verdict": "REQUEST_CHANGES",
+        "blockers": 3,
+        "resolvedIn": "5a219fa"
+      },
+      {
+        "round": 2,
+        "verdict": "REQUEST_CHANGES",
+        "blockers": 1,
+        "resolvedIn": "84c0af3"
+      },
+      {
+        "round": 3,
+        "verdict": "REQUEST_CHANGES",
+        "blockers": 2,
+        "resolvedIn": "71ad3af (revert)"
+      },
+      {
+        "round": 4,
+        "verdict": "REQUEST_CHANGES",
+        "blockers": 3,
+        "resolvedIn": "696d2d8"
+      },
+      {
+        "round": 5,
+        "verdict": "APPROVE",
+        "blockers": 0,
+        "resolvedIn": "c50c4f3 + eb6af3c (nits and the decision item; no blockers to resolve)"
+      }
+    ],
+    "capExceeded": "Rounds 4 and 5 ran beyond the 3-round cap. The reason is the same for both and is recorded rather than glossed: the gate-guard hook refuses a PR while the recorded verdict is REQUEST_CHANGES, and the alternatives were to record a human-resolved APPROVE that JB had not given — he approved proceeding to a PR at GATE 2 without having reviewed the diff — or to fabricate one. Both were refused. The overrun was reported to JB, who chose to run round 5, and round 5 returned a genuine APPROVE. Four rounds found zero product-code defects; every blocker across all five rounds was documentation fidelity, and the one substantive product finding (round 5's nit B2) was a missing test rather than a defect."
+  },
+  "scopeDecisions": [
+    {
+      "at": "2026-09-09T05:20:00Z",
+      "by": "JB",
+      "item": "Pre-existing E2E flake exposed (not caused) by this story",
+      "decision": "Fix the test-side determinism now; leave product code alone.",
+      "delivered": "e2e/global-setup.ts, e2e/clear-job-queue.sql, e2e/tests/ticket-detail.spec.ts -- test-only, outside the agreed 6-file blast radius. Root cause was NOT the first diagnosis: prisma migrate reset recreates `public` but never pg-boss's `pgboss` schema, so every run inherited the prior run's jobs (measured 364 pending / ~4,800 failed, growing per run). Truncating pgboss.job in global setup makes runs independent. Verified 6 consecutive clean full-suite runs vs 1-2 failures per ~3 runs before."
+    },
+    {
+      "at": "2026-09-09T05:20:00Z",
+      "by": "JB",
+      "item": "Reviewer decision items D1 (no admin floor under concurrency) and D2 (no role-change attribution)",
+      "decision": "Accept both as recorded. No AC asks for either; issue #8 puts audit logging out of scope.",
+      "delivered": "Recorded in the spec, users.ts:85-90, user-management.md Open questions, and 05-api-surface.md security posture."
+    },
+    {
+      "at": "2026-09-09T05:20:00Z",
+      "by": "JB",
+      "item": "House-convention nits needing files outside the blast radius (roleLabel to core/constants; E2E helpers to e2e/fixtures)",
+      "decision": "Leave all three; carry as follow-ups rather than widen the T3 diff."
+    },
+    {
+      "at": "2026-09-09T06:35:00Z",
+      "by": "JB",
+      "item": "Guard refusing a role change on the AI pseudo-user and soft-deleted rows (87603e7), added beyond the ACs without a T3 hard pause",
+      "decision": "Revert it and carry as a follow-up.",
+      "delivered": "71ad3af reverts the product hunk and its 2 scenarios, keeping the AC-relevant 409 scenario. Recorded as TD-22 with three design options plus an open question on the user-management doc. Reverting also resolved both round-3 blockers, since users.ts returned byte-identical to its pre-guard state."
+    }
+  ],
+  "checks": {
+    "green": true,
+    "at": "2026-09-09T08:36:06Z",
+    "command": "cd client && bun run test (142 passed, 8 files) && bun run test:e2e (93 passed, 5 files)",
+    "commit": "eb6af3cf83af479d76bb5b31036709636eb78a72",
+    "ambiguityScan": {
+      "cleared": true
+    },
+    "coverage": "n/a: no coverage tooling is configured anywhere in this repo — see solvo.json quality.coverageWaiver",
+    "e2e": {
+      "obligation": "covered",
+      "scenarios": 93,
+      "passed": 93,
+      "storyScenarios": 24,
+      "storyScenariosNote": "24 new scenarios in the Role management describe of e2e/tests/users.spec.ts (main had 7 in that file, HEAD has 31), plus 2 pre-existing ticket-detail scenarios modified to use the settle barrier. 69 baseline + 24 = 93, which matches the run. Every count derived from `bunx playwright test --list` and grep, not by hand.",
+      "attribution": ".solvo/stories/GH-8-spec.md §AC → scenario index — per-AC scenario identifiers, per issue #8's requirement that AC evidence not rest on a suite-level pass",
+      "stability": "full suite 93 passed x2 (at c50c4f3 and again at eb6af3c); the previously-red pair (ticket-detail + webhook-inbound-email) 26 passed x4 earlier; users.spec.ts alone 31 passed. Residual flake NOT claimed absent: round 5 saw 2 failures in its first 11 runs of users.spec.ts, then 9 consecutive clean, and could not attribute them (log overwritten, preceding batch was a mutated tree); neither reproduced in the 12 runs after. The two tests named in that window (:25 columns, :461 promote-via-dialog) both fail the way a transient GET /api/users failure would, since UsersTable swaps the table for ErrorAlert on query error. What is proven fixed is the pg-boss backlog, which was reproducible and measured; the suite is not being called flake-free."
+    },
+    "typecheck": "client tsc -b: 3 errors, all pre-existing and identical on main (ReplyForm.test.tsx:19, TicketSummary.test.tsx:19, vite.config.ts:41). server: 1 pre-existing (prisma/seed-replies.ts:377). None in files this branch touches.",
+    "rerunAtPrPhase": "Both suites re-run in full at eb6af3c, the commit immediately before this one: client 142/142, E2E 93/93. Not carried forward from an earlier commit — the run is at the tree being shipped. This state file is the trailing commit and its entire diff is this file, per the gated-cycle PR-phase order and the gate-guard freshness arm.",
+    "selfAudit": "Post-round-4 self audit of the finding class the rounds kept hitting, all four claims independently re-verified by round 5 and confirmed. (1) All 70 qualified file:line citations into the 9 files this branch changed re-resolved against the source: 67 point at exactly the claimed construct, 3 are the spec's deliberately-marked as-is (main-frame) references. Zero out of range. Round 5 re-ran this with a wider net — 129 filename-qualified citations across 63 documents, script-resolved, zero out of range. (2) All test counts re-derived from tooling rather than by hand. Post-c50c4f3 values: 93 total, 31 in users.spec.ts, 24 story scenarios, 14 describes, 2,677 E2E LOC. (3) Grep sweep for claims contradicting role writability: none remaining. (4) Three pre-existing off-by-one citations survive in 07-data-model.md (ticket-status.ts:1-24, a migration.sql:1-32, seed.ts:11-86) — all in files this branch never touched, left alone as out of scope.",
+    "citationDriftNote": "Adding the c50c4f3 scenario shifted the nine AC-to-scenario citations after users.spec.ts:800 by exactly +35, re-creating the drift class that caused blockers in rounds 1, 3 and 4. All nine were re-derived from `playwright test --list` and fixed in the same commit, along with the E2E counts in 11-testing.md and edit-user.md. Recorded because the lesson is the recurring one on this story: any insert into a test file invalidates every line citation below it, and no round found that by inspection — only by re-resolving mechanically."
+  },
+  "attempts": {
+    "recon": 2,
+    "build": 1
+  },
+  "artifacts": {
+    "recon": ".solvo/reconnaissance/GH-8-recon.md",
+    "spec": ".solvo/stories/GH-8-spec.md",
+    "evidence": ".solvo/evidence/GH-8.md",
+    "memory": "docs/repo-wiki/_memories/GH-8-promote-demote-users.md"
+  },
+  "autoExplored": [
+    "core",
+    "server",
+    "e2e"
+  ],
+  "evidencePackStatus": "INCOMPLETE — section 7 (Reviews) is unfillable: no qa block, no canonical QaRun, and none of the three exploratory charter areas issue #8 asks for, and no authority decision recorded for waiving them. quality.qa mode is 'warn' so it does not block, but the omission is unresolved and is the one thing on this story a human still has to decide. Every other section is complete, and the pack was refreshed at eb6af3c to cover rounds 4-5, the corrected commit and check attributions, the full 24-commit list, and the fourth scope decision.",
+  "qa": {
+    "verdict": "fail",
+    "snapshotId": "vs-9e6758cb71f1134f3ee3468a7a3414f4",
+    "performedBy": "claude-code haiku-4.5 / solvo qa-verify (dispatched by JB)",
+    "at": "2026-09-09T15:46:00.755Z",
+    "runId": "RUN-3772b2b90d0e",
+    "testedCommit": "1f64131310b807b27980af8113fa254d1be0f8c2",
+    "recordPath": ".solvo/evidence/qa/GH-8-run-1f64131310b807b27980af8113fa254d1be0f8c2.json",
+    "executionSource": null,
+    "acResults": [
+      {
+        "ac": "AC1",
+        "status": "verified"
+      },
+      {
+        "ac": "AC2",
+        "status": "gap"
+      },
+      {
+        "ac": "AC3",
+        "status": "gap"
+      },
+      {
+        "ac": "AC4",
+        "status": "verified"
+      },
+      {
+        "ac": "AC5",
+        "status": "verified"
+      },
+      {
+        "ac": "AC6",
+        "status": "verified"
+      },
+      {
+        "ac": "AC7",
+        "status": "ambiguous"
+      },
+      {
+        "ac": "AC8",
+        "status": "verified"
+      },
+      {
+        "ac": "AC9",
+        "status": "gap"
+      }
+    ],
+    "handoff": [],
+    "reasons": [
+      "AC2: 4 of 5 enumerated instances covered, and the uncovered one is the AC's own exclusivity clause. Covered: users.spec.ts :546 authenticated non-admin (403 at :572, body error==='Forbidden' at :575, storedRole at :576), :581 unauthenticated (401 at :597 + read :598), :601 agent self-promotion (403 + 'Forbidden' :621 + read :622). GAP: AC2 sentence 1 says role mutation is accepted ONLY through the existing admin-protected user-management API, and nothing tests that exclusivity. Better Auth is mounted at /api/auth/{*any} and exposes update-user to any authenticated principal; the only thing preventing a role write through it is `input: false` on the role additionalField at server/src/lib/auth.ts:22. A grep of e2e/ for 'update-user' returns nothing. No case in the approved 68 enumerates it and no charter probed it. Implementation is sound by inspection — the only two writes to role in server/src are users.ts:45 (hardcoded Role.agent) and users.ts:115 (behind requireAuth + requireAdmin) — so this is load-bearing authorization with zero coverage, not a defect.",
+      "AC3: The whole-stored-user clause is now ESTABLISHED, but by the hand-performed charter rather than by the suite, and two invalid-input instances remain untested. On the clause: all six automated AC3 scenarios send the target's own current name and email (:636-641, :658, :674-679, :693-698) and assert one field via storedRole (:443-448 returns .role), so they cannot distinguish 'nothing was written' from 'role was not written but name and email were'; the two that do send mutated fields (:705 name 'ab', :732 a taken email) never read them back. The claim is carried entirely by ATT-18fc2f14440d (OBL-23ed9be84e8c, performedBy JB), whose arm 2 sent MUTATED NAME + a mutated email with role 'superuser', then the same with the role key omitted, and read back by psql: name, email and role all at baseline with updatedAt unmoved from creation at 15:16:26.005, plus a count of rows matching the mutated email of 0. Consistent with users.ts:74-75 where validate runs before the target is loaded. Two caveats: it rests on a single human attempt rather than a repeatable test, and it is filed against an AC2-tagged obligation, so AC3 has no obligation carrying its own clause. REMAINING GAP: CASE-bd320a8da365 (role as array, object, integer, boolean) and CASE-4c5cbc978ea4 (whitespace-padded ' admin ') are marked manual with no obligation, no attempt and no waiver, and both are 'unsupported role values' by the AC's own wording. core/schemas/users.ts:19 is z.enum with no coercion or trim, so the implementation is right by inspection and the instances are untested rather than broken. Also assertion-light relative to siblings: :669 and :686 assert status and storedRole but omit the error-body assertion their four siblings carry.",
+      "AC9: All seven behaviours AC9 names have asserting scenarios and all passed in one full-suite run (ATT-a49d0e7e45db.stdout.log:146, '93 passed (32.3s)', with each Role management scenario named ok at :95-143). Three gaps against AC9's own terms. First, 'invalid role input' coverage is incomplete: the two AC3 instances above have no automated test at all. Second, CASE-2c479a856aea — the case whose entire job is auditing that every negative scenario pairs with a persistence read — has no obligation; performed by hand the pairing holds 13 of 14 (users.spec.ts:1025 asserts only 404 with no follow-up read), but every pairing calls storedRole (:443-448) which returns exactly one field, so the recorded claim is broader than the assertion. Third, seven AC9 obligations were discharged with 'playwright test --list' captures (OBL-afa4a3005597, OBL-e5a9e201f59f, OBL-5ed1c1a42331, OBL-4764df24a602, OBL-ce6f1973480d, OBL-7baece1881f8, OBL-971cfeba952a); a listing is the test names, while those cases' own steps say to read the assertions, so they become proven only in combination with a source read and with a different obligation's full-suite log. Separately, OBL-9556cad8acce records pass/complete against CASE-23c59ddcf0fa, whose expected result requires more than one cold-database run and whose evidence is one run — the plan states that requirement itself at plan.md:368.",
+      "AC7: AC7 is two sentences that pull in opposite directions, and the tests encode only one reading. Reading A, which the code and tests adopt: sentence 1 protects a user whose CURRENT STORED role is admin, the guard reads the row fresh at users.ts:141 and tests user.role === Role.admin at :147, so demote-then-delete is two individually-authorized steps rather than a bypass — users.spec.ts:887 encodes this as intended and says so in a comment at :899-900. Reading B, equally honest and unencoded: sentence 2 says a role change must not weaken or bypass that protection, which reads most naturally as forbidding exactly the sequence Reading A permits; an admin who cannot be deleted at 10:00 and can be deleted at 10:01 solely because another admin changed one field has had the protection bypassed by a role change, the literal thing sentence 2 names. Nothing in AC7's own text says the protection attaches to the current role rather than to being an admin — that qualifier comes from the spec and the test comment, not from issue #8. Under Reading B, users.spec.ts:887 is a test pinning a bypass rather than proving protection. Routes to the issue author for a ruling, not to Dev and not to another test run. The covered half is solid: :871 asserts 403, the exact body, and storedRole admin at :884, which also proves no soft delete since storedRole reads the deletedAt-filtered list. Second-order observation on the same clause from ATT-0fa25dd59654: a role change also STRENGTHENS the protection onto rows the Users page cannot reach, since PUT reaches soft-deleted rows and the AI pseudo-user and promoting either makes it permanently undeletable through the API. Out of story scope (TD-22, guard reverted at 71ad3af)."
+    ]
+  }
+}

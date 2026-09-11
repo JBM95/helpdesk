@@ -24,8 +24,8 @@ Adherence to the declared conventions is unusually high — most declared rules 
 
 **Client `@/` alias**: 78 imports across 34 files. Sample:
 
-- `client/src/pages/UsersPage.tsx:4` — `import ErrorAlert from "@/components/ErrorAlert"`
-- `client/src/pages/UserForm.tsx:11` — `import { Button } from "@/components/ui/button"`
+- `client/src/pages/UsersPage.tsx:22` — `import ErrorAlert from "@/components/ErrorAlert"`
+- `client/src/pages/UserForm.tsx:12` — `import { Button } from "@/components/ui/button"`
 - `client/src/components/ReplyForm.tsx:7` — `import { Textarea } from "@/components/ui/textarea"`
 - `client/src/pages/TicketsTable.tsx:15` — `import ErrorAlert from "@/components/ErrorAlert"`
 
@@ -73,7 +73,7 @@ Adherence to the declared conventions is unusually high — most declared rules 
 
 ### React Hook Form + zodResolver
 
-**3 of 3** forms use both: `pages/LoginPage.tsx:3,37-39`, `pages/UserForm.tsx:1,32-39`, `components/ReplyForm.tsx:1,28-30`. **100%.**
+**3 of 3** forms use both: `pages/LoginPage.tsx:3,37-39`, `pages/UserForm.tsx:1,42-54`, `components/ReplyForm.tsx:1,28-30`. **100%.**
 
 ### TanStack Query
 
@@ -85,15 +85,15 @@ Sampled 5 data-fetching components, all using `useQuery`/`useMutation`: `pages/U
 
 ### Error components
 
-`ErrorAlert` — 5 of 5 sampled mutation-heavy components: `pages/UsersPage.tsx:21,90`, `pages/UserForm.tsx:14,105-108`, `components/ReplyForm.tsx:9,63,66`, `pages/TicketsTable.tsx:15,154`, `pages/LoginPage.tsx:17,91`.
+`ErrorAlert` — 5 of 5 sampled mutation-heavy components: `pages/UsersPage.tsx:22,92`, `pages/UserForm.tsx:22,138-143`, `components/ReplyForm.tsx:9,63,66`, `pages/TicketsTable.tsx:15,154`, `pages/LoginPage.tsx:17,91`.
 
-`ErrorMessage` — 3 of 3 sampled forms: `pages/UserForm.tsx:15,73,87,101`, `pages/LoginPage.tsx:18,103,114`, `components/ReplyForm.tsx:10,75`.
+`ErrorMessage` — 3 of 3 sampled forms: `pages/UserForm.tsx:23,90,104,118`, `pages/LoginPage.tsx:18,103,114`, `components/ReplyForm.tsx:10,75`.
 
 **100% on both.**
 
 ### Semantic colour tokens
 
-**Hardcoded Tailwind colours outside `components/ui/`: 0 files.** Semantic tokens: `bg-*` in 18 files, `text-*` in 20 files. Sample: `pages/UsersPage.tsx:96` (`bg-destructive text-white hover:bg-destructive/90`), `components/TicketDetail.tsx:20` (`text-muted-foreground`), `components/ReplyThread.tsx:15` (`text-foreground`). **100%.**
+**Hardcoded Tailwind colours outside `components/ui/`: 0 files.** Semantic tokens: `bg-*` in 18 files, `text-*` in 20 files. Sample: `pages/UsersPage.tsx:98` (`bg-destructive text-white hover:bg-destructive/90`), `components/TicketDetail.tsx:20` (`text-muted-foreground`), `components/ReplyThread.tsx:15` (`text-foreground`). **100%.**
 
 ## Shared code conventions
 

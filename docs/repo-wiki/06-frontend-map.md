@@ -90,7 +90,7 @@ Available, not project-authored, internals not mapped: `alert`, `alert-dialog`, 
 | `["tickets", sortBy, sortOrder, filters, pageIndex]` | `GET /api/tickets` | nothing |
 | `["ticket", id]` | `GET /api/tickets/:id` | `UpdateTicket.tsx:41` |
 | `["replies", ticketId]` | `GET /api/tickets/:id/replies` | `ReplyForm.tsx:43` |
-| `["users"]` | `GET /api/users` | `UsersPage.tsx:49`, `UserForm.tsx:51` |
+| `["users"]` | `GET /api/users` | `UsersPage.tsx:51`, `UserForm.tsx:68` |
 | `["agents"]` | `GET /api/agents` | nothing |
 
 Mutations always invalidate; there is no `setQueryData` anywhere, so no optimistic updates.
@@ -113,7 +113,7 @@ Structurally significant local state:
 | `TicketsTable.tsx:99-101` | `sorting`, default `createdAt` desc |
 | `TicketsTable.tsx:102-105` | `pagination`, `pageIndex: 0`, `pageSize: 10` |
 | `TicketsTable.tsx:107-109` | `useEffect` resetting `pageIndex` on `filters` identity change |
-| `UsersPage.tsx:40-41` | dialog mode + pending delete target |
+| `UsersPage.tsx:42-43` | dialog mode + pending delete target |
 | `LoginPage.tsx:31` | `serverError` |
 
 ## Forms
@@ -121,7 +121,7 @@ Structurally significant local state:
 | Form | Schema | Location |
 |------|--------|----------|
 | Sign in | local inline Zod (`LoginPage.tsx:21-24`) | not shared — the endpoint belongs to Better Auth, not a local route |
-| Create/edit user | `createUserSchema` / `updateUserSchema` from `core/schemas/users` | `UserForm.tsx:33` picks by mode |
+| Create/edit user | `createUserSchema` / `updateUserSchema` from `core/schemas/users` | `UserForm.tsx:47` picks by mode |
 | Reply | `createReplySchema` from `core/schemas/replies` | `ReplyForm.tsx:29` |
 
 `TicketsFilters` is **not** a React Hook Form — it is plain controlled inputs calling `onChange` straight into the parent's `setFilters`.

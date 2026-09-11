@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { Role } from "core/constants/role.ts";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -27,6 +28,7 @@ interface EditingUser {
   id: string;
   name: string;
   email: string;
+  role: Role;
 }
 
 interface DeletingUser {

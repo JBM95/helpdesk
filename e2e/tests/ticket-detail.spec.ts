@@ -1,4 +1,9 @@
-import { test, expect, type APIRequestContext } from "@playwright/test";
+import {
+  test,
+  expect,
+  type APIRequestContext,
+  type Page,
+} from "@playwright/test";
 import { loginAsAdmin } from "../fixtures/auth";
 import type { InboundEmailInput } from "core/schemas/tickets.ts";
 
@@ -39,6 +44,72 @@ async function createTicketViaWebhook(
     status: string;
     category: string | null;
   };
+}
+
+/**
+ * Waits for the auto-resolve-ticket job to finish with this ticket, then puts the
+ * ticket into the state the test needs.
+ *
+ * The inbound-email webhook enqueues auto-resolve-ticket, which writes status
+ * "processing" and then a terminal status -- "open" when the AI call fails or
+ * escalates, "resolved" when it succeeds (auto-resolve-ticket.ts:67-92). Until
+ * that terminal write lands, any status or assignment the test sets is liable to
+ * be overwritten by the job, which is what used to make these tests fail after a
+ * reload.
+ *
+ * Two things this deliberately does NOT do:
+ *
+ * 1. It does not wait for "open" specifically. That would couple the *wait* to the
+ *    AI call failing, which is only true because .env.test configures no
+ *    OPENAI_API_KEY -- add one and the job writes "resolved" instead and the wait
+ *    would never finish. It waits for *any* terminal status, then PATCHes the
+ *    status it wants, so the test controls the status rather than inheriting
+ *    whatever the job decided.
+ *
+ *    Note the narrow scope of that: it decouples **status only**. The category
+ *    assertions in these tests still assume classify-ticket fails -- they locate
+ *    the category control by `hasText: "None"`, and a classify job that succeeded
+ *    would have written a real category (classify-ticket.ts:49-52), so that
+ *    locator would match nothing. Supplying an OPENAI_API_KEY would still need
+ *    those assertions revisited.
+ * 2. It does not rely on the default per-test timeout. pg-boss drains one job per
+ *    polling interval (batchSize 1, ~2s), so a job enqueued behind a full run's
+ *    worth can wait tens of seconds before it even starts. With the default 30s
+ *    test budget the wait alone could consume all of it and the real assertions
+ *    would never run -- which failed deterministically when this spec ran
+ *    alongside webhook-inbound-email.spec.ts. The budget is raised here, in the
+ *    helper that needs it, so a future caller cannot forget to.
+ *
+ * (classify-ticket also runs and always fails under test, but it only writes on
+ * success, so it cannot clobber anything -- it just retries and logs.)
+ */
+async function settleTicketAndOpen(page: Page, ticketId: number) {
+  test.setTimeout(90_000);
+
+  await expect
+    .poll(
+      async () => {
+        const response = await page.request.get(
+          `${API_BASE_URL}/api/tickets/${ticketId}`
+        );
+        expect(response.status()).toBe(200);
+        return (await response.json()).status;
+      },
+      {
+        message:
+          `auto-resolve-ticket never reached a terminal status for ticket ${ticketId} ` +
+          `(still "new" or "processing" after 60s -- the job queue is probably backed up)`,
+        timeout: 60_000,
+      }
+    )
+    .toMatch(/^(open|resolved)$/);
+
+  // The job is finished, so nothing else will write to this ticket.
+  const response = await page.request.patch(
+    `${API_BASE_URL}/api/tickets/${ticketId}`,
+    { data: { status: "open" } }
+  );
+  expect(response.status()).toBe(200);
 }
 
 /**
@@ -84,9 +155,10 @@ test.describe("Ticket Detail Page", () => {
     );
 
     await loginAsAdmin(page);
-    await page.request.patch(`${API_BASE_URL}/api/tickets/${ticket.id}`, {
-      data: { status: "open" },
-    });
+
+    // Let the auto-resolve job finish before touching the ticket, then set the
+    // status this test needs.
+    await settleTicketAndOpen(page, ticket.id);
     await page.goto(`/tickets/${ticket.id}`);
 
     // Update status
@@ -178,9 +250,10 @@ test.describe("Ticket Detail Page", () => {
     const ticket = await createTicketViaWebhook(request, payload);
 
     await loginAsAdmin(page);
-    await page.request.patch(`${API_BASE_URL}/api/tickets/${ticket.id}`, {
-      data: { status: "open" },
-    });
+
+    // Let the auto-resolve job finish before touching the ticket, then set the
+    // status this test needs.
+    await settleTicketAndOpen(page, ticket.id);
 
     // Navigate from list to detail
     await page.goto("/tickets");

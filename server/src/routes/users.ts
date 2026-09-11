@@ -74,7 +74,24 @@ router.put("/:id", requireAuth, requireAdmin, async (req, res) => {
   const data = validate(updateUserSchema, req.body, res);
   if (!data) return;
 
-  const { name, email, password } = data;
+  const { name, email, password, role } = data;
+
+  const target = await prisma.user.findUnique({ where: { id } });
+  if (!target) {
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
+
+  // An admin changing their own role would revoke their own access on the next
+  // request. It also blocks every *sequential* path to zero admins: demoting the
+  // final admin can only be done by that admin, and this refuses it. It is not a
+  // true floor under concurrency — two admins demoting each other in the same
+  // window both pass requireAdmin before either write commits. Accepted: no AC
+  // asks for a floor, and enforcing one needs a serializable transaction.
+  if (req.user.id === id && role !== target.role) {
+    res.status(403).json({ error: "You cannot change your own role" });
+    return;
+  }
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing && existing.id !== id) {
@@ -82,10 +99,25 @@ router.put("/:id", requireAuth, requireAdmin, async (req, res) => {
     return;
   }
 
-  await prisma.user.update({
-    where: { id: id },
-    data: { name, email, updatedAt: new Date() },
-  });
+  // requireAdmin reads the role Better Auth joins fresh from the User row on
+  // every request, so a demotion already binds the next one. Dropping the
+  // sessions means privilege loss does not rest on that library behaviour at
+  // all -- relevant because what session.cookieCache would serve if it were
+  // ever enabled is unverified in either direction.
+  //
+  // The drop is in the same transaction as the role write so the two cannot
+  // disagree: a demoted user is never left holding live session rows.
+  const demoted = target.role === Role.admin && role === Role.agent;
+
+  await prisma.$transaction([
+    prisma.user.update({
+      where: { id: id },
+      data: { name, email, role, updatedAt: new Date() },
+    }),
+    ...(demoted
+      ? [prisma.session.deleteMany({ where: { userId: id } })]
+      : []),
+  ]);
 
   if (password) {
     const hashedPassword = await hashPassword(password);

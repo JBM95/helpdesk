@@ -1,4 +1,5 @@
 import { z } from "zod/v4";
+import { Role } from "../constants/role";
 
 export const createUserSchema = z.object({
   name: z.string().trim().min(3, "Name must be at least 3 characters"),
@@ -15,6 +16,7 @@ export const updateUserSchema = z.object({
     z.literal(""),
     z.string().trim().min(8, "Password must be at least 8 characters"),
   ]),
+  role: z.enum(Role, "Role must be either agent or admin"),
 });
 
 export type UpdateUserInput = z.infer<typeof updateUserSchema>;
