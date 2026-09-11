@@ -1,5 +1,5 @@
 {
-  "version": "6.43.0",
+  "version": "6.44.0",
   "managed": [
     {
       "source": "agents/build-fixer.md",
@@ -346,17 +346,17 @@
     {
       "source": "hooks/command-gate.mjs",
       "target": ".agents/hooks/command-gate.mjs",
-      "sha256": "d89abf3e0e7d38c979f171eee2c51082a569b2f3a4dc845764453f96d98ef2ce"
+      "sha256": "15f9924e8d1cf86180db707ad1857c6c270a1b50362c909359cd16ce015205b6"
     },
     {
       "source": "hooks/compat.mjs",
       "target": ".agents/hooks/compat.mjs",
-      "sha256": "0a5ad9490ceb9eceb20bd5731bee5f074cb68247ec6983227f984371daa247ed"
+      "sha256": "f9981e4f0ebb8aa822f19850506fc5568cbe7eefe6e8ace097598df0e0ef79f6"
     },
     {
       "source": "hooks/doctor-check.mjs",
       "target": ".agents/hooks/doctor-check.mjs",
-      "sha256": "1c05a70677fe5970f204d9777e67ed3636d0ee4689c7edfe9e8dfab7094c3519"
+      "sha256": "70b9e1dbb0d83ea0f0fc566e534e3921a3d4148825a72bd2f4d7255e5369566c"
     },
     {
       "source": "hooks/doctor-check.ps1",
@@ -371,77 +371,77 @@
     {
       "source": "hooks/gate-guard.mjs",
       "target": ".agents/hooks/gate-guard.mjs",
-      "sha256": "636716ca65a93d113327471a4d92bc16bfa4ed15b607de8820226b0b3520288a"
+      "sha256": "cf1b352a126d307ca24016af77b433a414ab33037fd12ed9960e4481a35fb9b4"
     },
     {
       "source": "hooks/lint.mjs",
       "target": ".agents/hooks/lint.mjs",
-      "sha256": "5b8986b7eda15136a6f8f6eefd4865a4a0ea16b04da039215e8ecf72f641a502"
+      "sha256": "705d10a519e666f8abf0a68d077589224860e611f2c9bcb75db3fed693cd9473"
     },
     {
       "source": "hooks/merge-verify-gate.mjs",
       "target": ".agents/hooks/merge-verify-gate.mjs",
-      "sha256": "9a0532f54517694369bfaafc554e942959b37af2971509576492d6391a79a358"
+      "sha256": "4a83c8559b3773bd1f52f8bef4042c01a5a3c33f064e1a0e2c5083aa5d456268"
     },
     {
       "source": "hooks/qa-execute.mjs",
       "target": ".agents/hooks/qa-execute.mjs",
-      "sha256": "9321675d66354713c8dafd1794535567e6f2a4acf8dff698a7213fa7518a0733"
+      "sha256": "b15081dd142ccbae3ee6c48944870dad5913abdb54d6f7fb6e5b76e08ed92c3e"
     },
     {
       "source": "hooks/qa-findings.mjs",
       "target": ".agents/hooks/qa-findings.mjs",
-      "sha256": "ac984212733aac9fcc8f06b24bec293d0775f1ed7193183530cbd2b4effaca6c"
+      "sha256": "2c32a127024c855d41bdcbc78c717a8b24a304bd754c14affb3582211bbe6b9d"
     },
     {
       "source": "hooks/qa-readiness.mjs",
       "target": ".agents/hooks/qa-readiness.mjs",
-      "sha256": "c0b456bd5ca1d415685c3c950d11fa43388f38e36cb7bebc531f9e21432d5f8f"
+      "sha256": "d0daea8cd2e493d5c044fc320adeaade35f608617d96b9bcf168162d57a05568"
     },
     {
       "source": "hooks/qa-result.mjs",
       "target": ".agents/hooks/qa-result.mjs",
-      "sha256": "7712b38221a7b8913e20732d9e2c44faa0b69368a98a024d86f032791606222b"
+      "sha256": "394d708017ca151cc9efe30636fc770d95d7b44c3e2b98cd7bd8469c5f6f6503"
     },
     {
       "source": "hooks/qa-runtime.mjs",
       "target": ".agents/hooks/qa-runtime.mjs",
-      "sha256": "cd7fc3d594aa2266b6d592df4f839ece648e9415ce4c36d81031b1179a1c3ce7"
+      "sha256": "9d28962093d5ac1f7083f473aa1bd630a00c18f16183327e9591d08b4461e3b5"
     },
     {
       "source": "hooks/qa-scope.mjs",
       "target": ".agents/hooks/qa-scope.mjs",
-      "sha256": "315e2a64308d77500000343d1d8b66b39987d8faeedca3ccc3557c9fe725813f"
+      "sha256": "8e505f7b48cd33341abc65b99715e20b23bcdc839c97eae8edeef6e79512d8c6"
     },
     {
       "source": "hooks/qa-verify.mjs",
       "target": ".agents/hooks/qa-verify.mjs",
-      "sha256": "5b51bf0f83ef8a54151915f026a2bb5a10b6a393e2c5d7f7ac22fbce52c0d9e9"
+      "sha256": "37cd70e09cc89553110a5fff796b7b267a68329a57e4977ff2a2d84acc257711"
     },
     {
       "source": "hooks/setup.mjs",
       "target": ".agents/hooks/setup.mjs",
-      "sha256": "a049a1bad038b84b7082dd35afe922db25b7629be5f4ddfe591af7ddbc0bc3d7"
+      "sha256": "88383623ae29400d33a3797659262b6a32c8462d028b8f482b084ae787efeb9a"
     },
     {
       "source": "hooks/staleness-gate.mjs",
       "target": ".agents/hooks/staleness-gate.mjs",
-      "sha256": "d29107fa99a630b73d636c557191a30fea95ce1a8994b867087891f0cf35e49a"
+      "sha256": "7a7be3a11f382ff8a174da73f45f313c0b21988679d9558204d565d5b0c23296"
     },
     {
       "source": "hooks/subagent-mutation-gate.mjs",
       "target": ".agents/hooks/subagent-mutation-gate.mjs",
-      "sha256": "b41b65bcdb441b51aea19e8d79890d8e311a4f63260253155bb4e1913e4291e6"
+      "sha256": "44e7709d345f587539556eb4ef86e36761769aa59d47a0b251a59821ce11ce0b"
     },
     {
       "source": "hooks/sync.mjs",
       "target": ".agents/hooks/sync.mjs",
-      "sha256": "ce005ad4a35f411103875793404a03111cda644983fef14ba1155ff68d78e065"
+      "sha256": "7f7aa0cb0e2dc24d718ff003412dfda6c412821f167bdf78defdbc5766815ed6"
     },
     {
       "source": "hooks/telemetry.mjs",
       "target": ".agents/hooks/telemetry.mjs",
-      "sha256": "df2e5342d26c76e77e00266223b81c655a46ca60ef1ea8c53c6e8d1512c59fa4"
+      "sha256": "9f380c987899109f49752311c9013469ba19706516d3bec4b46f9af437e0d9cf"
     },
     {
       "source": "skills/ado-conventions/SKILL.md",
